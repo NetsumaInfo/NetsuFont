@@ -1,0 +1,1434 @@
+{
+  "format": 1,
+  "name": "netsu-pixel",
+  "family": "Netsu Pixel",
+  "style": "Regular",
+  "unitsPerEm": 1000,
+  "metrics": {
+    "ascender": 1000,
+    "descender": -200,
+    "capHeight": 700,
+    "xHeight": 500
+  },
+  "glyphs": [
+    {
+      "name": "space",
+      "unicode": 32,
+      "advance": 400,
+      "path": ""
+    },
+    {
+      "name": "zero",
+      "advance": 600,
+      "path": "M150 600H450V700H150ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM350 400H550V500H350ZM50 300H150V400H50ZM250 300H350V400H250ZM450 300H550V400H450ZM50 200H250V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H450V100H150Z",
+      "unicode": 48
+    },
+    {
+      "name": "one",
+      "advance": 600,
+      "path": "M250 600H350V700H250ZM150 500H350V600H150ZM250 400H350V500H250ZM250 300H350V400H250ZM250 200H350V300H250ZM250 100H350V200H250ZM150 0H450V100H150Z",
+      "unicode": 49
+    },
+    {
+      "name": "two",
+      "advance": 600,
+      "path": "M150 600H450V700H150ZM50 500H150V600H50ZM450 500H550V600H450ZM450 400H550V500H450ZM350 300H450V400H350ZM250 200H350V300H250ZM150 100H250V200H150ZM50 0H550V100H50Z",
+      "unicode": 50
+    },
+    {
+      "name": "three",
+      "advance": 600,
+      "path": "M50 600H550V700H50ZM350 500H450V600H350ZM250 400H350V500H250ZM350 300H450V400H350ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H450V100H150Z",
+      "unicode": 51
+    },
+    {
+      "name": "four",
+      "advance": 600,
+      "path": "M350 600H450V700H350ZM250 500H450V600H250ZM150 400H250V500H150ZM350 400H450V500H350ZM50 300H150V400H50ZM350 300H450V400H350ZM50 200H550V300H50ZM350 100H450V200H350ZM350 0H450V100H350Z",
+      "unicode": 52
+    },
+    {
+      "name": "five",
+      "advance": 600,
+      "path": "M50 600H550V700H50ZM50 500H150V600H50ZM50 400H450V500H50ZM450 300H550V400H450ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H450V100H150Z",
+      "unicode": 53
+    },
+    {
+      "name": "six",
+      "advance": 600,
+      "path": "M250 600H450V700H250ZM150 500H250V600H150ZM50 400H150V500H50ZM50 300H450V400H50ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H450V100H150Z",
+      "unicode": 54
+    },
+    {
+      "name": "seven",
+      "advance": 600,
+      "path": "M50 600H550V700H50ZM450 500H550V600H450ZM350 400H450V500H350ZM250 300H350V400H250ZM150 200H250V300H150ZM150 100H250V200H150ZM150 0H250V100H150Z",
+      "unicode": 55
+    },
+    {
+      "name": "eight",
+      "advance": 600,
+      "path": "M150 600H450V700H150ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM450 400H550V500H450ZM150 300H450V400H150ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H450V100H150Z",
+      "unicode": 56
+    },
+    {
+      "name": "nine",
+      "advance": 600,
+      "path": "M150 600H450V700H150ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM450 400H550V500H450ZM150 300H550V400H150ZM450 200H550V300H450ZM350 100H450V200H350ZM150 0H350V100H150Z",
+      "unicode": 57
+    },
+    {
+      "name": "A",
+      "advance": 600,
+      "path": "M150 600H450V700H150ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM450 400H550V500H450ZM50 300H550V400H50ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM50 0H150V100H50ZM450 0H550V100H450Z",
+      "unicode": 65
+    },
+    {
+      "name": "B",
+      "advance": 600,
+      "path": "M50 600H450V700H50ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM450 400H550V500H450ZM50 300H450V400H50ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM50 0H450V100H50Z",
+      "unicode": 66
+    },
+    {
+      "name": "C",
+      "advance": 600,
+      "path": "M150 600H450V700H150ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM50 300H150V400H50ZM50 200H150V300H50ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H450V100H150Z",
+      "unicode": 67
+    },
+    {
+      "name": "D",
+      "advance": 600,
+      "path": "M50 600H450V700H50ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM450 400H550V500H450ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM50 0H450V100H50Z",
+      "unicode": 68
+    },
+    {
+      "name": "E",
+      "advance": 600,
+      "path": "M50 600H550V700H50ZM50 500H150V600H50ZM50 400H150V500H50ZM50 300H450V400H50ZM50 200H150V300H50ZM50 100H150V200H50ZM50 0H550V100H50Z",
+      "unicode": 69
+    },
+    {
+      "name": "F",
+      "advance": 600,
+      "path": "M50 600H550V700H50ZM50 500H150V600H50ZM50 400H150V500H50ZM50 300H450V400H50ZM50 200H150V300H50ZM50 100H150V200H50ZM50 0H150V100H50Z",
+      "unicode": 70
+    },
+    {
+      "name": "G",
+      "advance": 600,
+      "path": "M150 600H450V700H150ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM50 300H150V400H50ZM250 300H550V400H250ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H550V100H150Z",
+      "unicode": 71
+    },
+    {
+      "name": "H",
+      "advance": 600,
+      "path": "M50 600H150V700H50ZM450 600H550V700H450ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM450 400H550V500H450ZM50 300H550V400H50ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM50 0H150V100H50ZM450 0H550V100H450Z",
+      "unicode": 72
+    },
+    {
+      "name": "I",
+      "advance": 600,
+      "path": "M150 600H450V700H150ZM250 500H350V600H250ZM250 400H350V500H250ZM250 300H350V400H250ZM250 200H350V300H250ZM250 100H350V200H250ZM150 0H450V100H150Z",
+      "unicode": 73
+    },
+    {
+      "name": "J",
+      "advance": 600,
+      "path": "M250 600H550V700H250ZM350 500H450V600H350ZM350 400H450V500H350ZM350 300H450V400H350ZM350 200H450V300H350ZM50 100H150V200H50ZM350 100H450V200H350ZM150 0H350V100H150Z",
+      "unicode": 74
+    },
+    {
+      "name": "K",
+      "advance": 600,
+      "path": "M50 600H150V700H50ZM450 600H550V700H450ZM50 500H150V600H50ZM350 500H450V600H350ZM50 400H150V500H50ZM250 400H350V500H250ZM50 300H250V400H50ZM50 200H150V300H50ZM250 200H350V300H250ZM50 100H150V200H50ZM350 100H450V200H350ZM50 0H150V100H50ZM450 0H550V100H450Z",
+      "unicode": 75
+    },
+    {
+      "name": "L",
+      "advance": 600,
+      "path": "M50 600H150V700H50ZM50 500H150V600H50ZM50 400H150V500H50ZM50 300H150V400H50ZM50 200H150V300H50ZM50 100H150V200H50ZM50 0H550V100H50Z",
+      "unicode": 76
+    },
+    {
+      "name": "M",
+      "advance": 600,
+      "path": "M50 600H150V700H50ZM450 600H550V700H450ZM50 500H250V600H50ZM350 500H550V600H350ZM50 400H150V500H50ZM250 400H350V500H250ZM450 400H550V500H450ZM50 300H150V400H50ZM250 300H350V400H250ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM50 0H150V100H50ZM450 0H550V100H450Z",
+      "unicode": 77
+    },
+    {
+      "name": "N",
+      "advance": 600,
+      "path": "M50 600H150V700H50ZM450 600H550V700H450ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H250V500H50ZM450 400H550V500H450ZM50 300H150V400H50ZM250 300H350V400H250ZM450 300H550V400H450ZM50 200H150V300H50ZM350 200H550V300H350ZM50 100H150V200H50ZM450 100H550V200H450ZM50 0H150V100H50ZM450 0H550V100H450Z",
+      "unicode": 78
+    },
+    {
+      "name": "O",
+      "advance": 600,
+      "path": "M150 600H450V700H150ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM450 400H550V500H450ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H450V100H150Z",
+      "unicode": 79
+    },
+    {
+      "name": "P",
+      "advance": 600,
+      "path": "M50 600H450V700H50ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM450 400H550V500H450ZM50 300H450V400H50ZM50 200H150V300H50ZM50 100H150V200H50ZM50 0H150V100H50Z",
+      "unicode": 80
+    },
+    {
+      "name": "Q",
+      "advance": 600,
+      "path": "M150 600H450V700H150ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM450 400H550V500H450ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM250 200H350V300H250ZM450 200H550V300H450ZM50 100H150V200H50ZM350 100H450V200H350ZM150 0H350V100H150ZM450 0H550V100H450Z",
+      "unicode": 81
+    },
+    {
+      "name": "R",
+      "advance": 600,
+      "path": "M50 600H450V700H50ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM450 400H550V500H450ZM50 300H450V400H50ZM50 200H150V300H50ZM250 200H350V300H250ZM50 100H150V200H50ZM350 100H450V200H350ZM50 0H150V100H50ZM450 0H550V100H450Z",
+      "unicode": 82
+    },
+    {
+      "name": "S",
+      "advance": 600,
+      "path": "M150 600H550V700H150ZM50 500H150V600H50ZM50 400H150V500H50ZM150 300H450V400H150ZM450 200H550V300H450ZM450 100H550V200H450ZM50 0H450V100H50Z",
+      "unicode": 83
+    },
+    {
+      "name": "T",
+      "advance": 600,
+      "path": "M50 600H550V700H50ZM250 500H350V600H250ZM250 400H350V500H250ZM250 300H350V400H250ZM250 200H350V300H250ZM250 100H350V200H250ZM250 0H350V100H250Z",
+      "unicode": 84
+    },
+    {
+      "name": "U",
+      "advance": 600,
+      "path": "M50 600H150V700H50ZM450 600H550V700H450ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM450 400H550V500H450ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H450V100H150Z",
+      "unicode": 85
+    },
+    {
+      "name": "V",
+      "advance": 600,
+      "path": "M50 600H150V700H50ZM450 600H550V700H450ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM450 400H550V500H450ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM150 100H250V200H150ZM350 100H450V200H350ZM250 0H350V100H250Z",
+      "unicode": 86
+    },
+    {
+      "name": "W",
+      "advance": 600,
+      "path": "M50 600H150V700H50ZM450 600H550V700H450ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM450 400H550V500H450ZM50 300H150V400H50ZM250 300H350V400H250ZM450 300H550V400H450ZM50 200H150V300H50ZM250 200H350V300H250ZM450 200H550V300H450ZM50 100H150V200H50ZM250 100H350V200H250ZM450 100H550V200H450ZM150 0H250V100H150ZM350 0H450V100H350Z",
+      "unicode": 87
+    },
+    {
+      "name": "X",
+      "advance": 600,
+      "path": "M50 600H150V700H50ZM450 600H550V700H450ZM50 500H150V600H50ZM450 500H550V600H450ZM150 400H250V500H150ZM350 400H450V500H350ZM250 300H350V400H250ZM150 200H250V300H150ZM350 200H450V300H350ZM50 100H150V200H50ZM450 100H550V200H450ZM50 0H150V100H50ZM450 0H550V100H450Z",
+      "unicode": 88
+    },
+    {
+      "name": "Y",
+      "advance": 600,
+      "path": "M50 600H150V700H50ZM450 600H550V700H450ZM50 500H150V600H50ZM450 500H550V600H450ZM150 400H250V500H150ZM350 400H450V500H350ZM250 300H350V400H250ZM250 200H350V300H250ZM250 100H350V200H250ZM250 0H350V100H250Z",
+      "unicode": 89
+    },
+    {
+      "name": "Z",
+      "advance": 600,
+      "path": "M50 600H550V700H50ZM450 500H550V600H450ZM350 400H450V500H350ZM250 300H350V400H250ZM150 200H250V300H150ZM50 100H150V200H50ZM50 0H550V100H50Z",
+      "unicode": 90
+    },
+    {
+      "name": "a",
+      "advance": 600,
+      "path": "M150 400H450V500H150ZM450 300H550V400H450ZM150 200H550V300H150ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H550V100H150Z",
+      "unicode": 97
+    },
+    {
+      "name": "b",
+      "advance": 600,
+      "path": "M50 600H150V700H50ZM50 500H150V600H50ZM50 400H150V500H50ZM250 400H450V500H250ZM50 300H250V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM50 0H450V100H50Z",
+      "unicode": 98
+    },
+    {
+      "name": "c",
+      "advance": 600,
+      "path": "M150 400H450V500H150ZM50 300H150V400H50ZM50 200H150V300H50ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H450V100H150Z",
+      "unicode": 99
+    },
+    {
+      "name": "d",
+      "advance": 600,
+      "path": "M450 600H550V700H450ZM450 500H550V600H450ZM150 400H350V500H150ZM450 400H550V500H450ZM50 300H150V400H50ZM350 300H550V400H350ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H550V100H150Z",
+      "unicode": 100
+    },
+    {
+      "name": "e",
+      "advance": 600,
+      "path": "M150 400H450V500H150ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H550V300H50ZM50 100H150V200H50ZM150 0H450V100H150Z",
+      "unicode": 101
+    },
+    {
+      "name": "f",
+      "advance": 600,
+      "path": "M250 600H450V700H250ZM150 500H250V600H150ZM450 500H550V600H450ZM150 400H250V500H150ZM50 300H350V400H50ZM150 200H250V300H150ZM150 100H250V200H150ZM150 0H250V100H150Z",
+      "unicode": 102
+    },
+    {
+      "name": "g",
+      "advance": 600,
+      "path": "M150 400H550V500H150ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H550V100H150ZM450 -100H550V0H450ZM150 -200H450V-100H150Z",
+      "unicode": 103
+    },
+    {
+      "name": "h",
+      "advance": 600,
+      "path": "M50 600H150V700H50ZM50 500H150V600H50ZM50 400H150V500H50ZM250 400H450V500H250ZM50 300H250V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM50 0H150V100H50ZM450 0H550V100H450Z",
+      "unicode": 104
+    },
+    {
+      "name": "i",
+      "advance": 600,
+      "path": "M250 600H350V700H250ZM150 400H350V500H150ZM250 300H350V400H250ZM250 200H350V300H250ZM250 100H350V200H250ZM150 0H450V100H150Z",
+      "unicode": 105
+    },
+    {
+      "name": "j",
+      "advance": 600,
+      "path": "M350 600H450V700H350ZM250 400H450V500H250ZM350 300H450V400H350ZM350 200H450V300H350ZM350 100H450V200H350ZM350 0H450V100H350ZM50 -100H150V0H50ZM350 -100H450V0H350ZM150 -200H350V-100H150Z",
+      "unicode": 106
+    },
+    {
+      "name": "k",
+      "advance": 600,
+      "path": "M50 600H150V700H50ZM50 500H150V600H50ZM50 400H150V500H50ZM350 400H450V500H350ZM50 300H150V400H50ZM250 300H350V400H250ZM50 200H250V300H50ZM50 100H150V200H50ZM250 100H350V200H250ZM50 0H150V100H50ZM350 0H450V100H350Z",
+      "unicode": 107
+    },
+    {
+      "name": "l",
+      "advance": 600,
+      "path": "M150 600H350V700H150ZM250 500H350V600H250ZM250 400H350V500H250ZM250 300H350V400H250ZM250 200H350V300H250ZM250 100H350V200H250ZM150 0H450V100H150Z",
+      "unicode": 108
+    },
+    {
+      "name": "m",
+      "advance": 600,
+      "path": "M50 400H250V500H50ZM350 400H450V500H350ZM50 300H150V400H50ZM250 300H350V400H250ZM450 300H550V400H450ZM50 200H150V300H50ZM250 200H350V300H250ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM50 0H150V100H50ZM450 0H550V100H450Z",
+      "unicode": 109
+    },
+    {
+      "name": "n",
+      "advance": 600,
+      "path": "M50 400H150V500H50ZM250 400H450V500H250ZM50 300H250V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM50 0H150V100H50ZM450 0H550V100H450Z",
+      "unicode": 110
+    },
+    {
+      "name": "o",
+      "advance": 600,
+      "path": "M150 400H450V500H150ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H450V100H150Z",
+      "unicode": 111
+    },
+    {
+      "name": "p",
+      "advance": 600,
+      "path": "M50 400H450V500H50ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM50 0H450V100H50ZM50 -100H150V0H50ZM50 -200H150V-100H50Z",
+      "unicode": 112
+    },
+    {
+      "name": "q",
+      "advance": 600,
+      "path": "M150 400H550V500H150ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H550V100H150ZM450 -100H550V0H450ZM450 -200H550V-100H450Z",
+      "unicode": 113
+    },
+    {
+      "name": "r",
+      "advance": 600,
+      "path": "M50 400H150V500H50ZM250 400H450V500H250ZM50 300H250V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM50 100H150V200H50ZM50 0H150V100H50Z",
+      "unicode": 114
+    },
+    {
+      "name": "s",
+      "advance": 600,
+      "path": "M150 400H550V500H150ZM50 300H150V400H50ZM150 200H450V300H150ZM450 100H550V200H450ZM50 0H450V100H50Z",
+      "unicode": 115
+    },
+    {
+      "name": "t",
+      "advance": 600,
+      "path": "M150 600H250V700H150ZM150 500H250V600H150ZM50 400H350V500H50ZM150 300H250V400H150ZM150 200H250V300H150ZM150 100H250V200H150ZM450 100H550V200H450ZM250 0H450V100H250Z",
+      "unicode": 116
+    },
+    {
+      "name": "u",
+      "advance": 600,
+      "path": "M50 400H150V500H50ZM450 400H550V500H450ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM350 100H550V200H350ZM150 0H350V100H150ZM450 0H550V100H450Z",
+      "unicode": 117
+    },
+    {
+      "name": "v",
+      "advance": 600,
+      "path": "M50 400H150V500H50ZM450 400H550V500H450ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM150 100H250V200H150ZM350 100H450V200H350ZM250 0H350V100H250Z",
+      "unicode": 118
+    },
+    {
+      "name": "w",
+      "advance": 600,
+      "path": "M50 400H150V500H50ZM450 400H550V500H450ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM250 200H350V300H250ZM450 200H550V300H450ZM50 100H150V200H50ZM250 100H350V200H250ZM450 100H550V200H450ZM150 0H250V100H150ZM350 0H450V100H350Z",
+      "unicode": 119
+    },
+    {
+      "name": "x",
+      "advance": 600,
+      "path": "M50 400H150V500H50ZM450 400H550V500H450ZM150 300H250V400H150ZM350 300H450V400H350ZM250 200H350V300H250ZM150 100H250V200H150ZM350 100H450V200H350ZM50 0H150V100H50ZM450 0H550V100H450Z",
+      "unicode": 120
+    },
+    {
+      "name": "y",
+      "advance": 600,
+      "path": "M50 400H150V500H50ZM450 400H550V500H450ZM50 300H150V400H50ZM450 300H550V400H450ZM50 200H150V300H50ZM450 200H550V300H450ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H550V100H150ZM450 -100H550V0H450ZM150 -200H450V-100H150Z",
+      "unicode": 121
+    },
+    {
+      "name": "z",
+      "advance": 600,
+      "path": "M50 400H550V500H50ZM350 300H450V400H350ZM250 200H350V300H250ZM150 100H250V200H150ZM50 0H550V100H50Z",
+      "unicode": 122
+    },
+    {
+      "name": "period",
+      "advance": 200,
+      "path": "M50 0H150V100H50Z",
+      "unicode": 46
+    },
+    {
+      "name": "comma",
+      "advance": 300,
+      "path": "M150 100H250V200H150ZM150 0H250V100H150ZM50 -100H150V0H50Z",
+      "unicode": 44
+    },
+    {
+      "name": "colon",
+      "advance": 200,
+      "path": "M50 400H150V500H50ZM50 0H150V100H50Z",
+      "unicode": 58
+    },
+    {
+      "name": "semicolon",
+      "advance": 300,
+      "path": "M150 400H250V500H150ZM150 100H250V200H150ZM150 0H250V100H150ZM50 -100H150V0H50Z",
+      "unicode": 59
+    },
+    {
+      "name": "exclam",
+      "advance": 200,
+      "path": "M50 600H150V700H50ZM50 500H150V600H50ZM50 400H150V500H50ZM50 300H150V400H50ZM50 200H150V300H50ZM50 0H150V100H50Z",
+      "unicode": 33
+    },
+    {
+      "name": "question",
+      "advance": 600,
+      "path": "M150 600H450V700H150ZM50 500H150V600H50ZM450 500H550V600H450ZM450 400H550V500H450ZM350 300H450V400H350ZM250 200H350V300H250ZM250 0H350V100H250Z",
+      "unicode": 63
+    },
+    {
+      "name": "quotesingle",
+      "advance": 200,
+      "path": "M50 600H150V700H50ZM50 500H150V600H50Z",
+      "unicode": 39
+    },
+    {
+      "name": "quotedbl",
+      "advance": 400,
+      "path": "M50 600H150V700H50ZM250 600H350V700H250ZM50 500H150V600H50ZM250 500H350V600H250Z",
+      "unicode": 34
+    },
+    {
+      "name": "hyphen",
+      "advance": 400,
+      "path": "M50 300H350V400H50Z",
+      "unicode": 45
+    },
+    {
+      "name": "parenleft",
+      "advance": 400,
+      "path": "M250 600H350V700H250ZM150 500H250V600H150ZM50 400H150V500H50ZM50 300H150V400H50ZM50 200H150V300H50ZM150 100H250V200H150ZM250 0H350V100H250Z",
+      "unicode": 40
+    },
+    {
+      "name": "parenright",
+      "advance": 400,
+      "path": "M50 600H150V700H50ZM150 500H250V600H150ZM250 400H350V500H250ZM250 300H350V400H250ZM250 200H350V300H250ZM150 100H250V200H150ZM50 0H150V100H50Z",
+      "unicode": 41
+    },
+    {
+      "name": "slash",
+      "advance": 600,
+      "path": "M450 600H550V700H450ZM450 500H550V600H450ZM350 400H450V500H350ZM250 300H350V400H250ZM150 200H250V300H150ZM50 100H150V200H50ZM50 0H150V100H50Z",
+      "unicode": 47
+    },
+    {
+      "name": "ampersand",
+      "advance": 600,
+      "path": "M150 600H350V700H150ZM50 500H150V600H50ZM350 500H450V600H350ZM50 400H150V500H50ZM250 400H350V500H250ZM150 300H250V400H150ZM50 200H150V300H50ZM250 200H350V300H250ZM450 200H550V300H450ZM50 100H150V200H50ZM350 100H450V200H350ZM150 0H350V100H150ZM450 0H550V100H450Z",
+      "unicode": 38
+    },
+    {
+      "name": "at",
+      "advance": 600,
+      "path": "M150 600H450V700H150ZM50 500H150V600H50ZM450 500H550V600H450ZM50 400H150V500H50ZM250 400H550V500H250ZM50 300H150V400H50ZM250 300H350V400H250ZM450 300H550V400H450ZM50 200H150V300H50ZM250 200H450V300H250ZM50 100H150V200H50ZM150 0H550V100H150Z",
+      "unicode": 64
+    },
+    {
+      "name": "ae",
+      "advance": 600,
+      "path": "M150 400H250V500H150ZM350 400H450V500H350ZM250 300H350V400H250ZM450 300H550V400H450ZM150 200H550V300H150ZM50 100H150V200H50ZM250 100H350V200H250ZM150 0H250V100H150ZM350 0H550V100H350Z",
+      "unicode": 230
+    },
+    {
+      "name": "oe",
+      "advance": 600,
+      "path": "M150 400H250V500H150ZM350 400H450V500H350ZM50 300H150V400H50ZM250 300H350V400H250ZM450 300H550V400H450ZM50 200H150V300H50ZM250 200H550V300H250ZM50 100H150V200H50ZM250 100H350V200H250ZM150 0H250V100H150ZM350 0H550V100H350Z",
+      "unicode": 339
+    },
+    {
+      "name": "AE",
+      "advance": 600,
+      "path": "M150 600H550V700H150ZM50 500H150V600H50ZM250 500H350V600H250ZM50 400H150V500H50ZM250 400H350V500H250ZM50 300H550V400H50ZM50 200H150V300H50ZM250 200H350V300H250ZM50 100H150V200H50ZM250 100H350V200H250ZM50 0H150V100H50ZM250 0H550V100H250Z",
+      "unicode": 198
+    },
+    {
+      "name": "OE",
+      "advance": 600,
+      "path": "M150 600H550V700H150ZM50 500H150V600H50ZM250 500H350V600H250ZM50 400H150V500H50ZM250 400H350V500H250ZM50 300H150V400H50ZM250 300H550V400H250ZM50 200H150V300H50ZM250 200H350V300H250ZM50 100H150V200H50ZM250 100H350V200H250ZM150 0H550V100H150Z",
+      "unicode": 338
+    },
+    {
+      "name": "germandbls",
+      "advance": 600,
+      "path": "M150 600H350V700H150ZM50 500H150V600H50ZM350 500H450V600H350ZM50 400H150V500H50ZM350 400H450V500H350ZM50 300H150V400H50ZM250 300H350V400H250ZM50 200H150V300H50ZM350 200H450V300H350ZM50 100H150V200H50ZM350 100H450V200H350ZM50 0H150V100H50ZM250 0H450V100H250Z",
+      "unicode": 223
+    },
+    {
+      "name": "dotlessi",
+      "advance": 600,
+      "path": "M150 400H350V500H150ZM250 300H350V400H250ZM250 200H350V300H250ZM250 100H350V200H250ZM150 0H450V100H150Z",
+      "unicode": 305
+    },
+    {
+      "name": "guillemotleft",
+      "advance": 600,
+      "path": "M150 400H250V500H150ZM350 400H450V500H350ZM50 300H150V400H50ZM250 300H350V400H250ZM150 200H250V300H150ZM350 200H450V300H350Z",
+      "unicode": 171
+    },
+    {
+      "name": "guillemotright",
+      "advance": 600,
+      "path": "M50 400H150V500H50ZM250 400H350V500H250ZM150 300H250V400H150ZM350 300H450V400H350ZM50 200H150V300H50ZM250 200H350V300H250Z",
+      "unicode": 187
+    },
+    {
+      "name": "questiondown",
+      "advance": 600,
+      "path": "M250 600H350V700H250ZM250 400H350V500H250ZM150 300H250V400H150ZM50 200H150V300H50ZM50 100H150V200H50ZM450 100H550V200H450ZM150 0H450V100H150Z",
+      "unicode": 191
+    },
+    {
+      "name": "exclamdown",
+      "advance": 200,
+      "path": "M50 600H150V700H50ZM50 400H150V500H50ZM50 300H150V400H50ZM50 200H150V300H50ZM50 100H150V200H50ZM50 0H150V100H50Z",
+      "unicode": 161
+    },
+    {
+      "name": "quoteleft",
+      "advance": 300,
+      "path": "M150 600H250V700H150ZM50 500H250V600H50Z",
+      "unicode": 8216
+    },
+    {
+      "name": "quoteright",
+      "advance": 300,
+      "path": "M50 600H250V700H50ZM50 500H150V600H50Z",
+      "unicode": 8217
+    },
+    {
+      "name": "quotedblleft",
+      "advance": 500,
+      "path": "M150 600H250V700H150ZM350 600H450V700H350ZM50 500H450V600H50Z",
+      "unicode": 8220
+    },
+    {
+      "name": "quotedblright",
+      "advance": 500,
+      "path": "M50 600H450V700H50ZM50 500H150V600H50ZM250 500H350V600H250Z",
+      "unicode": 8221
+    },
+    {
+      "name": "quotesinglbase",
+      "advance": 300,
+      "path": "M150 100H250V200H150ZM150 0H250V100H150ZM50 -100H150V0H50Z",
+      "unicode": 8218
+    },
+    {
+      "name": "quotedblbase",
+      "advance": 500,
+      "path": "M150 100H250V200H150ZM350 100H450V200H350ZM150 0H250V100H150ZM350 0H450V100H350ZM50 -100H150V0H50ZM250 -100H350V0H250Z",
+      "unicode": 8222
+    },
+    {
+      "name": "endash",
+      "advance": 600,
+      "path": "M50 300H550V400H50Z",
+      "unicode": 8211
+    },
+    {
+      "name": "emdash",
+      "advance": 800,
+      "path": "M50 300H750V400H50Z",
+      "unicode": 8212
+    },
+    {
+      "name": "ellipsis",
+      "advance": 600,
+      "path": "M50 0H150V100H50ZM250 0H350V100H250ZM450 0H550V100H450Z",
+      "unicode": 8230
+    },
+    {
+      "name": "acute",
+      "advance": 600,
+      "path": "M350 700H450V800H350ZM250 600H350V700H250Z"
+    },
+    {
+      "name": "grave",
+      "advance": 600,
+      "path": "M150 700H250V800H150ZM250 600H350V700H250Z"
+    },
+    {
+      "name": "circumflex",
+      "advance": 600,
+      "path": "M250 700H350V800H250ZM150 600H250V700H150ZM350 600H450V700H350Z"
+    },
+    {
+      "name": "dieresis",
+      "advance": 600,
+      "path": "M150 600H250V700H150ZM350 600H450V700H350Z"
+    },
+    {
+      "name": "tilde",
+      "advance": 600,
+      "path": "M150 700H350V800H150ZM450 700H550V800H450ZM50 600H150V700H50ZM250 600H450V700H250Z"
+    },
+    {
+      "name": "caron",
+      "advance": 600,
+      "path": "M150 700H250V800H150ZM350 700H450V800H350ZM250 600H350V700H250Z"
+    },
+    {
+      "name": "cedilla",
+      "advance": 600,
+      "path": "M250 -100H350V0H250ZM150 -200H350V-100H150Z"
+    },
+    {
+      "name": "ring",
+      "advance": 600,
+      "path": "M250 700H350V800H250ZM150 600H250V700H150ZM350 600H450V700H350Z"
+    },
+    {
+      "name": "agrave",
+      "unicode": 224,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "a",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "grave",
+          "x": 50,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "acircumflex",
+      "unicode": 226,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "a",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "circumflex",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "ccedilla",
+      "unicode": 231,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "c",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "cedilla",
+          "x": 50,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "eacute",
+      "unicode": 233,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "e",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "acute",
+          "x": -50,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "egrave",
+      "unicode": 232,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "e",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "grave",
+          "x": 50,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "ecircumflex",
+      "unicode": 234,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "e",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "circumflex",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "edieresis",
+      "unicode": 235,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "e",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "dieresis",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "icircumflex",
+      "unicode": 238,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "dotlessi",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "circumflex",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "idieresis",
+      "unicode": 239,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "dotlessi",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "dieresis",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "ocircumflex",
+      "unicode": 244,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "o",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "circumflex",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "ugrave",
+      "unicode": 249,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "u",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "grave",
+          "x": 50,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "ucircumflex",
+      "unicode": 251,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "u",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "circumflex",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "udieresis",
+      "unicode": 252,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "u",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "dieresis",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "ydieresis",
+      "unicode": 255,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "y",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "dieresis",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "Agrave",
+      "unicode": 192,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "A",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "grave",
+          "x": 50,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Acircumflex",
+      "unicode": 194,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "A",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "circumflex",
+          "x": 0,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Ccedilla",
+      "unicode": 199,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "C",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "cedilla",
+          "x": 50,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "Eacute",
+      "unicode": 201,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "E",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "acute",
+          "x": -50,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Egrave",
+      "unicode": 200,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "E",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "grave",
+          "x": 50,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Ecircumflex",
+      "unicode": 202,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "E",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "circumflex",
+          "x": 0,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Edieresis",
+      "unicode": 203,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "E",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "dieresis",
+          "x": 0,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Icircumflex",
+      "unicode": 206,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "I",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "circumflex",
+          "x": 0,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Idieresis",
+      "unicode": 207,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "I",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "dieresis",
+          "x": 0,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Ocircumflex",
+      "unicode": 212,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "O",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "circumflex",
+          "x": 0,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Ugrave",
+      "unicode": 217,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "U",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "grave",
+          "x": 50,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Ucircumflex",
+      "unicode": 219,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "U",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "circumflex",
+          "x": 0,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Udieresis",
+      "unicode": 220,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "U",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "dieresis",
+          "x": 0,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Ydieresis",
+      "unicode": 376,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "Y",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "dieresis",
+          "x": 0,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "aacute",
+      "unicode": 225,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "a",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "acute",
+          "x": -50,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "iacute",
+      "unicode": 237,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "dotlessi",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "acute",
+          "x": -50,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "ntilde",
+      "unicode": 241,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "n",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "tilde",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "oacute",
+      "unicode": 243,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "o",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "acute",
+          "x": -50,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "uacute",
+      "unicode": 250,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "u",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "acute",
+          "x": -50,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "Aacute",
+      "unicode": 193,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "A",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "acute",
+          "x": -50,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Iacute",
+      "unicode": 205,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "I",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "acute",
+          "x": -50,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Ntilde",
+      "unicode": 209,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "N",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "tilde",
+          "x": 0,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Oacute",
+      "unicode": 211,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "O",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "acute",
+          "x": -50,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Uacute",
+      "unicode": 218,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "U",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "acute",
+          "x": -50,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "adieresis",
+      "unicode": 228,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "a",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "dieresis",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "odieresis",
+      "unicode": 246,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "o",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "dieresis",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "name": "Adieresis",
+      "unicode": 196,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "A",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "dieresis",
+          "x": 0,
+          "y": 200
+        }
+      ]
+    },
+    {
+      "name": "Odieresis",
+      "unicode": 214,
+      "advance": 600,
+      "path": "",
+      "components": [
+        {
+          "glyph": "O",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "glyph": "dieresis",
+          "x": 0,
+          "y": 200
+        }
+      ]
+    }
+  ],
+  "kerning": [
+    {
+      "left": "L",
+      "right": "T",
+      "value": -100
+    },
+    {
+      "left": "L",
+      "right": "V",
+      "value": -100
+    },
+    {
+      "left": "L",
+      "right": "Y",
+      "value": -100
+    },
+    {
+      "left": "T",
+      "right": "a",
+      "value": -100
+    },
+    {
+      "left": "T",
+      "right": "e",
+      "value": -100
+    },
+    {
+      "left": "T",
+      "right": "o",
+      "value": -100
+    },
+    {
+      "left": "V",
+      "right": "a",
+      "value": -100
+    },
+    {
+      "left": "V",
+      "right": "o",
+      "value": -100
+    },
+    {
+      "left": "Y",
+      "right": "o",
+      "value": -100
+    }
+  ]
+}

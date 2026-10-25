@@ -1,0 +1,84 @@
+{
+  "title": "NetsuFont",
+  "language": "Langue de l'application",
+  "status": {
+    "connecting": "Connexion au serveur…",
+    "offline": "Serveur arrêté",
+    "online": "Serveur en marche"
+  },
+  "connect": {
+    "open": "Relier un agent",
+    "close": "Fermer",
+    "body": "Les polices se dessinent en parlant à l'agent de votre éditeur de code. Reliez-le à NetsuFont avec cette commande.",
+    "ask": "Puis demandez-lui, par exemple : « dessine une police arrondie, les majuscules d'abord ».",
+    "folder": "Dossier des polices : {{dir}}"
+  },
+  "crash": {
+    "title": "Quelque chose a cassé l'affichage",
+    "body": "Vos polices ne sont pas touchées : elles sont dans leurs fichiers. Rechargez la page ; si cela revient, voici l'erreur à signaler.",
+    "reload": "Recharger"
+  },
+  "code": {
+    "copy": "Copier",
+    "copied": "Copié"
+  },
+  "empty": {
+    "title": "Aucune police pour l'instant",
+    "offlineTitle": "Le serveur ne répond pas",
+    "offlineBody": "Lancez-le depuis le dossier du projet avec cette commande."
+  },
+  "list": {
+    "title": "Polices",
+    "glyphs_one": "{{count}} glyphe",
+    "glyphs_other": "{{count}} glyphes"
+  },
+  "view": {
+    "label": "Vue",
+    "glyphs": "Glyphes",
+    "text": "Texte"
+  },
+  "grid": {
+    "filter": "Filtrer : nom ou caractères",
+    "none": "Aucun glyphe ne correspond."
+  },
+  "stage": {
+    "back": "Tous les glyphes",
+    "points": "Points",
+    "context": "Le glyphe entre ses voisins"
+  },
+  "proof": {
+    "label": "Texte d'essai",
+    "sample": "Portez ce vieux whisky au juge blond qui fume\nHAMBURGEFONTSIV 0123456789",
+    "complete": "Tous les caractères sont dessinés. Le texte est composé par le navigateur avec la police compilée en OTF.",
+    "missing": "Pas encore dessinés, montrés dans une police de secours : {{chars}}",
+    "error": "La police n'a pas pu être compilée : {{error}}"
+  },
+  "panel": {
+    "glyph": "Glyphe",
+    "name": "Nom",
+    "unicode": "Unicode",
+    "advance": "Chasse",
+    "bearings": "Approches gauche · droite",
+    "empty": "vide",
+    "component": "Composant",
+    "path": "Contour",
+    "font": "Police",
+    "family": "Famille",
+    "style": "Style",
+    "id": "Id",
+    "em": "Unités par em",
+    "metrics": "Lignes",
+    "coverage": "Couverture",
+    "missing": "Manquent : {{chars}}",
+    "kerning_one": "Crénage : {{count}} paire",
+    "kerning_other": "Crénage : {{count}} paires",
+    "languages": "Langues"
+  },
+  "charset": {
+    "uppercase": "Majuscules",
+    "lowercase": "Minuscules",
+    "digits": "Chiffres",
+    "punctuation": "Ponctuation",
+    "ascii": "ASCII entier"
+  }
+}

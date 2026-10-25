@@ -1,0 +1,13 @@
+{
+  "name": "netsufont",
+  "private": true,
+  "license": "MIT",
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @netsufont/server --filter @netsufont/app dev",
+    "server": "pnpm --filter @netsufont/server dev",
+    "app": "pnpm --filter @netsufont/app dev",
+    "check": "pnpm -r check",
+    "test": "pnpm -r test"
+  }
+}

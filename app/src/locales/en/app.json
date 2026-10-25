@@ -1,0 +1,84 @@
+{
+  "title": "NetsuFont",
+  "language": "Language of the app",
+  "status": {
+    "connecting": "Connecting to the server…",
+    "offline": "Server stopped",
+    "online": "Server running"
+  },
+  "connect": {
+    "open": "Link an agent",
+    "close": "Close",
+    "body": "Fonts are drawn by talking to the agent of your code editor. Link it to NetsuFont with this command.",
+    "ask": "Then ask it, for instance: \"draw a rounded font, capitals first\".",
+    "folder": "Fonts folder: {{dir}}"
+  },
+  "crash": {
+    "title": "Something broke the display",
+    "body": "Your fonts are untouched: they are in their files. Reload the page; if it comes back, this is the error to report.",
+    "reload": "Reload"
+  },
+  "code": {
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "empty": {
+    "title": "No font yet",
+    "offlineTitle": "The server does not answer",
+    "offlineBody": "Start it from the project folder with this command."
+  },
+  "list": {
+    "title": "Fonts",
+    "glyphs_one": "{{count}} glyph",
+    "glyphs_other": "{{count}} glyphs"
+  },
+  "view": {
+    "label": "View",
+    "glyphs": "Glyphs",
+    "text": "Text"
+  },
+  "grid": {
+    "filter": "Filter: name or characters",
+    "none": "No glyph matches."
+  },
+  "stage": {
+    "back": "All glyphs",
+    "points": "Points",
+    "context": "The glyph between its neighbours"
+  },
+  "proof": {
+    "label": "Sample text",
+    "sample": "The quick brown fox jumps over the lazy dog\nHAMBURGEFONTSIV 0123456789",
+    "complete": "Every character is drawn. The text is set by the browser with the font compiled to OTF.",
+    "missing": "Not drawn yet, shown in a fallback font: {{chars}}",
+    "error": "The font could not be compiled: {{error}}"
+  },
+  "panel": {
+    "glyph": "Glyph",
+    "name": "Name",
+    "unicode": "Unicode",
+    "advance": "Advance",
+    "bearings": "Side bearings left · right",
+    "empty": "empty",
+    "component": "Component",
+    "path": "Outline",
+    "font": "Font",
+    "family": "Family",
+    "style": "Style",
+    "id": "Id",
+    "em": "Units per em",
+    "metrics": "Lines",
+    "coverage": "Coverage",
+    "missing": "Missing: {{chars}}",
+    "kerning_one": "Kerning: {{count}} pair",
+    "kerning_other": "Kerning: {{count}} pairs",
+    "languages": "Languages"
+  },
+  "charset": {
+    "uppercase": "Uppercase",
+    "lowercase": "Lowercase",
+    "digits": "Digits",
+    "punctuation": "Punctuation",
+    "ascii": "All of ASCII"
+  }
+}
