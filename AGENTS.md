@@ -47,6 +47,7 @@ Ports: app **1450**, server **6220** (1420, 1430 and 1440 belong to other Netsu 
 
 - Everything written in the repository is in **English**, in simple sentences. Only the conversation with the maintainer may be in French.
 - **Say what is measured or verified and what is not.**
+- A logo or an icon shown in a README or a page has a **transparent background** and fills its frame: its view box is cut to its visible pixels, glow included. Never a square of background colour around it.
 - Licenses: MIT, Apache, BSD, MPL only. FontForge and Fontra are GPL: they are not used. A font brought in with `import_font` keeps its own license; the user checks it.
 - File ≤ 300 lines (ceiling 400), function ≤ 40, React component ≤ 200. No dead code.
 - No hard-coded visible text: `app/src/locales/fr/` (the source for wording), then every other language, same change.
