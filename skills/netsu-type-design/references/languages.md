@@ -86,12 +86,25 @@ Build the letters that are not Latin from the parts you already have:
   build each letter from it: one circle language, like o.
 - **Yiddish (yi)**: Hebrew letters, ײ װ ױ (two letters joined, drawn as one), and points as marks
   with advance 0: patah ַ  kamatz ָ  hiriq ִ  under the letter, dagesh ּ  in it, rafe ֿ  over it.
+  Draw the shin dot ׁ over the right arm of ש, where it goes: it stays where drawn.
+- **Thai (th), Lao (lo)**: no case; letters on the baseline at about the x-height, with a small
+  loop at the start of most strokes. Vowel signs and tones above or below are marks of advance 0
+  (ิ ี ึ ื ั ็ ่ ้ ๊ ๋ ์, ุ ู ฺ): the font sets each on its letter, a tone on top of a vowel sign
+  above. Vowels before or after the letter (เ แ โ ใ ไ ะ า ำ) are spacing glyphs.
 - **Hebrew (he)**: right to left, no case. Letters sit on the baseline and rise to a height
   between the x-height and the cap height (about 560); horizontal strokes thicker than vertical
   ones (the reverse of Latin). Final forms ך ן ף ץ go down to the descender. `proof` and the app
   set it right to left.
-- **Not possible yet**: the Indic scripts, Thai, Khmer, Myanmar (letters reorder and stack: mark
-  positioning not written yet); Chinese, Japanese, Korean (thousands of glyphs). Say so.
+- **Devanagari (hi, mr, ne)**: letters hang from a headline at the top of the x-height band;
+  consonants have a vertical stem at their right. Draw the letters with their headline touching
+  both edges, so words join; the spacing vowel signs ा ि ी ो ौ (ि with its headline: the text
+  engine draws it before its consonant); the marks े ै ं ँ above, ु ू ृ ् ़ below, advance 0.
+  Then the forms: `<consonant>.half` (the consonant without its stem: `copy_glyph`, remove the
+  stem), `uni0930.rphf` (a hook above, advance 0, ink left of x 0), `uni0930.blwf` (a short
+  stroke under the stem, advance 0), the conjuncts क्ष `uni0915_uni094D_uni0937` and ज्ञ
+  `uni091C_uni094D_uni091E` (त्र श्र are welcome, named the same way). `languages` names the rest.
+- **Not possible yet**: Bengali, Tamil and the other Indic scripts, Khmer, Myanmar, Tibetan,
+  Sinhala (each reorders its own way); Chinese, Japanese, Korean (thousands of glyphs). Say so.
 
 ## 3b. Arabic, Persian, Urdu
 
@@ -111,6 +124,9 @@ Right to left, no case, every letter on a baseline stroke that runs through the 
 Measured in a monoline test (2026-11-06, stroke 70, `proof` and the app): teeth of ب س 200–250
 high, alef 700, lam 750; dots squares of 80, above at y 330–410, below at y −230 to −150;
 `.init` and `.medi` of ٮ 200 wide. `compose` lifts a dot that would touch a tall letter.
+
+5. **Harakat** (optional, for teaching texts and the Quran): fatha, kasra, damma, sukun, shadda and
+   the tanwin (U+064B to U+0652) as marks of advance 0; the font sets them on each letter and form.
 
 ## 4. Pangrams for proof
 
@@ -147,5 +163,8 @@ hy  Բարեւ, աշխարհ։ (sample)
 ka  ქართული ენა — სწრაფი ყავისფერი მელა (sample)
 ar  نص حكيم له سر قاطع وذو شأن عظيم مكتوب على ثوب أخضر ومغلف بجلد أزرق
 fa  بر اثر چنین تلقین و شستشوی مغزی جامعی، سطح و پایه‌ی ذهن و فهم و نظر بعضی اشخاص
+hi  ऋषियों को सताने वाले दुष्ट राक्षसों के राजा रावण का सर्वनाश करने वाले विष्णुवतार भगवान श्रीराम
+th  เป็นมนุษย์สุดประเสริฐเลิศคุณค่า กว่าบรรดาฝูงสัตว์เดรัจฉาน
+lo  ພາສາລາວ (sample)
 ur  ٹھنڈ میں، ایک قحط زدہ گاؤں سے گذرتے وقت ایک چڑچڑے، باأثر و فارغ شخص کو بعض جل پری نما اژدہے نظر آئے
 ```

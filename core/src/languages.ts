@@ -2,7 +2,7 @@ import { formsOf, LAM_ALEF } from './arabic';
 import { glyphName } from './names';
 import type { FontDoc } from './types';
 
-export type Script = 'latin' | 'greek' | 'cyrillic' | 'armenian' | 'georgian' | 'hebrew' | 'arabic';
+export type Script = 'latin' | 'greek' | 'cyrillic' | 'armenian' | 'georgian' | 'hebrew' | 'arabic' | 'devanagari' | 'thai' | 'lao';
 
 /**
  * The letters each language needs beyond the basic Latin set, lowercase then uppercase, and its own punctuation.
@@ -24,6 +24,9 @@ const RU = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюяА
 const CYRILLIC_PUNCT = '0123456789.,:;!?-()«»„“’–—…№';
 const HEBREW = 'אבגדהוזחטיךכלםמןנסעףפץצקרשת0123456789.,:;!?-()"\'׳״–—…₪';
 const ARABIC_PUNCT = '،؛؟.:!()«»–—…';
+const DEVANAGARI = 'अआइईउऊऋएऐओऔकखगघङचछजझञटठडढणतथदधनपफबभमयरलवशषसहािीुूृेैोौंःँ़्।॥०१२३४५६७८९.,:;!?-()–—…';
+/** The consonants of Devanagari that take a half form before another consonant. The others keep their virama. */
+const HALF = 'कखगघचजझञणतथधनपफबभमयलवशषस';
 
 export const LANGUAGES: Language[] = [
   { code: 'en', script: 'latin', chars: QUOTES },
@@ -78,6 +81,11 @@ export const LANGUAGES: Language[] = [
   { code: 'ka', script: 'georgian', chars: `${span(0x10d0, 0x10f0)}0123456789.,:;!?-()„“–—…` },
   { code: 'he', script: 'hebrew', chars: HEBREW },
   { code: 'yi', script: 'hebrew', chars: `${HEBREW}װױײִַָּֿ` },
+  { code: 'hi', script: 'devanagari', chars: DEVANAGARI },
+  { code: 'mr', script: 'devanagari', chars: `${DEVANAGARI}ळ` },
+  { code: 'ne', script: 'devanagari', chars: DEVANAGARI },
+  { code: 'th', script: 'thai', chars: `${span(0xe01, 0xe3a)}${span(0xe3f, 0xe4e)}${span(0xe50, 0xe59)}0123456789.,:;!?-()"'–—…` },
+  { code: 'lo', script: 'lao', chars: 'ກຂຄງຈຊຍດຕຖທນບປຜຝພຟມຢຣລວສຫອຮໜໝະັາຳິີຶືຸູົຼຽເແໂໃໄໆ່້໊໋໌ໍ໐໑໒໓໔໕໖໗໘໙0123456789.,:;!?-()–—…' },
   { code: 'ar', script: 'arabic', chars: `ءآأؤإئابةتثجحخدذرزسشصضطظعغفقكلمنهوىي٠١٢٣٤٥٦٧٨٩${ARABIC_PUNCT}` },
   { code: 'fa', script: 'arabic', chars: `ءآأؤئابپةتثجچحخدذرزژسشصضطظعغفقکگلمنهوی۰۱۲۳۴۵۶۷۸۹${ARABIC_PUNCT}` },
   { code: 'ur', script: 'arabic', chars: `ءآأؤئابپتٹثجچحخدڈذرڑزژسشصضطظعغفقکگلمںنوہھیے۰۱۲۳۴۵۶۷۸۹۔${ARABIC_PUNCT}` },
@@ -85,7 +93,7 @@ export const LANGUAGES: Language[] = [
 
 /** Scripts the format cannot serve yet, and why. */
 export const UNSUPPORTED_SCRIPTS =
-  'Hindi and the other Indic scripts, Thai, Khmer, Myanmar: letters reorder and stack, which needs mark positioning (GPOS) and contextual rules not written yet. Chinese, Japanese, Korean: thousands of glyphs.';
+  'Bengali, Tamil, Telugu and the other Indic scripts beyond Devanagari, Khmer, Myanmar, Tibetan, Sinhala: each reorders its own way (split vowels, other pre-base signs), not written yet. Chinese, Japanese, Korean: thousands of glyphs.';
 
 /** Every character a language needs: basic Latin first for a Latin language, then its own. */
 export function charsOf(language: Language): string[] {
@@ -94,6 +102,10 @@ export function charsOf(language: Language): string[] {
 
 /** The glyphs a language needs besides those of its characters: the joining forms and ligatures of Arabic. */
 export function formsNeeded(language: Language): string[] {
+  if (language.script === 'devanagari') {
+    const halves = [...HALF, ...(language.code === 'mr' ? 'ळ' : '')].map((char) => `${glyphName(char)}.half`);
+    return [...halves, 'uni0930.rphf', 'uni0930.blwf', 'uni0915_uni094D_uni0937', 'uni091C_uni094D_uni091E'];
+  }
   if (language.script !== 'arabic') return [];
   const forms = charsOf(language).flatMap((char) => formsOf(char).map((form) => `${glyphName(char)}.${form}`));
   return [...forms, ...LAM_ALEF.flatMap((name) => [name, `${name}.fina`])];

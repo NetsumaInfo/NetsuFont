@@ -1,4 +1,5 @@
-import { glyphMap, layout, outline } from './outline';
+import { layout } from './layout';
+import { glyphMap, outline } from './outline';
 import { writePath } from './path';
 import type { FontDoc, Glyph } from './types';
 
@@ -105,7 +106,7 @@ export function proofSvg(doc: FontDoc, text: string, options: ProofOptions = {})
   const lines = sizes.flatMap((size) => {
     const scale = size / doc.unitsPerEm;
     const drawn = rows.map(({ placed }) => {
-      const shapes = placed.map(({ glyph, x }) => `<path transform="translate(${x} 0)" d="${glyphPath(doc, glyph, byName)}"/>`).join('');
+      const shapes = placed.map(({ glyph, x, y }) => `<path transform="translate(${x} ${-y})" d="${glyphPath(doc, glyph, byName)}"/>`).join('');
       const line = `<g transform="translate(${pad} ${y + top * scale}) scale(${scale})" fill="${colors.ink}">${shapes}</g>`;
       y += height * scale;
       return line;

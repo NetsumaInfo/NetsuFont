@@ -1,6 +1,7 @@
 /// <reference path="./opentype.d.ts" />
 import opentype, { type Font as OtFont, type Glyph as OtGlyph, type Path as OtPath } from 'opentype.js';
 import { featureRules, type Rule } from './features';
+import { gdefTable, gposTable } from './gpos';
 import { glyphMap, outline } from './outline';
 import { writePath, type Command } from './path';
 import { kernTable, withTable } from './sfnt';
@@ -52,10 +53,20 @@ export function exportOtf(doc: FontDoc): Uint8Array {
   // .notdef is index 0: the glyphs of the document follow in their order.
   const index = new Map(own.map((glyph, at) => [glyph.name, at + 1]));
   addFeatures(font, featureRules(doc), index);
-  const bytes = new Uint8Array(font.toArrayBuffer());
+  const gpos = gposTable(doc, index);
+  if (gpos) skipMarksInLigatures(font);
+  let bytes: Uint8Array = new Uint8Array(font.toArrayBuffer());
+  if (gpos) bytes = withTable(withTable(bytes, 'GPOS', gpos), 'GDEF', gdefTable(doc, index));
   if (doc.kerning.length === 0) return bytes;
   const pairs = doc.kerning.map((kern) => ({ left: index.get(kern.left)!, right: index.get(kern.right)!, value: kern.value }));
   return withTable(bytes, 'kern', kernTable(pairs));
+}
+
+/** A harakat between lam and alef must not break lam-alef: the required ligatures look past marks (GDEF says which). */
+function skipMarksInLigatures(font: OtFont): void {
+  const gsub = font.tables.gsub;
+  if (!gsub) return;
+  for (const record of gsub.features) if (record.tag === 'rlig') for (const at of record.feature.lookupListIndexes) gsub.lookups[at]!.lookupFlag = 8;
 }
 
 /**

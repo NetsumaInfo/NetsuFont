@@ -30,7 +30,13 @@ DOCUMENT
   "<mark>.case" is the flatter one for capitals, above the cap height; without it, compose raises the lowercase one.
   dotlessi carries the accents of i.
 - Right to left (Hebrew, Arabic): proof and the app set it so. In such text a kerning pair's left is the letter read first.
-- Marks with a unicode (Arabic harakat, Hebrew points): advance 0; text engines centre them on their letter.
+- Marks with a unicode (accents typed after a letter, Hebrew points, Arabic harakat, Thai and Devanagari vowel signs):
+  advance 0, drawn once anywhere. The export (GDEF, GPOS mark and mkmk) and proof set each on the top of its letter's
+  ink, or under it (Unicode says, or it is drawn below the baseline); a second one stacks on the first. The Hebrew
+  dagesh is centred; the shin and sin dots and holam stay where drawn in the letter's frame. Devanagari marks touch.
+- Devanagari: <consonant>.half (before another consonant, the virama gone), uni0930.rphf (the reph: advance 0, ink
+  above and left of x 0), uni0930.blwf (ra under a consonant: advance 0), conjuncts named by their parts
+  (uni0915_uni094D_uni0937 for क्ष). The vowel sign ि is a spacing glyph: the text engine draws it first.
 - Arabic: a joining letter is its glyph (isolated, with unicode) and forms without unicode: <name>.init (word start, joins
   on its left edge), .medi (both edges), .fina (word end, joins on its right edge). ا د ذ ر ز و ة join only on the right:
   .fina alone. Lam-alef ligatures uni0644_uni0627, uni0644_uni0623, uni0644_uni0625, uni0644_uni0622, each with .fina.

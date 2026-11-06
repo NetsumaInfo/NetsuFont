@@ -15,3 +15,7 @@ export * from './names';
 export * from './arabic';
 export * from './features';
 export * from './shape';
+export * from './layout';
+export * from './marks';
+export * from './gpos';
+export * from './indic';

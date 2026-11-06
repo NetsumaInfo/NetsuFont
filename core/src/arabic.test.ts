@@ -6,7 +6,7 @@ import { featureRules, optionalFeatures } from './features';
 import { languageCoverage } from './languages';
 import { applyOps, type Op } from './ops';
 import { exportOtf } from './otf';
-import { layout } from './outline';
+import { layout } from './layout';
 import { bidiLevels, shapeLine, visualOrder } from './shape';
 
 const bar = (name: string, unicode?: number, w = 300, x0 = 0, x1 = 300): Op => ({ op: 'set_glyph', glyph: name, ...(unicode === undefined ? {} : { unicode }), advance: w, shapes: [{ type: 'rect', x: x0, y: 0, w: x1 - x0, h: 80 }] });

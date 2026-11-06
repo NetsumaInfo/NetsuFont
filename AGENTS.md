@@ -6,12 +6,12 @@ An app to make fonts with an AI agent. The agent draws and spaces the glyphs thr
 
 ## Status (2026-10-25, first slice, shapes, languages, skill)
 
-- `core/`: the font document, the ops, validation, shapes (rect, ellipse, ring, arc, line, polygon turned into paths), checks (a counter not cut, ink outside the advance or the lines), languages (57 languages in 7 scripts, how each character is made), `compose` (accented letters from base and marks; Greek and Cyrillic letters shaped as Latin ones; Arabic letters from skeleton and dots, with their forms), features (GSUB rules read from glyph names: Arabic forms, ligatures, stylistic sets), shaping and layout (a simple bidi, Arabic joining, ligatures, kerning), SVG pictures (glyph sheet, text proof), coverage of character sets, OTF export (opentype.js, CFF outlines, plus a `kern` table written by `core/src/sfnt.ts` and a GSUB table), and import of a TTF or OTF. Unit tested.
+- `core/`: the font document, the ops, validation, shapes (rect, ellipse, ring, arc, line, polygon turned into paths), checks (a counter not cut, ink outside the advance or the lines), languages (62 languages in 10 scripts, how each character is made), `compose` (accented letters from base and marks; Greek and Cyrillic letters shaped as Latin ones; Arabic letters from skeleton and dots, with their forms), features (GSUB rules read from glyph names: Arabic forms, ligatures, stylistic sets), shaping and layout (a simple bidi, Arabic joining, Devanagari reordering, ligatures, marks on anchors, kerning), SVG pictures (glyph sheet, text proof), coverage of character sets, OTF export (opentype.js, CFF outlines, plus a `kern` table written by `core/src/sfnt.ts`, a GSUB table, and GDEF and GPOS mark positioning written by `core/src/gpos.ts`), and import of a TTF or OTF. Unit tested.
 - `server/`: local HTTP server. `/mcp` is the MCP endpoint (stateless streamable HTTP); `/api/fonts` and `/api/events` feed the app. Fonts are files in `fonts/`.
 - `app/`: web front (Vite, React, Tailwind v4). Read only. The list of fonts, the glyph grid or one glyph on its lines, a text proof set by the browser with the font compiled to OTF, and a panel (glyph, metrics, coverage, kerning). The choice is in the address (`#/netsu-pixel/g`). English and French.
 - `fonts/netsu-pixel.nfont.json` is drawn by `server/scripts/seed.ts` through the tools (en, fr, es, de, nl). `galet` (fr, pl) and `rivet` (en, ru, el) were drawn by agents that had only the skill.
 - The method of drawing a font is a skill, `netsu-type-design`, in `skills/`. `server/src/guide.ts` holds the format; the skill holds the method. The NetsuSkills repository publishes a copy.
-- Not yet: styles shared by a family (weights), scripts that need mark positioning and reordering (Indic, Thai), CJK, a lint of the style, GPOS kerning and marks, a GDEF table, TTF and WOFF2 export, contextual alternates, editing by hand in the app. See `docs/STATUS.md`.
+- Not yet: styles shared by a family (weights), Indic scripts other than Devanagari, Khmer, Myanmar, CJK, a lint of the style, GPOS kerning, TTF and WOFF2 export, contextual alternates, editing by hand in the app. See `docs/STATUS.md`.
 
 ## Read first
 
@@ -21,7 +21,7 @@ An app to make fonts with an AI agent. The agent draws and spaces the glyphs thr
 
 ```
 core/src/      # pure TypeScript, no DOM, no Node: types, path, validate, outline (components, layout), ops, shapes, check, svg, charset,
-               # languages, names, accents (compose), arabic, features, shape, otf, sfnt, doc
+               # languages, names, accents (compose), arabic, indic, features, shape, marks, layout, gpos, otf, sfnt, doc
 server/src/    # store.ts (only code that touches the disk), tools.ts (MCP tools), reply.ts (what a tool answers), guide.ts (what the agent is told), main.ts (HTTP)
 server/scripts/  # seed.ts (the example font), mcp.ts (one tool call from a shell), agent.ts (their client)
 app/src/       # components/, lib/ (useFonts, events, picked, fontFace), locales/ (fr is the source, en)
@@ -55,7 +55,7 @@ Ports: app **1450**, server **6220** (1420, 1430 and 1440 belong to other Netsu 
 - Coordinates are font units, y up, as in the font file. Only the SVG pictures turn y down (`writePath(…, true)`).
 - An MCP tool is a thin adapter over `core`. When the format or an op changes, update `server/src/guide.ts` in the same change: it is all the agent knows, and every agent pays for each of its lines.
 - The skill in `skills/` changes with the guide: a rule lives in one of the two, never both. A number in the skill's references was drawn and proofed before it was written there. After a change, copy the folder to NetsuSkills, where its tests are recorded.
-- A language is supported when `languages` reports it complete, never because a few of its letters exist. Scripts the format cannot shape (Indic, Thai) are said to be unsupported, never drawn as isolated forms. Arabic counts its joining forms and lam-alef, not only its letters.
+- A language is supported when `languages` reports it complete, never because a few of its letters exist. Scripts the format cannot shape (Bengali, Tamil and the other Indic scripts beyond Devanagari) are said to be unsupported, never drawn as isolated forms. Arabic counts its joining forms and lam-alef, not only its letters.
 - What a tool answers is paid for at every call: the outline gives each glyph's advance and side bearings, not its path.
 - The app shows the ids the agent uses (font, glyph, metric names) in a monospace face.
 - `core` stays free of DOM and Node APIs: it runs in the browser, in the server and in tests.

@@ -44,7 +44,10 @@ declare module 'opentype.js' {
     numGlyphs: number;
     glyphs: { get(index: number): Glyph; length: number };
     kerningPairs?: Record<string, number>;
-    tables: { os2?: { sxHeight?: number; sCapHeight?: number } };
+    tables: {
+      os2?: { sxHeight?: number; sCapHeight?: number };
+      gsub?: { features: { tag: string; feature: { lookupListIndexes: number[] } }[]; lookups: { lookupFlag: number }[] };
+    };
     getEnglishName(name: 'fontFamily' | 'fontSubfamily'): string | undefined;
     substitution: {
       addSingle(feature: string, sub: { sub: number; by: number }, script: string, language: string): void;

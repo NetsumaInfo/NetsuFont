@@ -1,5 +1,6 @@
 import { isRtl, joiningOf, MIRROR, type Joining } from './arabic';
 import { DEFAULT_FEATURES, featureRules, type Rule } from './features';
+import { isConsonant, reorderIndic } from './indic';
 import type { FontDoc, Glyph } from './types';
 
 /** A glyph set on a line: its embedding level (odd: right to left) and, for a mark, the item it sits on. */
@@ -81,17 +82,56 @@ function joiningForms(joins: Joining[]): (string | undefined)[] {
   });
 }
 
-/** The longest ligature that starts at `at`, if any. */
-function ligatureAt(names: string[], at: number, rules: Rule[]): Rule | undefined {
-  return rules
-    .filter((rule) => rule.sub.length > 1 && rule.sub.every((name, k) => names[at + k] === name))
-    .sort((a, b) => b.sub.length - a.sub.length)[0];
-}
-
 interface Logical {
   glyph: Glyph;
   level: number;
   char: string;
+}
+
+const isMarkChar = (item: Logical): boolean => /\p{M}/u.test(item.char) && item.glyph.advance === 0;
+
+/** The ligature passes, in the order text engines apply them: Devanagari conjuncts, then below and half forms, then the rest. */
+const PASSES: (string | undefined)[] = ['akhn', 'blwf', 'half', undefined];
+
+/**
+ * One pass of ligatures, the longest first at each place. The required Arabic ligatures look past marks (lam, a
+ * harakat, alef is still lam-alef), the marks kept after the ligature. A half form needs a consonant after it.
+ */
+function ligatures(items: Logical[], rules: Rule[], byName: Map<string, Glyph>): Logical[] {
+  if (rules.length === 0) return items;
+  const out: Logical[] = [];
+  for (let i = 0; i < items.length; ) {
+    const match = rules
+      .map((rule) => ({ rule, at: matchAt(items, i, rule) }))
+      .filter((found): found is { rule: Rule; at: number[] } => found.at !== undefined)
+      .sort((x, y) => y.rule.sub.length - x.rule.sub.length)[0];
+    if (!match) {
+      out.push(items[i]!);
+      i += 1;
+      continue;
+    }
+    const last = match.at[match.at.length - 1]!;
+    out.push({ ...items[i]!, glyph: byName.get(match.rule.by)! }, ...items.slice(i, last + 1).filter((item, k) => !match.at.includes(i + k) && isMarkChar(item)));
+    i = last + 1;
+  }
+  return out;
+}
+
+/** The places of a rule's glyphs from `at`, or undefined when it does not match there. */
+function matchAt(items: Logical[], at: number, rule: Rule): number[] | undefined {
+  const skip = rule.feature === 'rlig';
+  const found: number[] = [];
+  for (let i = at; i < items.length && found.length < rule.sub.length; i += 1) {
+    if (skip && found.length > 0 && isMarkChar(items[i]!)) continue;
+    if (items[i]!.glyph.name !== rule.sub[found.length]) return undefined;
+    found.push(i);
+  }
+  if (found.length < rule.sub.length) return undefined;
+  if (rule.feature === 'half') {
+    const next = items[found[found.length - 1]! + 1];
+    if (!next || !isConsonant(next.char.codePointAt(0)!)) return undefined;
+  }
+  return found;
 }
 
 /** The letters of a line as glyphs, in the order they are read, with their joining forms, ligatures and features. */
@@ -100,22 +140,20 @@ function substitute(doc: FontDoc, logical: Logical[], features: string[]): Logic
   const on = new Set([...DEFAULT_FEATURES, ...features]);
   const rules = featureRules(doc).filter((rule) => on.has(rule.feature));
   const singles = new Map(rules.filter((rule) => rule.sub.length === 1).map((rule) => [`${rule.feature} ${rule.sub[0]}`, rule.by]));
-  const forms = joiningForms(logical.map((item) => joiningOf(item.char)));
-  let items = logical.map((item, i) => {
+  const rephRule = rules.find((rule) => rule.feature === 'rphf');
+  const reph = rephRule ? (ra: Logical): Logical => ({ ...ra, glyph: byName.get(rephRule.by)! }) : undefined;
+  const ordered = reorderIndic(logical, reph);
+  const forms = joiningForms(ordered.map((item) => joiningOf(item.char)));
+  let items = ordered.map((item, i) => {
     const by = forms[i] ? singles.get(`${forms[i]} ${item.glyph.name}`) : undefined;
     return by ? { ...item, glyph: byName.get(by)! } : item;
   });
-  const out: Logical[] = [];
-  for (let i = 0; i < items.length; ) {
-    const lig = ligatureAt(items.map((item) => item.glyph.name), i, rules);
-    out.push(lig ? { ...items[i]!, glyph: byName.get(lig.by)! } : items[i]!);
-    i += lig ? lig.sub.length : 1;
-  }
-  items = out.map((item) => {
+  const several = rules.filter((rule) => rule.sub.length > 1 && rule.feature !== 'rphf');
+  for (const pass of PASSES) items = ligatures(items, several.filter((rule) => (pass ? rule.feature === pass : !PASSES.includes(rule.feature))), byName);
+  return items.map((item) => {
     const feature = features.find((f) => singles.has(`${f} ${item.glyph.name}`));
     return feature ? { ...item, glyph: byName.get(singles.get(`${feature} ${item.glyph.name}`)!)! } : item;
   });
-  return items;
 }
 
 /**
@@ -137,7 +175,7 @@ export function shapeLine(doc: FontDoc, text: string, features: string[] = []): 
   const shaped = substitute(doc, logical, features);
   let lastBase = -1;
   const items: Item[] = shaped.map((item, i) => {
-    const mark = /\p{M}/u.test(item.char) && item.glyph.advance === 0;
+    const mark = isMarkChar(item);
     if (!mark) lastBase = i;
     return { glyph: item.glyph, level: item.level, mark, ...(mark && lastBase >= 0 ? { base: lastBase } : {}) };
   });
