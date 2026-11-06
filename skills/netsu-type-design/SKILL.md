@@ -1,6 +1,6 @@
 ---
 name: netsu-type-design
-description: Use when the user asks to create, draw, design or redesign a font, typeface, alphabet or set of letters in NetsuFont (the netsufont MCP server), from a style brief or from an imported TTF or OTF — including spacing, kerning, accents and other languages (French, Polish, Vietnamese, Greek, Cyrillic, Hebrew…) and exporting the .otf. Do NOT use for choosing or pairing existing fonts for a site, for logos and wordmarks (netsu-app-icon), or for animated icons (netsu-icon-motion).
+description: Use when the user asks to create, draw, design or redesign a font, typeface, alphabet or set of letters in NetsuFont (the netsufont MCP server), from a style brief or from an imported TTF or OTF — including spacing, kerning, accents, other scripts (Polish, Vietnamese, Greek, Cyrillic, Armenian, Georgian, Hebrew, Arabic, Persian, Urdu…), ligatures and stylistic alternates, and exporting the .otf. Do NOT use for choosing or pairing existing fonts for a site, for logos and wordmarks (netsu-app-icon), or for animated icons (netsu-icon-motion).
 ---
 
 # NetsuTypeDesign
@@ -25,7 +25,9 @@ font family by family, space it, cover its languages, kern it and export it.
 
 2. **Style sheet in numbers**, before any glyph. Load `references/construction.md`: it turns
    the adjectives into stems, contrast, widths, x-height and terminals. Write the sheet with the
-   template; every later glyph takes its numbers from it, never new ones.
+   template; every later glyph takes its numbers from it, never new ones. Add its **signature**:
+   two or three traits no default font has, from §Character, written as rules every family
+   follows. A font made only of the table's averages is correct and forgettable.
 
 3. **Control glyphs.** One `edit_font` that draws H, O, n, o and v with `shapes` from the
    recipes of `construction.md`, scaled to the sheet. Then `look_glyphs {chars:"HOnov"}` and
@@ -72,10 +74,14 @@ nnynn ooyoo"`. Each x
    then one `compose` with every letter it can make, then draw what is left. Check with one
    `proof` of the brief's pangrams, a line each, sizes `[48, 18]`.
 
-8. **Kerning.** `proof` the pairs of `construction.md` §Kerning. Kern only what looks wrong
+8. **Features**, when the brief asks for character or display use: the alternates of the
+   signature as `.ss01` (a second a, g, y or R), ligatures named by their parts (`f_i`, `T_h`).
+   `proof {features:["ss01"]}` shows them; one set per trait, never more.
+
+9. **Kerning.** `proof` the pairs of `construction.md` §Kerning. Kern only what looks wrong
    after spacing; a first release needs 40 to 150 pairs, never a pair for every combination.
 
-9. **Deliver.** `list_fonts`: no check left unexplained. `proof` a paragraph at 48, 18 and 12.
+10. **Deliver.** `list_fonts`: no check left unexplained. `proof` a paragraph at 48, 18 and 12.
    `export_font`, give the path, say how to install it (Windows: right click, Install), and
    what was not verified (an app the font was not tried in).
 
@@ -83,7 +89,9 @@ nnynn ooyoo"`. Each x
 
 Control glyphs: 1 create, 1 to 3 edits, 2 looks. Each of the 12 families: 1 edit, 1 look, 1 fix
 at most. Spacing: one edit and one proof per family. Languages: 1 call, 2 to 4 edits, 1 proof.
-Each new script (Greek, Cyrillic): 3 to 5 edits and 2 proofs more. Kerning: 2 proofs, 2 edits.
+Each new script (Greek, Cyrillic): 3 to 5 edits and 2 proofs more. Arabic: not measured in a blind
+run yet; in a test (2026-11-06) the skeletons with their forms, lam-alef and the dots took one edit
+of 41 ops, and one `compose` made 9 letters with their forms. Kerning: 2 proofs, 2 edits.
 About 90 calls for a Latin font with two languages; past 110, say why.
 
 ## Brief template
@@ -132,12 +140,14 @@ and legible at 12 px; the weakest were & 2 @ and the Greek ζ ξ ς.
 | Every pair kerned "just in case" | Space first, kern the few pairs still wrong |
 | Accented letters drawn whole, each a little different | Marks drawn once, letters made with `compose` |
 | "Supports Polish" because ą ę exist | `languages` reports the language complete, and its pangram is proofed |
-| Arabic or Hindi promised | Said plainly: not possible yet (the guide's languages answer says why) |
+| Hindi, Thai or Chinese promised | Said plainly: not possible yet (the languages answer says why) |
+| Arabic drawn as isolated letters only | Skeletons with `.init` `.medi` `.fina`, lam-alef, dots by `compose`; `languages` reports it complete |
+| A font of averages: every number from the table | Two or three signature traits, held in every family |
 | The imported font kept under its own name | `set_info` with a new family name: OFL fonts reserve theirs |
 
 ## References
 
-- `references/construction.md` — steps 2, 3, 6 and 8: from adjectives to numbers, verified
+- `references/construction.md` — steps 2, 3, 6, 8 and 9: from adjectives to numbers, verified
   shape recipes, optical corrections, spacing values, pairs to kern.
-- `references/languages.md` — step 7: drawing marks, letters of each language and script,
-  pangrams for proof.
+- `references/languages.md` — step 7: drawing marks, letters of each language and script
+  (Arabic joining forms included), pangrams for proof.

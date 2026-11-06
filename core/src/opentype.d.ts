@@ -46,6 +46,10 @@ declare module 'opentype.js' {
     kerningPairs?: Record<string, number>;
     tables: { os2?: { sxHeight?: number; sCapHeight?: number } };
     getEnglishName(name: 'fontFamily' | 'fontSubfamily'): string | undefined;
+    substitution: {
+      addSingle(feature: string, sub: { sub: number; by: number }, script: string, language: string): void;
+      addLigature(feature: string, ligature: { sub: number[]; by: number }, script: string, language: string): void;
+    };
     toArrayBuffer(): ArrayBuffer;
   }
 

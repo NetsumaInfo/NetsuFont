@@ -1,5 +1,6 @@
 /// <reference path="./opentype.d.ts" />
 import opentype, { type Font as OtFont, type Glyph as OtGlyph, type Path as OtPath } from 'opentype.js';
+import { featureRules, type Rule } from './features';
 import { glyphMap, outline } from './outline';
 import { writePath, type Command } from './path';
 import { kernTable, withTable } from './sfnt';
@@ -31,7 +32,8 @@ function notdef(doc: FontDoc): OtGlyph {
 
 /**
  * The font as an OpenType file with CFF outlines (.otf). Components are drawn into each glyph, quadratic
- * curves become cubic, and the kerning is written as a `kern` table.
+ * curves become cubic, the kerning is written as a `kern` table and the features asked for by glyph names
+ * (Arabic joining forms, ligatures, stylistic sets: see `featureRules`) as a GSUB table.
  */
 export function exportOtf(doc: FontDoc): Uint8Array {
   validate(doc);
@@ -47,12 +49,26 @@ export function exportOtf(doc: FontDoc): Uint8Array {
     glyphs,
     tables: { os2: { sxHeight: doc.metrics.xHeight, sCapHeight: doc.metrics.capHeight } },
   });
-  const bytes = new Uint8Array(font.toArrayBuffer());
-  if (doc.kerning.length === 0) return bytes;
   // .notdef is index 0: the glyphs of the document follow in their order.
   const index = new Map(own.map((glyph, at) => [glyph.name, at + 1]));
+  addFeatures(font, featureRules(doc), index);
+  const bytes = new Uint8Array(font.toArrayBuffer());
+  if (doc.kerning.length === 0) return bytes;
   const pairs = doc.kerning.map((kern) => ({ left: index.get(kern.left)!, right: index.get(kern.right)!, value: kern.value }));
   return withTable(bytes, 'kern', kernTable(pairs));
+}
+
+/**
+ * The substitutions as a GSUB table. opentype.js lists features in the order they are added and asks for that order
+ * to be alphabetical: the rules are sorted by feature first.
+ */
+function addFeatures(font: OtFont, rules: Rule[], index: Map<string, number>): void {
+  const sorted = [...rules].sort((a, b) => (a.feature === b.feature ? (a.script < b.script ? -1 : 1) : a.feature < b.feature ? -1 : 1));
+  for (const rule of sorted) {
+    const by = index.get(rule.by)!;
+    if (rule.sub.length === 1) font.substitution.addSingle(rule.feature, { sub: index.get(rule.sub[0]!)!, by }, rule.script, 'dflt');
+    else font.substitution.addLigature(rule.feature, { sub: rule.sub.map((name) => index.get(name)!), by }, rule.script, 'dflt');
+  }
 }
 
 function fromPath(path: OtPath): string {

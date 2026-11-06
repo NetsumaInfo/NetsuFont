@@ -82,18 +82,20 @@ export interface ProofOptions {
   colors?: Colors;
   /** The widest the picture may be, in pixels: as wide as the longest line, up to this. */
   width?: number;
+  /** Optional features turned on, such as ss01. Joining forms and ligatures are always on. */
+  features?: string[];
 }
 
 /**
  * The text set with the font at several sizes, one line per size, drawn from the document itself:
- * the advances and the kerning as a font file will have them. "
+ * the advances, kerning and features as a font file will have them, right-to-left text set right to left. "
 " starts a new line. Lines too long are cut.
  */
 export function proofSvg(doc: FontDoc, text: string, options: ProofOptions = {}): { svg: string; missing: string[]; cut: boolean } {
   const colors = options.colors ?? LIGHT;
   const sizes = options.sizes ?? [72, 36, 18];
   const byName = glyphMap(doc);
-  const rows = text.split('\n').map((line) => layout(doc, line));
+  const rows = text.split('\n').map((line) => layout(doc, line, options.features));
   const missing = [...new Set(rows.flatMap((row) => row.missing))];
   const { top, height } = band(doc);
   const pad = 16;

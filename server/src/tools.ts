@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { applyOps, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type Op } from '@netsufont/core';
+import { applyOps, charsOf, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
 import { z } from 'zod';
 import { GUIDE } from './guide';
 import { afterEdit, guarded, outline, png, text } from './reply';
@@ -29,15 +29,28 @@ function listing(store: Store): string {
   return `app language: ${store.language()}\n\n${said}`;
 }
 
+/** The lines of one language: what compose can make from glyphs already planned, what has to be drawn. */
+function languageLines(entry: LanguageCoverage, detail: boolean): string[] {
+  const head = `${entry.code} ${entry.has}/${entry.of}`;
+  if (!detail) return [head];
+  const built = entry.missing.filter((char) => recipe(char).base !== undefined);
+  const drawn = entry.missing.filter((char) => recipe(char).base === undefined).map((char) => `${char} ${recipe(char).name}`);
+  // A form of a letter that compose makes (ب from ٮ) comes with that letter; the others are drawn.
+  const composed = new Set(charsOf(SCRIPTS.find((l) => l.code === entry.code)!).filter((char) => recipe(char).base !== undefined).map((char) => recipe(char).name));
+  const forms = entry.forms.filter((name) => !composed.has(name.split('.')[0]!));
+  return [
+    head,
+    ...(built.length > 0 ? [`  compose: ${built.join('')}`] : []),
+    ...(drawn.length > 0 ? [`  draw: ${drawn.join(', ')}`] : []),
+    ...(forms.length > 0 ? [`  draw forms and ligatures: ${forms.join(', ')}`] : []),
+  ];
+}
+
 /** What each language lacks, and how to make each missing character: built from base and marks, or drawn. */
 function languages(doc: FontDoc, codes: string[] | undefined): string {
-  const lines = languageCoverage(doc, codes).map(({ code, has, of, missing }) => {
-    if (codes === undefined) return `${code} ${has}/${of}`;
-    const built = missing.filter((char) => recipe(char).base !== undefined);
-    const drawn = missing.filter((char) => recipe(char).base === undefined).map((char) => `${char} ${recipe(char).name}`);
-    return [`${code} ${has}/${of}`, ...(built.length > 0 ? [`  compose: ${built.join('')}`] : []), ...(drawn.length > 0 ? [`  draw: ${drawn.join(', ')}`] : [])].join('\n');
-  });
-  const marks = [...new Set(languageCoverage(doc, codes).flatMap(({ missing }) => missing.flatMap((char) => recipe(char).marks ?? [])))].filter((mark) => !doc.glyphs.some((g) => g.name === mark));
+  const entries = languageCoverage(doc, codes);
+  const lines = entries.flatMap((entry) => languageLines(entry, codes !== undefined));
+  const marks = [...new Set(entries.flatMap(({ missing }) => missing.flatMap((char) => recipe(char).marks ?? [])))].filter((mark) => !doc.glyphs.some((g) => g.name === mark));
   return [...lines, ...(marks.length > 0 ? [`marks to draw before compose: ${marks.join(', ')}`] : []), `not possible yet: ${UNSUPPORTED_SCRIPTS}`].join('\n');
 }
 
@@ -86,11 +99,16 @@ function registerRead(server: McpServer, store: Store): void {
     'proof',
     {
       description: 'Text set with the font at several sizes, with its advances and kerning: for judging spacing and rhythm.',
-      inputSchema: { name, text: z.string().min(1).max(600).describe('"\\n" starts a new line.'), sizes: z.array(z.number().min(6).max(300)).max(6).optional() },
+      inputSchema: {
+        name,
+        text: z.string().min(1).max(600).describe('"\\n" starts a new line.'),
+        sizes: z.array(z.number().min(6).max(300)).max(6).optional(),
+        features: z.array(z.string().regex(/^[a-z0-9]{4}$/)).max(8).optional().describe('Optional features to turn on, such as ["ss01"].'),
+      },
     },
     (args) =>
       guarded(() => {
-        const { svg, missing, cut } = proofSvg(store.read(args.name), args.text, args.sizes ? { sizes: args.sizes } : {});
+        const { svg, missing, cut } = proofSvg(store.read(args.name), args.text, { ...(args.sizes ? { sizes: args.sizes } : {}), ...(args.features ? { features: args.features } : {}) });
         const said = [missing.length > 0 ? `not drawn yet, left out: ${JSON.stringify(missing.join(''))}` : 'every character drawn', ...(cut ? ['a line is too long at the largest size and is cut: split it with \\n'] : [])];
         return png(svg, Number(/width="(\d+)"/.exec(svg)?.[1] ?? 1200), said.join('\n'));
       }),

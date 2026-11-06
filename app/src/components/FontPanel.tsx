@@ -52,8 +52,8 @@ function Languages({ doc }: { doc: FontDoc }) {
   const all = languageCoverage(doc).sort((a, b) => b.has / b.of - a.has / a.of);
   return (
     <Section title={t('panel.languages')}>
-      {all.map(({ code, has, of, missing }) => (
-        <div key={code} title={missing.length > 0 ? t('panel.missing', { chars: missing.join(' ') }) : undefined}>
+      {all.map(({ code, has, of, missing, forms }) => (
+        <div key={code} title={has < of ? t('panel.missing', { chars: [...missing, ...forms].join(' ') }) : undefined}>
           <Row label={`${names.of(code) ?? code} · ${code}`} value={has === of ? '✓' : `${has}/${of}`} />
         </div>
       ))}

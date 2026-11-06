@@ -1,4 +1,5 @@
 import { bounds, parsePath, transformPath, type Box, type Command } from './path';
+import { shapeLine, type Item } from './shape';
 import type { FontDoc, Glyph } from './types';
 
 /** The glyphs by name. */
@@ -43,26 +44,35 @@ export interface Placed {
 }
 
 /**
- * A line of text set with the font: each character's glyph after the one before, its advance and the
- * kerning of the pair. A character the font does not draw is left out and named in `missing`.
+ * A line of text set with the font, shaped (see `shapeLine`): each glyph after the one before, its advance and
+ * the kerning of the pair. In right-to-left text a pair is read in its order: `left` is the letter read first, on
+ * the right. A mark of no advance is centred on the ink of its letter, as text engines do for a font without mark
+ * positioning. A character the font does not draw is left out and named in `missing`.
  */
-export function layout(doc: FontDoc, text: string): { placed: Placed[]; width: number; missing: string[] } {
+export function layout(doc: FontDoc, text: string, features: string[] = []): { placed: Placed[]; width: number; missing: string[] } {
   const kerns = new Map(doc.kerning.map((kern) => [`${kern.left} ${kern.right}`, kern.value]));
+  const byName = glyphMap(doc);
+  const { items, missing } = shapeLine(doc, text, features);
   const placed: Placed[] = [];
-  const missing: string[] = [];
   let x = 0;
-  let previous: Glyph | undefined;
-  for (const char of text) {
-    const glyph = glyphFor(doc, char);
-    if (!glyph) {
-      if (!missing.includes(char)) missing.push(char);
+  let previous: Item | undefined;
+  for (const item of items) {
+    if (item.mark) {
+      placed.push({ glyph: item.glyph, x, kern: 0 });
       continue;
     }
-    const kern = previous ? (kerns.get(`${previous.name} ${glyph.name}`) ?? 0) : 0;
+    const pair = previous && (item.level % 2 === 1 && previous.level % 2 === 1 ? `${item.glyph.name} ${previous.glyph.name}` : `${previous.glyph.name} ${item.glyph.name}`);
+    const kern = pair ? (kerns.get(pair) ?? 0) : 0;
     x += kern;
-    placed.push({ glyph, x, kern });
-    x += glyph.advance;
-    previous = glyph;
+    placed.push({ glyph: item.glyph, x, kern });
+    x += item.glyph.advance;
+    previous = item;
   }
+  items.forEach((item, i) => {
+    if (!item.mark || item.base === undefined) return;
+    const base = glyphBounds(doc, items[item.base]!.glyph, byName);
+    const mark = glyphBounds(doc, item.glyph, byName);
+    if (base && mark) placed[i]!.x = placed[item.base]!.x + (base.xMin + base.xMax) / 2 - (mark.xMin + mark.xMax) / 2;
+  });
   return { placed, width: x, missing };
 }

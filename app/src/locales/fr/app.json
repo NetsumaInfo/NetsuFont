@@ -51,7 +51,9 @@
     "sample": "Portez ce vieux whisky au juge blond qui fume\nHAMBURGEFONTSIV 0123456789",
     "complete": "Tous les caractères sont dessinés. Le texte est composé par le navigateur avec la police compilée en OTF.",
     "missing": "Pas encore dessinés, montrés dans une police de secours : {{chars}}",
-    "error": "La police n'a pas pu être compilée : {{error}}"
+    "error": "La police n'a pas pu être compilée : {{error}}",
+    "features": "Jeux de glyphes",
+    "samples": "Textes d’essai"
   },
   "panel": {
     "glyph": "Glyphe",

@@ -47,7 +47,11 @@ leave marks alone. `compose` of Greek accented letters (ά έ) needs `acute` dra
 | hu | ő ű: hungarumlaut, never a dieresis |
 | ro | ș ț with commaaccent, never cedilla |
 | hr | đ Đ (a bar across the ascender, or the D's stem) |
-| tr | ı (dotless i), İ (I with dotaccent), ğ (breve), ş ç (cedilla) |
+| tr, az | ı (dotless i), İ (I with dotaccent), ğ (breve), ş ç (cedilla); az: ə Ə (an e turned) |
+| lv | ķ ļ ņ Ķ Ļ Ņ Ģ with commaaccent; ģ with `commaturnedabove` (a small comma above, turned); macrons ā ē ī ū |
+| lt, et | ė į ų (dotaccent, ogonek on i and u); et: õ (tilde) |
+| is, fo | ð Ð (d with a bar across the ascender; Ð = Đ), þ Þ (a stem through a bowl, ascender to descender) |
+| mt, cy, eo | ħ Ħ (bar across the ascender); ŵ ŷ (circumflex); ĉ ĝ ĥ ĵ ŝ ŭ |
 | vi | two marks stacked (ấ ầ ẩ ẫ ậ): `compose` stacks them; check the circumflex + acute pair, often set side by side instead. ơ ư with horn |
 
 ## 3. Other scripts
@@ -72,13 +76,41 @@ Build the letters that are not Latin from the parts you already have:
   rest. Lowercase в г к л м н п т are small capitals at the x-height, not Latin shapes; д ц щ have a
   short descender at the bottom; и й are N turned; ж ф ш щ ы ю are wide (m width or more); я is R
   turned. ё = е + dieresis, й = и + breve (composed). Ukrainian ґ (г with an up-turn), є, ї.
+  Belarusian ў (у + breve). Serbian and Macedonian ђ ћ џ љ њ ѓ ќ: ђ ћ = h with a bar, џ = ц with
+  the descender in the middle, љ њ = л н + ь. Kazakh ә ғ қ ң ө ұ ү һ (һ and ә made from h and ə).
+- **Armenian (hy)**: 38 letters with case; lowercase on the x-height, many with ascenders or
+  descenders (բ գ դ ե զ է ը թ ժ ի լ...); uppercase on the cap height. Strokes rounded, few
+  diagonals. ։ is the full stop (two dots, as a colon), ՝ ՞ ՛ sit above the line.
+- **Georgian (ka)**: 33 letters, no case. Round bodies on the x-height; many letters have an
+  ascender (ბ ზ თ ი...) or a descender (გ დ ე ვ...), rarely both. Draw the x-height body once and
+  build each letter from it: one circle language, like o.
+- **Yiddish (yi)**: Hebrew letters, ײ װ ױ (two letters joined, drawn as one), and points as marks
+  with advance 0: patah ַ  kamatz ָ  hiriq ִ  under the letter, dagesh ּ  in it, rafe ֿ  over it.
 - **Hebrew (he)**: right to left, no case. Letters sit on the baseline and rise to a height
   between the x-height and the cap height (about 560); horizontal strokes thicker than vertical
-  ones (the reverse of Latin). Final forms ך ן ף ץ go down to the descender. The app's text view
-  sets it right to left; `proof` does not.
-- **Not possible yet**: Arabic, Persian, Urdu, the Indic scripts, Thai, Khmer (letters change
-  with their neighbours: GSUB, not written by NetsuFont yet); Chinese, Japanese, Korean
-  (thousands of glyphs). Say so; never draw isolated forms and call it Arabic.
+  ones (the reverse of Latin). Final forms ך ן ף ץ go down to the descender. `proof` and the app
+  set it right to left.
+- **Not possible yet**: the Indic scripts, Thai, Khmer, Myanmar (letters reorder and stack: mark
+  positioning not written yet); Chinese, Japanese, Korean (thousands of glyphs). Say so.
+
+## 3b. Arabic, Persian, Urdu
+
+Right to left, no case, every letter on a baseline stroke that runs through the word. Order:
+
+1. **Skeletons with their forms**, one `edit_font`: ا د ر و (isolated + `.fina`), and ٮ uni066E,
+   ں uni06BA, ى uni0649, ح س ص ط ع ڡ uni06A1 ٯ uni066F ه ل م ك (isolated + `.init` `.medi` `.fina`).
+   `.init` is the start of a word: its baseline stroke reaches x 0 (left). `.fina` reaches the
+   advance (right); `.medi` both. The checks name a form that does not touch its edge.
+2. **Lam-alef**: uni0644_uni0627 and its `.fina` (lam and alef as one shape), then the same with
+   أ إ آ (uni0623 uni0625 uni0622): copy and add the hamza or madda.
+3. **Dots as marks**, then one `compose` of every letter with dots (ب ت ث ن ي ج خ ذ ز ش ض ظ غ ف ق ة
+   أ إ آ ؤ ئ, and پ چ ژ ی for Persian, ٹ ڈ ڑ for Urdu): it makes each letter and all its forms.
+   ج چ: their dots sit inside the bowl; fix those with `set_glyph` components after.
+4. **Draw** ء ك ه ھ ہ ے, the Arabic-Indic digits ٠–٩ (ar) or ۰–۹ (fa, ur), and ، ؛ ؟.
+
+Measured in a monoline test (2026-11-06, stroke 70, `proof` and the app): teeth of ب س 200–250
+high, alef 700, lam 750; dots squares of 80, above at y 330–410, below at y −230 to −150;
+`.init` and `.medi` of ٮ 200 wide. `compose` lifts a dot that would touch a tall letter.
 
 ## 4. Pangrams for proof
 
@@ -104,4 +136,16 @@ el  Ξεσκεπάζω την ψυχοφθόρα βδελυγμία
 ru  Съешь же ещё этих мягких французских булок, да выпей чаю
 uk  Чуєш їх, доцю, га? Кумедна ж ти, прощайся без ґольфів!
 he  דג סקרן שט בים מאוכזב ולפתע מצא חברה
+yi  ייִדיש איז אַ שפּראַך (sample, not a pangram)
+ca  Jove xef, porti whisky amb quinze glaçons d’hidrogen, coi!
+is  Kæmi ný öxi hér, ykist þjófum nú bæði víl og ádrepa
+lv  Glāžšķūņa rūķīši dzērumā čiepj Baha koncertflīģeļu vākus
+lt  Įlinkdama fechtuotojo špaga sublykčiojusi pragręžė apvalų arbūzą
+bg  Ах, чудна българска земьо, полюшвай цъфтящи жита
+sr  Фијуче ветар у шибљу, леди пасаже и куће иза њих и гунђа у оџацима
+hy  Բարեւ, աշխարհ։ (sample)
+ka  ქართული ენა — სწრაფი ყავისფერი მელა (sample)
+ar  نص حكيم له سر قاطع وذو شأن عظيم مكتوب على ثوب أخضر ومغلف بجلد أزرق
+fa  بر اثر چنین تلقین و شستشوی مغزی جامعی، سطح و پایه‌ی ذهن و فهم و نظر بعضی اشخاص
+ur  ٹھنڈ میں، ایک قحط زدہ گاؤں سے گذرتے وقت ایک چڑچڑے، باأثر و فارغ شخص کو بعض جل پری نما اژدہے نظر آئے
 ```

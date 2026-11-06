@@ -77,8 +77,21 @@ function outOfBounds(doc: FontDoc, glyph: Glyph, commands: Command[]): Finding[]
   if (box.yMax > top + margin) said.push({ glyph: glyph.name, text: `reaches y ${Math.round(box.yMax)}, far above the ascender ${doc.metrics.ascender}: lines of text will collide.` });
   if (box.yMin < doc.metrics.descender - margin) said.push({ glyph: glyph.name, text: `reaches y ${Math.round(box.yMin)}, below the descender ${doc.metrics.descender}.` });
   // A mark is placed by compose, wherever it is drawn.
-  if (glyph.unicode !== undefined && (box.xMin < -margin || box.xMax > glyph.advance + margin)) said.push({ glyph: glyph.name, text: `ink from x ${Math.round(box.xMin)} to ${Math.round(box.xMax)} leaves the advance 0 to ${glyph.advance}: it will touch its neighbours.` });
+  if (glyph.unicode !== undefined && !/\p{M}/u.test(String.fromCodePoint(glyph.unicode)) && (box.xMin < -margin || box.xMax > glyph.advance + margin)) said.push({ glyph: glyph.name, text: `ink from x ${Math.round(box.xMin)} to ${Math.round(box.xMax)} leaves the advance 0 to ${glyph.advance}: it will touch its neighbours.` });
   return said;
+}
+
+/**
+ * An Arabic form joins its neighbours by its ink touching the edge of its advance: an initial form on its left (the
+ * next letter is read to the left), a final form on its right, a medial form on both.
+ */
+function unjoined(doc: FontDoc, glyph: Glyph, commands: Command[]): Finding[] {
+  const form = /\.(init|medi|fina)$/.exec(glyph.name)?.[1];
+  const box = form ? bounds(commands) : undefined;
+  if (!form || !box) return [];
+  const near = doc.unitsPerEm * 0.02;
+  const sides = [...(form !== 'fina' && box.xMin > near ? ['left (x 0)'] : []), ...(form !== 'init' && box.xMax < glyph.advance - near ? [`right (x ${glyph.advance})`] : [])];
+  return sides.length > 0 ? [{ glyph: glyph.name, text: `a ${form} form joins by its ${sides.join(' and ')}: carry the baseline stroke to that edge.` }] : [];
 }
 
 /** What is wrong in the glyphs named, or in all of them. */
@@ -87,6 +100,6 @@ export function checkGlyphs(doc: FontDoc, names?: string[]): Finding[] {
   const glyphs = names === undefined ? doc.glyphs : doc.glyphs.filter((glyph) => names.includes(glyph.name));
   return glyphs.flatMap((glyph) => {
     const commands = outline(doc, glyph, byName);
-    return [...uncut(glyph, commands), ...outOfBounds(doc, glyph, commands)];
+    return [...uncut(glyph, commands), ...outOfBounds(doc, glyph, commands), ...unjoined(doc, glyph, commands)];
   });
 }

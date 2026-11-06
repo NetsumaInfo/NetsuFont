@@ -9,7 +9,8 @@ NetsuFont works like [NetsuIcon](https://github.com/NetsumaInfo/NetsuIcon), its 
 - **Draw from zero**: the agent creates a font and draws its glyphs as outlines, in font units.
 - **Change a font**: bring in a TTF or OTF file (check that its license allows changes; OFL does) and ask for a new style.
 - **Build from shapes**: rects, rings, arcs and strokes become outlines, turned the right way.
-- **Many languages**: 23 are counted (French, Spanish, German, Polish, Czech, Turkish, Vietnamese, Greek, Russian, Ukrainian, Hebrew…). Accented letters are made from their base and their accent, placed by the tool. Arabic and the Indic scripts are not possible yet: their letters change shape with their neighbours.
+- **Many languages and scripts**: 57 are counted, in Latin, Greek, Cyrillic, Armenian, Georgian, Hebrew and Arabic script (French, Polish, Vietnamese, Russian, Serbian, Armenian, Georgian, Hebrew, Yiddish, Arabic, Persian, Urdu…). Accented letters are made from their base and their accent; Arabic letters from their skeleton and dots, with their joining forms. Text runs right to left where it should. The Indic scripts, Thai and Chinese, Japanese and Korean are not possible yet.
+- **OpenType features from glyph names**: Arabic joining forms and lam-alef, ligatures (`f_i`), stylistic sets (`a.ss01`) and alternates are written to the font; the app has a switch for each optional one.
 - **Space and kern**: side bearings and kerning pairs, checked on words.
 - **See it**: the glyphs on their metric lines, one glyph large with its points, and your own text set with the compiled font.
 - **Export**: an OpenType file with CFF outlines and kerning.

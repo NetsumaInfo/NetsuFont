@@ -83,6 +83,22 @@ end meets a stem (n, m, u) overlaps it: overlaps add, they are never a problem.
   italic are narrower: `scale [0.95, 1]` before. Space again after.
 - **Pixel**: one rect per run of pixels in a row; pixel 100; spacing half a pixel each side.
 
+## Character
+
+A signature is a rule, not an ornament: it applies to every glyph where it can. Pick two or three:
+
+- **A stroke model**: monoline (every stroke one width), contrast by direction (verticals thick,
+  horizontals thin), or a broad nib (thick on the diagonal from bottom left).
+- **Terminals**: cut level, cut slanted, round, a small spur, or a flare (wider at the end).
+- **One shape language**: square curves (rounded rects), circles, or straight segments only
+  (faceted: each curve a polygon of a few sides).
+- **A few telling letters**: a two-storey or single-storey a and g, the leg of R and K, the tail of
+  Q y j, the bar of e (level or slanted), the top of 1 and 4. Give the other choice to `.ss01`.
+- **Proportions off the average**: an x-height well above or below the table's, a narrow s beside a wide o.
+
+Proof the signature with `"Rag Quest Jolly 1974"` before the families: every trait shows there.
+A trait that hurts reading at 12 px (a flare, a spur) goes in `.ss01`, not the default.
+
 ## 4. Optical corrections (check each family)
 
 1. Round and pointed letters overshoot: O C G Q S above and below by 12, o c e s by 10; the apex

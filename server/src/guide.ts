@@ -29,7 +29,17 @@ DOCUMENT
   hungarumlaut hookabove horn above the x-height; cedilla ogonek commaaccent dotbelow below the baseline.
   "<mark>.case" is the flatter one for capitals, above the cap height; without it, compose raises the lowercase one.
   dotlessi carries the accents of i.
-- Hebrew runs right to left: proof sets it left to right; the app's text view sets it the right way.
+- Right to left (Hebrew, Arabic): proof and the app set it so. In such text a kerning pair's left is the letter read first.
+- Marks with a unicode (Arabic harakat, Hebrew points): advance 0; text engines centre them on their letter.
+- Arabic: a joining letter is its glyph (isolated, with unicode) and forms without unicode: <name>.init (word start, joins
+  on its left edge), .medi (both edges), .fina (word end, joins on its right edge). ا د ذ ر ز و ة join only on the right:
+  .fina alone. Lam-alef ligatures uni0644_uni0627, uni0644_uni0623, uni0644_uni0625, uni0644_uni0622, each with .fina.
+  Draw skeletons with their forms (ٮ uni066E, ں uni06BA, ى uni0649, ح د ر س ص ط ع ه, ڡ uni06A1, ٯ uni066F) and dots as
+  marks: dotabove-ar twodotsabove-ar threedotsabove-ar dotbelow-ar twodotsbelow-ar threedotsbelow-ar hamzaabove-ar
+  hamzabelow-ar madda-ar tahabove-ar. compose makes ب ت ن ي ج خ ش ف ق أ… and their forms.
+- Features come from names and are written to the font on export: f_i (liga, parts joined by _), a.ss01 to a.ss20
+  (stylistic sets), a.alt (salt), a.sc (smcp), one.onum, one.tnum. proof {features:["ss01"]} shows them; the app has a
+  switch for each.
 
 OPS (edit_font)
 {op:"set_glyph", glyph, unicode?, advance?, path?, shapes?, components?}   creates it, or changes what is given;
@@ -56,6 +66,7 @@ MORE OPS
    in degrees, positive leans right; then translate [x,y]. The advance follows the x scale.
 {op:"set_kern", left, right, value}   glyph names or characters ("period" or "."); negative brings the pair closer; 0 removes it
 {op:"compose", chars:"éèçÀ"}   makes letters from glyphs already drawn: base + marks, placed (centred, stacked,
-   raised on capitals), and Greek or Cyrillic letters shaped as Latin ones (а е о р с А В Н, Α Β Ε). Refused with
+   raised on capitals), Greek or Cyrillic letters shaped as Latin ones (а е о р с А В Н, Α Β Ε), and Arabic letters
+   from skeleton + dots with all their forms (dots moved only to clear the skeleton). Refused with
    the list of glyphs to draw first. Fix one with set_glyph components afterwards.
 {op:"set_metrics", metrics:{ascender?, descender?, capHeight?, xHeight?}}   {op:"set_info", family?, style?}`;

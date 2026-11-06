@@ -51,7 +51,9 @@
     "sample": "The quick brown fox jumps over the lazy dog\nHAMBURGEFONTSIV 0123456789",
     "complete": "Every character is drawn. The text is set by the browser with the font compiled to OTF.",
     "missing": "Not drawn yet, shown in a fallback font: {{chars}}",
-    "error": "The font could not be compiled: {{error}}"
+    "error": "The font could not be compiled: {{error}}",
+    "features": "Glyph sets",
+    "samples": "Sample texts"
   },
   "panel": {
     "glyph": "Glyph",

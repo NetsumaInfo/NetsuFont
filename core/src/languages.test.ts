@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { newFont } from './doc';
-import { languageCoverage, LANGUAGES, recipe } from './languages';
+import { languageCoverage, LANGUAGES } from './languages';
+import { recipe } from './names';
 import { applyOps } from './ops';
 import { FontError } from './types';
 

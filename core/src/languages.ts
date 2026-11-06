@@ -1,5 +1,8 @@
-import { nameOf } from './charset';
+import { formsOf, LAM_ALEF } from './arabic';
+import { glyphName } from './names';
 import type { FontDoc } from './types';
+
+export type Script = 'latin' | 'greek' | 'cyrillic' | 'armenian' | 'georgian' | 'hebrew' | 'arabic';
 
 /**
  * The letters each language needs beyond the basic Latin set, lowercase then uppercase, and its own punctuation.
@@ -7,109 +10,114 @@ import type { FontDoc } from './types';
  */
 export interface Language {
   code: string;
-  script: 'latin' | 'greek' | 'cyrillic' | 'hebrew';
+  script: Script;
   chars: string;
 }
 
 const LATIN_BASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;!?\'"-()/&';
+const QUOTES = '’“”–—…';
+
+/** The characters from one code point to another, both included. */
+const span = (from: number, to: number): string => String.fromCodePoint(...Array.from({ length: to - from + 1 }, (_, i) => from + i));
+
+const RU = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
+const CYRILLIC_PUNCT = '0123456789.,:;!?-()«»„“’–—…№';
+const HEBREW = 'אבגדהוזחטיךכלםמןנסעףפץצקרשת0123456789.,:;!?-()"\'׳״–—…₪';
+const ARABIC_PUNCT = '،؛؟.:!()«»–—…';
 
 export const LANGUAGES: Language[] = [
-  { code: 'en', script: 'latin', chars: '’‘“”–—…' },
-  { code: 'fr', script: 'latin', chars: 'àâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ«»’–—…' },
-  { code: 'es', script: 'latin', chars: 'áéíñóúüÁÉÍÑÓÚÜ¿¡«»’“”–—…' },
-  { code: 'pt', script: 'latin', chars: 'àáâãçéêíóôõúÀÁÂÃÇÉÊÍÓÔÕÚ«»’“”–—…' },
-  { code: 'it', script: 'latin', chars: 'àèéìíîòóùúÀÈÉÌÍÎÒÓÙÚ«»’“”–—…' },
-  { code: 'de', script: 'latin', chars: 'äöüßÄÖÜ„“”‚‘’«»–—…' },
-  { code: 'nl', script: 'latin', chars: 'áéíóúëïöüÁÉÍÓÚËÏÖÜ’“”–—…' },
-  { code: 'sv', script: 'latin', chars: 'åäöÅÄÖ”’–—…' },
-  { code: 'da', script: 'latin', chars: 'æøåÆØÅ„“«»’–—…' },
-  { code: 'nb', script: 'latin', chars: 'æøåÆØÅ«»’“”–—…' },
-  { code: 'fi', script: 'latin', chars: 'äöåÄÖÅ”’–—…' },
-  { code: 'pl', script: 'latin', chars: 'ąćęłńóśźżĄĆĘŁŃÓŚŹŻ„”«»’–—…' },
-  { code: 'cs', script: 'latin', chars: 'áčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ„“‚‘»«–—…' },
-  { code: 'sk', script: 'latin', chars: 'áäčďéíĺľňóôŕšťúýžÁÄČĎÉÍĹĽŇÓÔŔŠŤÚÝŽ„“–—…' },
-  { code: 'hu', script: 'latin', chars: 'áéíóöőúüűÁÉÍÓÖŐÚÜŰ„”»«–—…' },
-  { code: 'ro', script: 'latin', chars: 'ăâîșțĂÂÎȘȚ„”«»–—…' },
-  { code: 'hr', script: 'latin', chars: 'čćđšžČĆĐŠŽ„”»«–—…' },
-  { code: 'tr', script: 'latin', chars: 'çğıöşüâîûÇĞİÖŞÜÂÎÛ“”‘’«»–—…' },
-  { code: 'vi', script: 'latin', chars: 'àáảãạăằắẳẵặâầấẩẫậđèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵÀÁẢÃẠĂẰẮẲẴẶÂẦẤẨẪẬĐÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴ“”–—…' },
-  { code: 'el', script: 'greek', chars: 'αβγδεζηθικλμνξοπρσςτυφχψωάέήίόύώϊϋΐΰΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩΆΈΉΊΌΎΏΪΫ0123456789.,:;!«»’–—…·;' },
-  { code: 'ru', script: 'cyrillic', chars: 'абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ0123456789.,:;!?-()«»„“–—…№' },
-  { code: 'uk', script: 'cyrillic', chars: 'абвгґдеєжзиіїйклмнопрстуфхцчшщьюяАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ0123456789.,:;!?-()«»„“’–—…№' },
-  { code: 'he', script: 'hebrew', chars: 'אבגדהוזחטיךכלםמןנסעףפץצקרשת0123456789.,:;!?-()"\'׳״–—…₪' },
+  { code: 'en', script: 'latin', chars: QUOTES },
+  { code: 'fr', script: 'latin', chars: `àâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ«»${QUOTES}` },
+  { code: 'es', script: 'latin', chars: `áéíñóúüÁÉÍÑÓÚÜ¿¡«»${QUOTES}` },
+  { code: 'pt', script: 'latin', chars: `àáâãçéêíóôõúÀÁÂÃÇÉÊÍÓÔÕÚ«»${QUOTES}` },
+  { code: 'it', script: 'latin', chars: `àèéìíîòóùúÀÈÉÌÍÎÒÓÙÚ«»${QUOTES}` },
+  { code: 'ca', script: 'latin', chars: `àçèéíïòóúüÀÇÈÉÍÏÒÓÚÜ·«»${QUOTES}` },
+  { code: 'gl', script: 'latin', chars: `áéíñóúüÁÉÍÑÓÚÜ¿¡«»${QUOTES}` },
+  { code: 'eu', script: 'latin', chars: `ñÑ«»${QUOTES}` },
+  { code: 'de', script: 'latin', chars: `äöüßÄÖÜ„‚‘«»${QUOTES}` },
+  { code: 'nl', script: 'latin', chars: `áéíóúëïöüÁÉÍÓÚËÏÖÜ${QUOTES}` },
+  { code: 'af', script: 'latin', chars: `áéèêëíîïóôöúûüÁÉÈÊËÍÎÏÓÔÖÚÛÜ${QUOTES}` },
+  { code: 'sv', script: 'latin', chars: `åäöÅÄÖ${QUOTES}` },
+  { code: 'da', script: 'latin', chars: `æøåÆØÅ„«»${QUOTES}` },
+  { code: 'nb', script: 'latin', chars: `æøåÆØÅ«»${QUOTES}` },
+  { code: 'fi', script: 'latin', chars: `äöåÄÖÅ${QUOTES}` },
+  { code: 'is', script: 'latin', chars: `áéíóúýðþæöÁÉÍÓÚÝÐÞÆÖ„${QUOTES}` },
+  { code: 'fo', script: 'latin', chars: `áíóúýæøðÁÍÓÚÝÆØÐ„${QUOTES}` },
+  { code: 'ga', script: 'latin', chars: `áéíóúÁÉÍÓÚ${QUOTES}` },
+  { code: 'cy', script: 'latin', chars: `âêîôûŵŷáéíóúàèìòùäëïöüÂÊÎÔÛŴŶÁÉÍÓÚÀÈÌÒÙÄËÏÖÜ${QUOTES}` },
+  { code: 'pl', script: 'latin', chars: `ąćęłńóśźżĄĆĘŁŃÓŚŹŻ„«»${QUOTES}` },
+  { code: 'cs', script: 'latin', chars: `áčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ„‚‘»«${QUOTES}` },
+  { code: 'sk', script: 'latin', chars: `áäčďéíĺľňóôŕšťúýžÁÄČĎÉÍĹĽŇÓÔŔŠŤÚÝŽ„${QUOTES}` },
+  { code: 'sl', script: 'latin', chars: `čšžČŠŽ„»«${QUOTES}` },
+  { code: 'hr', script: 'latin', chars: `čćđšžČĆĐŠŽ„»«${QUOTES}` },
+  { code: 'bs', script: 'latin', chars: `čćđšžČĆĐŠŽ„»«${QUOTES}` },
+  { code: 'hu', script: 'latin', chars: `áéíóöőúüűÁÉÍÓÖŐÚÜŰ„»«${QUOTES}` },
+  { code: 'ro', script: 'latin', chars: `ăâîșțĂÂÎȘȚ„«»${QUOTES}` },
+  { code: 'sq', script: 'latin', chars: `çëÇË«»„${QUOTES}` },
+  { code: 'et', script: 'latin', chars: `äöõüšžÄÖÕÜŠŽ„${QUOTES}` },
+  { code: 'lv', script: 'latin', chars: `āčēģīķļņšūžĀČĒĢĪĶĻŅŠŪŽ„«»${QUOTES}` },
+  { code: 'lt', script: 'latin', chars: `ąčęėįšųūžĄČĘĖĮŠŲŪŽ„${QUOTES}` },
+  { code: 'mt', script: 'latin', chars: `ċġħżàèìòùĊĠĦŻÀÈÌÒÙ${QUOTES}` },
+  { code: 'tr', script: 'latin', chars: `çğıöşüâîûÇĞİÖŞÜÂÎÛ«»‘${QUOTES}` },
+  { code: 'az', script: 'latin', chars: `çəğıöşüÇƏĞİÖŞÜ«»${QUOTES}` },
+  { code: 'eo', script: 'latin', chars: `ĉĝĥĵŝŭĈĜĤĴŜŬ${QUOTES}` },
+  { code: 'id', script: 'latin', chars: QUOTES },
+  { code: 'ms', script: 'latin', chars: QUOTES },
+  { code: 'sw', script: 'latin', chars: QUOTES },
+  { code: 'tl', script: 'latin', chars: `ñÑ${QUOTES}` },
+  { code: 'vi', script: 'latin', chars: `àáảãạăằắẳẵặâầấẩẫậđèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵÀÁẢÃẠĂẰẮẲẴẶÂẦẤẨẪẬĐÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴ${QUOTES}` },
+  { code: 'el', script: 'greek', chars: 'αβγδεζηθικλμνξοπρσςτυφχψωάέήίόύώϊϋΐΰΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩΆΈΉΊΌΎΏΪΫ0123456789.,:;!«»’–—…·' },
+  { code: 'ru', script: 'cyrillic', chars: RU + CYRILLIC_PUNCT },
+  { code: 'uk', script: 'cyrillic', chars: `абвгґдеєжзиіїйклмнопрстуфхцчшщьюяАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ${CYRILLIC_PUNCT}` },
+  { code: 'be', script: 'cyrillic', chars: `абвгдеёжзійклмнопрстуўфхцчшыьэюяАБВГДЕЁЖЗІЙКЛМНОПРСТУЎФХЦЧШЫЬЭЮЯ${CYRILLIC_PUNCT}` },
+  { code: 'bg', script: 'cyrillic', chars: `абвгдежзийклмнопрстуфхцчшщъьюяАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЮЯ${CYRILLIC_PUNCT}` },
+  { code: 'sr', script: 'cyrillic', chars: `абвгдђежзијклљмнњопрстћуфхцчџшАБВГДЂЕЖЗИЈКЛЉМНЊОПРСТЋУФХЦЧЏШ${CYRILLIC_PUNCT}` },
+  { code: 'mk', script: 'cyrillic', chars: `абвгдѓежзѕијклљмнњопрстќуфхцчџшАБВГДЃЕЖЗЅИЈКЛЉМНЊОПРСТЌУФХЦЧЏШ${CYRILLIC_PUNCT}` },
+  { code: 'kk', script: 'cyrillic', chars: `${RU}әғқңөұүһіӘҒҚҢӨҰҮҺІ${CYRILLIC_PUNCT}` },
+  { code: 'hy', script: 'armenian', chars: `${span(0x531, 0x556)}${span(0x561, 0x587)}0123456789.,:-()։՝՞՛«»—…` },
+  { code: 'ka', script: 'georgian', chars: `${span(0x10d0, 0x10f0)}0123456789.,:;!?-()„“–—…` },
+  { code: 'he', script: 'hebrew', chars: HEBREW },
+  { code: 'yi', script: 'hebrew', chars: `${HEBREW}װױײִַָּֿ` },
+  { code: 'ar', script: 'arabic', chars: `ءآأؤإئابةتثجحخدذرزسشصضطظعغفقكلمنهوىي٠١٢٣٤٥٦٧٨٩${ARABIC_PUNCT}` },
+  { code: 'fa', script: 'arabic', chars: `ءآأؤئابپةتثجچحخدذرزژسشصضطظعغفقکگلمنهوی۰۱۲۳۴۵۶۷۸۹${ARABIC_PUNCT}` },
+  { code: 'ur', script: 'arabic', chars: `ءآأؤئابپتٹثجچحخدڈذرڑزژسشصضطظعغفقکگلمںنوہھیے۰۱۲۳۴۵۶۷۸۹۔${ARABIC_PUNCT}` },
 ];
 
-/** Scripts the format cannot serve yet: their letters change shape with their neighbours, which needs GSUB. */
-export const UNSUPPORTED_SCRIPTS = 'Arabic, Persian, Urdu, Hindi and the other Indic scripts, Thai, Khmer: their letters change shape with their neighbours (GSUB), not written yet. Chinese, Japanese, Korean: thousands of glyphs.';
+/** Scripts the format cannot serve yet, and why. */
+export const UNSUPPORTED_SCRIPTS =
+  'Hindi and the other Indic scripts, Thai, Khmer, Myanmar: letters reorder and stack, which needs mark positioning (GPOS) and contextual rules not written yet. Chinese, Japanese, Korean: thousands of glyphs.';
 
 /** Every character a language needs: basic Latin first for a Latin language, then its own. */
 export function charsOf(language: Language): string[] {
   return [...new Set([...(language.script === 'latin' ? LATIN_BASE : ''), ...language.chars])];
 }
 
-/** What a font covers of each language, the missing characters named. */
-export function languageCoverage(doc: FontDoc, codes?: string[]): { code: string; has: number; of: number; missing: string[] }[] {
+/** The glyphs a language needs besides those of its characters: the joining forms and ligatures of Arabic. */
+export function formsNeeded(language: Language): string[] {
+  if (language.script !== 'arabic') return [];
+  const forms = charsOf(language).flatMap((char) => formsOf(char).map((form) => `${glyphName(char)}.${form}`));
+  return [...forms, ...LAM_ALEF.flatMap((name) => [name, `${name}.fina`])];
+}
+
+export interface LanguageCoverage {
+  code: string;
+  has: number;
+  of: number;
+  /** Characters without a glyph. */
+  missing: string[];
+  /** Glyphs without a character that the language needs: Arabic forms and ligatures, by name. */
+  forms: string[];
+}
+
+/** What a font covers of each language, the missing characters and forms named. */
+export function languageCoverage(doc: FontDoc, codes?: string[]): LanguageCoverage[] {
   const drawn = new Set(doc.glyphs.flatMap((glyph) => (glyph.unicode === undefined ? [] : [glyph.unicode])));
+  const names = new Set(doc.glyphs.map((glyph) => glyph.name));
   return LANGUAGES.filter((language) => codes === undefined || codes.includes(language.code)).map((language) => {
     const chars = charsOf(language);
+    const needed = formsNeeded(language);
     const missing = chars.filter((char) => !drawn.has(char.codePointAt(0)!));
-    return { code: language.code, has: chars.length - missing.length, of: chars.length, missing };
+    const forms = needed.filter((name) => !names.has(name));
+    return { code: language.code, has: chars.length + needed.length - missing.length - forms.length, of: chars.length + needed.length, missing, forms };
   });
-}
-
-/** The spacing accent drawn for each combining mark, by its usual glyph name. */
-export const MARKS: Record<number, string> = {
-  0x300: 'grave', 0x301: 'acute', 0x302: 'circumflex', 0x303: 'tilde', 0x304: 'macron', 0x306: 'breve', 0x307: 'dotaccent',
-  0x308: 'dieresis', 0x309: 'hookabove', 0x30a: 'ring', 0x30b: 'hungarumlaut', 0x30c: 'caron', 0x31b: 'horn', 0x323: 'dotbelow',
-  0x326: 'commaaccent', 0x327: 'cedilla', 0x328: 'ogonek',
-};
-
-/** Marks that hang below the baseline, or sit at the right of the letter, instead of above it. */
-export const BELOW = new Set(['dotbelow', 'commaaccent', 'cedilla', 'ogonek']);
-export const RIGHT = new Set(['horn']);
-
-/** Letters with no decomposition, by their usual glyph name. */
-const NAMED: Record<string, string> = {
-  ß: 'germandbls', æ: 'ae', Æ: 'AE', œ: 'oe', Œ: 'OE', ø: 'oslash', Ø: 'Oslash', ł: 'lslash', Ł: 'Lslash', đ: 'dcroat', Đ: 'Dcroat',
-  ı: 'dotlessi', ð: 'eth', Ð: 'Eth', þ: 'thorn', Þ: 'Thorn', '«': 'guillemotleft', '»': 'guillemotright', '¿': 'questiondown',
-  '¡': 'exclamdown', '‘': 'quoteleft', '’': 'quoteright', '‚': 'quotesinglbase', '“': 'quotedblleft', '”': 'quotedblright',
-  '„': 'quotedblbase', '–': 'endash', '—': 'emdash', '…': 'ellipsis', '·': 'periodcentered', '€': 'Euro', '₪': 'uni20AA', '№': 'uni2116',
-};
-
-const hex = (code: number): string => `uni${code.toString(16).toUpperCase().padStart(4, '0')}`;
-
-/** Greek and Cyrillic letters drawn as a Latin one: made as a component of it, the same shape under another code. */
-const LOOKALIKE: Record<string, string> = {
-  а: 'a', е: 'e', о: 'o', р: 'p', с: 'c', у: 'y', х: 'x', і: 'i', ј: 'j', ѕ: 's', А: 'A', В: 'B', Е: 'E', К: 'K', М: 'M', Н: 'H',
-  О: 'O', Р: 'P', С: 'C', Т: 'T', Х: 'X', І: 'I', Ј: 'J', Ѕ: 'S', Α: 'A', Β: 'B', Ε: 'E', Ζ: 'Z', Η: 'H', Ι: 'I', Κ: 'K', Μ: 'M',
-  Ν: 'N', Ο: 'O', Ρ: 'P', Τ: 'T', Υ: 'Y', Χ: 'X', ο: 'o',
-};
-
-/** The glyph name of any character: its usual name, else uniXXXX. */
-export function glyphName(char: string): string {
-  const plain = nameOf(char) ?? NAMED[char];
-  if (plain) return plain;
-  const [baseChar, ...rest] = [...char.normalize('NFD')];
-  const mark = rest.length === 1 ? MARKS[rest[0]!.codePointAt(0)!] : undefined;
-  const code = char.codePointAt(0)!;
-  // The Latin letters with one accent keep their usual names: eacute, scaron, zdotaccent.
-  return mark && baseChar && nameOf(baseChar) && code <= 0x24f ? `${nameOf(baseChar)}${mark}` : hex(code);
-}
-
-/**
- * How a character is made: its glyph name and, when it is not drawn on its own, its base and its marks (an
- * accented letter), or its base alone (a Greek or Cyrillic letter shaped as a Latin one).
- */
-export function recipe(char: string): { name: string; unicode: number; base?: string; marks?: string[] } {
-  const unicode = char.codePointAt(0)!;
-  const name = glyphName(char);
-  const same = LOOKALIKE[char];
-  if (same) return { name, unicode, base: same, marks: [] };
-  const [baseChar, ...rest] = [...char.normalize('NFD')];
-  const marks = rest.map((mark) => MARKS[mark.codePointAt(0)!]);
-  if (rest.length === 0 || !baseChar || marks.some((mark) => mark === undefined)) return { name, unicode };
-  // An accent above an i or a j replaces its dot.
-  const below = marks.every((mark) => BELOW.has(mark!));
-  const base = !below && (baseChar === 'i' || baseChar === 'і') ? 'dotlessi' : !below && baseChar === 'j' ? 'uni0237' : glyphName(baseChar);
-  return { name, unicode, base, marks: marks as string[] };
 }
