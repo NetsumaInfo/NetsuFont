@@ -53,7 +53,8 @@ describe('the MCP tools', () => {
     const file = exported.match(/written: (.+\.otf)/)![1]!;
     expect(fs.existsSync(file)).toBe(true);
     const imported = await call('import_font', { file, name: 'again' });
-    expect(said(imported)).toContain('I "I" 300');
+    expect(said(imported)).toContain('again: ');
+    expect(said(await call('list_fonts', { name: 'again' }))).toContain('I "I" 300');
   });
 
   it('gives back a sentence, not a crash, for a bad op', async () => {

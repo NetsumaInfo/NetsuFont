@@ -42,6 +42,20 @@ export interface SheetOptions {
   colors?: Colors;
   /** Draw the metric lines and the advance of each glyph. */
   guides?: boolean;
+  /**
+   * Another font drawn under each glyph in a light colour, as on tracing paper: the glyph of the same character,
+   * scaled so that both fonts' cap heights match. To draw a script from a model.
+   */
+  under?: FontDoc;
+}
+
+/** The model's glyph of the same character, under the cell's own glyph, centred in the cell. */
+function underlay(doc: FontDoc, model: FontDoc, glyph: Glyph, cell: number): string {
+  const found = model.glyphs.find((g) => (glyph.unicode !== undefined ? g.unicode === glyph.unicode : g.name === glyph.name));
+  if (!found) return '';
+  const scale = doc.metrics.capHeight / model.metrics.capHeight;
+  const left = (cell - found.advance * scale) / 2;
+  return `<path transform="translate(${left} 0) scale(${scale})" d="${glyphPath(model, found)}" fill="#6aa5ff" fill-opacity="0.45"/>`;
 }
 
 /**
@@ -65,7 +79,8 @@ export function glyphSheet(doc: FontDoc, glyphs: Glyph[], options: SheetOptions 
     // A uniXXXX name says nothing at a glance: the character follows it.
     const said = glyph.name.startsWith('uni') && glyph.unicode !== undefined ? `${glyph.name} ${String.fromCodePoint(glyph.unicode)}` : glyph.name;
     const name = `<text x="${cell / 2}" y="${height - top + label * 1.2}" font-size="${label}" font-family="monospace" text-anchor="middle" fill="${colors.label}">${escape(said)}</text>`;
-    return `<g transform="translate(${x} ${y})">${marks}<path transform="translate(${left} 0)" d="${glyphPath(doc, glyph, byName)}" fill="${colors.ink}"/>${name}</g>`;
+    const model = options.under ? underlay(doc, options.under, glyph, cell) : '';
+    return `<g transform="translate(${x} ${y})">${marks}${model}<path transform="translate(${left} 0)" d="${glyphPath(doc, glyph, byName)}" fill="${colors.ink}" fill-opacity="${model ? 0.8 : 1}"/>${name}</g>`;
   });
   const width = columns * cell;
   const total = Math.max(1, rows) * rowHeight;

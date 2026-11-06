@@ -88,16 +88,24 @@ function registerRead(server: McpServer, store: Store): void {
   server.registerTool(
     'look_glyphs',
     {
-      description: 'A picture of glyphs on their metric lines (baseline, x-height, cap height, ascender, descender) with their advance.',
-      inputSchema: { name, glyphs, chars, columns: z.number().int().min(1).max(16).optional() },
+      description: 'A picture of glyphs on their metric lines (baseline, x-height, cap height, ascender, descender) with their advance. With model: another font\'s glyph of each character under it, in blue, as on tracing paper.',
+      inputSchema: {
+        name,
+        glyphs,
+        chars,
+        columns: z.number().int().min(1).max(16).optional(),
+        model: z.string().optional().describe('A font id to draw under each glyph, scaled to the same cap height, such as "model-deva".'),
+      },
     },
     (args) =>
       guarded(() => {
         const doc = store.read(args.name);
-        const shown = pick(doc, args.glyphs, args.chars);
+        const model = args.model === undefined ? undefined : store.read(args.model);
+        // With a model, a character not drawn yet shows the model alone: the cell to draw in.
+        const shown = model && args.chars !== undefined ? [...new Set(args.chars)].map((char) => doc.glyphs.find((g) => g.unicode === char.codePointAt(0)) ?? { name: recipe(char).name, unicode: char.codePointAt(0)!, advance: 0, path: '' }) : pick(doc, args.glyphs, args.chars);
         if (shown.length === 0) throw new FontError('nothing_to_show', 'None of these glyphs exists yet.');
         const columns = args.columns ?? Math.min(8, shown.length);
-        return png(glyphSheet(doc, shown, { columns }), Math.min(1600, columns * 200), `${shown.map((g) => g.name).join(' ')}`);
+        return png(glyphSheet(doc, shown, { columns, ...(model ? { under: model } : {}) }), Math.min(1600, columns * 200), `${shown.map((g) => g.name).join(' ')}`);
       }),
   );
 
@@ -155,7 +163,7 @@ function registerWrite(server: McpServer, store: Store): void {
         if (!/\.(ttf|otf|ttc)$/i.test(args.file) || !fs.existsSync(args.file)) throw new FontError('file_not_found', 'Give the absolute path of a .ttf, .otf or .ttc file that exists.');
         const { doc, skipped } = importFont(new Uint8Array(fs.readFileSync(args.file)), args.name, args.index ?? 0);
         store.write(doc);
-        return text(`${outline(doc)}\nnot brought in: ${skipped.join(', ')}`);
+        return text(`${summary(doc)}\nnot brought in: ${skipped.join(', ')}\nlist_fonts {name} for its glyphs; look_glyphs {name, chars} to see them`);
       }),
   );
 

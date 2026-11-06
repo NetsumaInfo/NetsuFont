@@ -75,8 +75,12 @@ nnynn ooyoo"`. Each x
    `references/languages.md` before drawing marks or letters of another script. Draw the marks,
    then one `compose` with every letter it can make, then draw what is left. A script you cannot
    draw from memory (Devanagari, Thai, Arabic letters you are unsure of): first bring in a font of
-   that script as a **model** (`import_font {name:"model-deva"}`), `look_glyphs` the letters
-   you must draw, draw your own with your sheet's numbers, never its paths, then `remove_font` it. Check with one
+   that script as a **model** (`import_font {name:"model-deva"}`). Then, family by family (6 to 8
+   letters): `look_glyphs {name, chars, model:"model-deva"}` shows the model in blue in each cell,
+   even before you draw; draw your letters in your style with your sheet's numbers, never its
+   paths; look again with the model under and fix until each letter keeps the model's structure
+   (which side the stem is on, where strokes meet, the counters, the width). `remove_font` it at
+   the end. Two blind runs without this tracing drew Devanagari no reader could read. Check with one
    `proof` of the brief's pangrams, a line each, sizes `[48, 18]`.
 
 8. **Features**, when the brief asks for character or display use: the alternates of the
@@ -94,7 +98,9 @@ nnynn ooyoo"`. Each x
 
 Control glyphs: 1 create, 1 to 3 edits, 2 looks. Each of the 12 families: 1 edit, 1 look, 1 fix
 at most. Spacing: one edit and one proof per family. Languages: 1 call, 2 to 4 edits, 1 proof.
-Each new script (Greek, Cyrillic): 3 to 5 edits and 2 proofs more. Arabic: not measured in a blind
+Each new script (Greek, Cyrillic): 3 to 5 edits and 2 proofs more. A script traced on a model:
+one look with the model and one edit per family, then one look to fix; about 40 calls for
+Devanagari. Arabic: not measured in a blind
 run yet; in a test (2026-11-06) the skeletons with their forms, lam-alef and the dots took one edit
 of 41 ops, and one `compose` made 9 letters with their forms. Kerning: 2 proofs, 2 edits.
 About 90 calls for a Latin font with two languages; past 110, say why.
