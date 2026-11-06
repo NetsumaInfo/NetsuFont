@@ -4,7 +4,7 @@ import { featureRules, type Rule } from './features';
 import { gdefTable, gposTable } from './gpos';
 import { glyphMap, outline } from './outline';
 import { writePath, type Command } from './path';
-import { kernTable, withTable } from './sfnt';
+import { fontCount, fontOfCollection, kernTable, withTable } from './sfnt';
 import { FontError, FORMAT, type FontDoc, type Glyph, type Kern } from './types';
 import { GLYPH_NAME, validate } from './validate';
 
@@ -102,12 +102,14 @@ function nameFor(glyph: OtGlyph, index: number, taken: Set<string>): string {
 }
 
 /**
- * Reads a TTF or OTF file into a document. What is kept: names, metrics, outlines, advances, one code point per
+ * Reads a TTF or OTF file, or one font of a TTC collection, into a document. What is kept: names, metrics, outlines, advances, one code point per
  * glyph, and kerning from a `kern` table. Not kept: GPOS kerning, hinting, features such as ligatures.
  */
-export function importFont(bytes: Uint8Array, name: string): { doc: FontDoc; skipped: string[] } {
+export function importFont(file: Uint8Array, name: string, index = 0): { doc: FontDoc; skipped: string[] } {
   let font: OtFont;
   try {
+    if (index >= fontCount(file)) throw new Error(`the file holds ${fontCount(file)} fonts, from index 0`);
+    const bytes = fontOfCollection(file, index);
     font = opentype.parse(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer);
   } catch (error) {
     throw new FontError('bad_font_file', `This file could not be read as a font: ${(error as Error).message}`);

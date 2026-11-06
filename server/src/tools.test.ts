@@ -61,6 +61,13 @@ describe('the MCP tools', () => {
     const bad = await call('edit_font', { name: 'demo', ops: [{ op: 'set_glyph', glyph: 'A', path: 'L0 0' }] });
     expect(bad.isError).toBe(true);
     expect(said(bad)).toContain('starts with M');
-    expect(said(await call('list_fonts'))).not.toContain('"A"');
+    expect(said(await call('list_fonts', { name: 'demo' }))).not.toContain('"A"');
+  });
+
+  it('lists fonts in one line each and takes one out to the trash', async () => {
+    await call('create_font', { name: 'model-x', family: 'Model X' });
+    expect(said(await call('list_fonts'))).toContain('model-x: "Model X" Regular, 1 glyphs');
+    expect(said(await call('remove_font', { name: 'model-x' }))).toContain('.trash');
+    expect(said(await call('list_fonts'))).not.toContain('model-x');
   });
 });

@@ -48,6 +48,13 @@ function head(doc: FontDoc): string[] {
   ];
 }
 
+/** A font in one line: id, family, glyphs, languages complete, checks. */
+export function summary(doc: FontDoc): string {
+  const complete = languageCoverage(doc).filter((l) => l.has === l.of).map((l) => l.code);
+  const found = checkGlyphs(doc).length;
+  return `${doc.name}: "${doc.family}" ${doc.style}, ${doc.glyphs.length} glyphs, ${doc.kerning.length} kerning pairs, languages ${complete.join(' ') || 'none'}${found > 0 ? `, ${found} checks` : ''}`;
+}
+
 const SHOWN = 12;
 
 /** The checks of these glyphs, at most a dozen lines. */

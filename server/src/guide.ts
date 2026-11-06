@@ -6,7 +6,9 @@
 export const GUIDE = `NetsuFont: fonts drawn by small targeted operations. The user watches the font change live in the app.
 
 WORKFLOW
-1. list_fonts, then create_font {name, family, style?} or import_font {file, name} (a .ttf or .otf; its license must allow changes).
+1. list_fonts (one line each; {name} for one font's glyphs and checks), then create_font {name, family, style?} or
+   import_font {file, name, index?} (a .ttf, .otf, or .ttc with index; to change, its license must allow it).
+   remove_font {name} takes a font out (its file goes to fonts/.trash).
 2. edit_font {name, ops:[...]}. All or nothing: on an error nothing is saved and the error names the op. It answers the
    glyphs it changed, with their advance and [left right] side bearings, and checks: fix each, or keep it on purpose.
 3. look_glyphs {name, chars:"Hno"} (or glyphs:[names]): the glyphs on their lines. proof {name, text, sizes?}: words at
@@ -54,7 +56,7 @@ OPS (edit_font)
 SHAPES (each turned the right way; overlapping shapes add; "hole":true cuts one layer). Angles: 0 right, 90 top.
 {type:"rect", x, y, w, h}   {type:"ellipse", cx, cy, rx, ry}   {type:"polygon", points:[[x,y],...]}
 {type:"ring", cx, cy, rx, ry, stroke, strokeY?}   rx, ry are the outside; strokeY: thickness at top and bottom
-{type:"arc", cx, cy, rx, ry, stroke, strokeY?, from, to, ends?}   the band of a ring from one angle to the other,
+{type:"arc", cx, cy, rx, ry, stroke, strokeY?, from, to, ends?}   the band of a ring (rx, ry outside) from one angle to the other,
    counterclockwise, ends cut along the radius: the arch of n is from 0 to 180, a c from 45 to 315; to may pass
    360 (270 to 450)
 {type:"line", x1, y1, x2, y2, width, ends?}   width across the stroke

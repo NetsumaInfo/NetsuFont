@@ -3,6 +3,8 @@ node_modules/
 fonts/settings.json
 # Files written by export_font.
 fonts/exports/
+# Fonts taken out with remove_font.
+fonts/.trash/
 dist/
 .claude/settings.local.json
 .DS_Store

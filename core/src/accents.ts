@@ -52,9 +52,8 @@ function ordered(builds: Build[]): Build[] {
 export function composeLetters(doc: FontDoc, chars: string): string[] {
   const byName = glyphMap(doc);
   const builds = ordered([...new Set(chars)].flatMap(buildsOf));
-  const coming = new Set(builds.map((build) => build.name));
-  const lacking = new Set(builds.flatMap((build) => [build.base, ...build.marks]).filter((name) => !byName.has(name) && !coming.has(name)));
-  if (lacking.size > 0) throw new FontError('glyph_not_found', `Draw these first: ${[...lacking].join(', ')}. Marks are drawn above the x-height or below the baseline.`);
+  const lacking = lackingOf(builds, byName);
+  if (lacking.length > 0) throw new FontError('glyph_not_found', `Draw these first: ${lacking.join(', ')}. Marks are drawn above the x-height or below the baseline.`);
   return builds.map((build) => {
     const base = byName.get(build.base)!;
     const parts = place(doc, byName, base, build.marks, build.capital);
@@ -67,6 +66,17 @@ export function composeLetters(doc: FontDoc, chars: string): string[] {
     byName.set(glyph.name, existing ?? glyph);
     return build.name;
   });
+}
+
+function lackingOf(builds: Build[], byName: Map<string, Glyph>): string[] {
+  const coming = new Set(builds.map((build) => build.name));
+  return [...new Set(builds.flatMap((build) => [build.base, ...build.marks]).filter((name) => !byName.has(name) && !coming.has(name)))];
+}
+
+/** The glyphs compose needs drawn before it can make these characters: bases, skeletons with their forms, marks. */
+export function composeNeeds(doc: FontDoc, chars: string): string[] {
+  const composable = [...new Set(chars)].filter((char) => recipe(char).base !== undefined);
+  return lackingOf(composable.flatMap(buildsOf), glyphMap(doc));
 }
 
 function place(doc: FontDoc, byName: Map<string, Glyph>, base: Glyph, marks: string[], capital: boolean): Part[] {

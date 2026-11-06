@@ -95,9 +95,14 @@ Build the letters that are not Latin from the parts you already have:
   between the x-height and the cap height (about 560); horizontal strokes thicker than vertical
   ones (the reverse of Latin). Final forms ך ן ף ץ go down to the descender. `proof` and the app
   set it right to left.
-- **Devanagari (hi, mr, ne)**: letters hang from a headline at the top of the x-height band;
-  consonants have a vertical stem at their right. Draw the letters with their headline touching
-  both edges, so words join; the spacing vowel signs ा ि ी ो ौ (ि with its headline: the text
+- **Devanagari (hi, mr, ne)**: look at a model first (Windows has Nirmala UI, a .ttc: `index` 0;
+  else Noto Sans Devanagari, OFL). Measured in Nirmala UI, scaled to an em of 1000 with Latin caps
+  at 700 (2026-11-06): the headline's top at 728, its ink 17 past both edges so words join; most
+  consonants hang from it with a stem at their right, their body from 0 to the headline, as wide
+  as their shape asks (र 489, न 607, ग 624, म 673, क 863); ा 260; े above from 714 to 1035; ु
+  below from −250. A blind run that set the headline at 600 with Latin caps at 700 looked too
+  small beside Latin. Draw the letters, each from its model's structure, and the digits ०–९
+  from the model too: they are not the Latin figures; the spacing vowel signs ा ि ी ो ौ (ि with its headline: the text
   engine draws it before its consonant); the marks े ै ं ँ above, ु ू ृ ् ़ below, advance 0.
   Then the forms: `<consonant>.half` (the consonant without its stem: `copy_glyph`, remove the
   stem), `uni0930.rphf` (a hook above, advance 0, ink left of x 0), `uni0930.blwf` (a short
@@ -108,22 +113,29 @@ Build the letters that are not Latin from the parts you already have:
 
 ## 3b. Arabic, Persian, Urdu
 
-Right to left, no case, every letter on a baseline stroke that runs through the word. Order:
+Right to left, no case, every letter on a baseline stroke that runs through the word. Look at a
+model first (Noto Kufi Arabic or Noto Naskh Arabic, OFL; Windows often has them). Measured in Noto
+Kufi Arabic, Latin x-height 536, caps 714 (2026-11-06): teeth of ب س and the bodies of ع م at
+475–517; alef, lam and kaf at 760; descending tails (ر و م ع) to −240 or −320; `.init` and `.medi`
+forms draw their joining stroke 10 past the edge they join by; ٮ isolated 778 wide, `.init` 301,
+`.medi` 341, `.fina` 821. Order:
 
 1. **Skeletons with their forms**, one `edit_font`: ا د ر و (isolated + `.fina`), and ٮ uni066E,
    ں uni06BA, ى uni0649, ح س ص ط ع ڡ uni06A1 ٯ uni066F ه ل م ك (isolated + `.init` `.medi` `.fina`).
    `.init` is the start of a word: its baseline stroke reaches x 0 (left). `.fina` reaches the
    advance (right); `.medi` both. The checks name a form that does not touch its edge.
-2. **Lam-alef**: uni0644_uni0627 and its `.fina` (lam and alef as one shape), then the same with
-   أ إ آ (uni0623 uni0625 uni0622): copy and add the hamza or madda.
+2. **Lam-alef**: uni0644_uni0627 and its `.fina` (lam and alef as one shape: lam on the right, read
+   first, alef on the left; the `.fina` joins by the right, the lam's side), then the same with
+   أ إ آ (uni0623 uni0625 uni0622): `set_glyph` with components, the ligature and the hamza or madda.
 3. **Dots as marks**, then one `compose` of every letter with dots (ب ت ث ن ي ج خ ذ ز ش ض ظ غ ف ق ة
    أ إ آ ؤ ئ, and پ چ ژ ی for Persian, ٹ ڈ ڑ for Urdu): it makes each letter and all its forms.
    ج چ: their dots sit inside the bowl; fix those with `set_glyph` components after.
-4. **Draw** ء ك ه ھ ہ ے, the Arabic-Indic digits ٠–٩ (ar) or ۰–۹ (fa, ur), and ، ؛ ؟.
+4. **Draw** ء ك ه (and ھ ہ ے for Urdu, with their forms), the Arabic-Indic digits ٠–٩ (ar) or ۰–۹ (fa, ur), and ، ؛ ؟.
 
 Measured in a monoline test (2026-11-06, stroke 70, `proof` and the app): teeth of ب س 200–250
 high, alef 700, lam 750; dots squares of 80, above at y 330–410, below at y −230 to −150;
-`.init` and `.medi` of ٮ 200 wide. `compose` lifts a dot that would touch a tall letter.
+`.init` and `.medi` of ٮ 200 wide. `compose` keeps a dot at the height it is drawn and lifts it only
+when it would touch a taller letter: draw dots at their place over a tooth.
 
 5. **Harakat** (optional, for teaching texts and the Quran): fatha, kasra, damma, sukun, shadda and
    the tanwin (U+064B to U+0652) as marks of advance 0; the font sets them on each letter and form.

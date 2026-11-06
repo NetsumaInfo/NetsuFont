@@ -92,7 +92,7 @@ export interface ProofOptions {
  * the advances, kerning and features as a font file will have them, right-to-left text set right to left. "
 " starts a new line. Lines too long are cut.
  */
-export function proofSvg(doc: FontDoc, text: string, options: ProofOptions = {}): { svg: string; missing: string[]; cut: boolean } {
+export function proofSvg(doc: FontDoc, text: string, options: ProofOptions = {}): { svg: string; missing: string[]; cut: boolean; fits: number } {
   const colors = options.colors ?? LIGHT;
   const sizes = options.sizes ?? [72, 36, 18];
   const byName = glyphMap(doc);
@@ -119,5 +119,13 @@ export function proofSvg(doc: FontDoc, text: string, options: ProofOptions = {})
     svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${total}" width="${width}" height="${total}"><rect width="${width}" height="${total}" fill="${colors.paper}"/>${lines.join('')}</svg>`,
     missing,
     cut: widest > width,
+    fits: fitting(rows, width - pad * 2, Math.max(...sizes) / doc.unitsPerEm),
   };
+}
+
+/** About how many characters of these lines fit in a width at a scale: for the agent to split a line that is cut. */
+function fitting(rows: { placed: unknown[]; width: number }[], room: number, scale: number): number {
+  const glyphs = rows.reduce((sum, row) => sum + row.placed.length, 0);
+  const width = rows.reduce((sum, row) => sum + row.width, 0);
+  return glyphs === 0 || width === 0 ? 0 : Math.floor(room / ((width / glyphs) * scale));
 }

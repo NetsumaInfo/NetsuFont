@@ -64,6 +64,20 @@ export class Store {
     saveJson(this.file(doc.name), doc);
   }
 
+  /**
+   * Takes a font out of the list: its file goes to `.trash/` (git-ignored), from where the user can bring it back.
+   * Returns where it went.
+   */
+  remove(name: string): string {
+    const file = this.file(name);
+    if (!fs.existsSync(file)) throw new FontError('font_not_found', `No font named "${name}".`);
+    const folder = path.join(this.dir, '.trash');
+    fs.mkdirSync(folder, { recursive: true });
+    const target = path.join(folder, `${name}-${Date.now()}${SUFFIX}`);
+    fs.renameSync(file, target);
+    return target;
+  }
+
   /** Writes an exported font file in `exports/` (git-ignored). Returns its path. */
   writeExport(fileName: string, bytes: Uint8Array): string {
     const folder = path.join(this.dir, 'exports');

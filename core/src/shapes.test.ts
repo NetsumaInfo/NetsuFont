@@ -3,7 +3,7 @@ import { checkGlyphs } from './check';
 import { newFont } from './doc';
 import { applyOps } from './ops';
 import { bounds, parsePath } from './path';
-import { shapesPath } from './shapes';
+import { shapesPath, type Shape } from './shapes';
 import { proofSvg } from './svg';
 import { FontError } from './types';
 
@@ -103,4 +103,21 @@ it('mirrors a glyph inside its advance', () => {
   const mirrored = doc.glyphs.find((g) => g.name === 'uni0418')!;
   expect(mirrored.advance).toBe(600);
   expect(box(mirrored.path)).toMatchObject({ xMin: 450, xMax: 550 });
+});
+
+describe('round ends', () => {
+  it('are one contour with their stroke, so a round end inside a stem is not a filled hole', () => {
+    const shapes: Shape[] = [
+      { type: 'rect', x: 80, y: 0, w: 90, h: 700 },
+      { type: 'rect', x: 530, y: 0, w: 90, h: 700 },
+      { type: 'line', x1: 125, y1: 350, x2: 575, y2: 350, width: 80, ends: 'round' },
+      { type: 'arc', cx: 350, cy: 350, rx: 200, ry: 200, stroke: 80, from: 30, to: 150, ends: 'round' },
+    ];
+    const path = shapesPath(shapes);
+    expect(path.match(/M/g)).toHaveLength(4);
+    const doc = applyOps(newFont('t', 'T'), [{ op: 'set_glyph', glyph: 'H', unicode: 72, advance: 700, path }]);
+    expect(checkGlyphs(doc)).toEqual([]);
+    const box = bounds(parsePath(shapesPath([shapes[2]!])))!;
+    expect([box.xMin, box.xMax, box.yMin, box.yMax]).toEqual([85, 615, 310, 390]);
+  });
 });

@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { applyOps, charsOf, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
+import { applyOps, charsOf, composeNeeds, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
 import { z } from 'zod';
 import { GUIDE } from './guide';
-import { afterEdit, guarded, outline, png, text } from './reply';
+import { afterEdit, guarded, outline, png, summary, text } from './reply';
 import { LANGUAGES, type Store } from './store';
 
 const name = z.string().describe('Name of the font: lowercase letters, digits and dashes.');
@@ -24,9 +24,11 @@ function pick(doc: FontDoc, names: string[] | undefined, characters: string | un
   });
 }
 
-function listing(store: Store): string {
-  const said = store.all().map(outline).join('\n\n') || 'No font yet. Create one with create_font, or bring one in with import_font.';
-  return `app language: ${store.language()}\n\n${said}`;
+/** Every font in one line each; the glyphs only of the font named. */
+function listing(store: Store, font: string | undefined): string {
+  if (font !== undefined) return outline(store.read(font));
+  const said = store.all().map(summary).join('\n') || 'No font yet. Create one with create_font, or bring one in with import_font.';
+  return `app language: ${store.language()}\n${said}\nlist_fonts {name}: one font with its glyphs and checks`;
 }
 
 /** The lines of one language: what compose can make from glyphs already planned, what has to be drawn. */
@@ -50,14 +52,18 @@ function languageLines(entry: LanguageCoverage, detail: boolean): string[] {
 function languages(doc: FontDoc, codes: string[] | undefined): string {
   const entries = languageCoverage(doc, codes);
   const lines = entries.flatMap((entry) => languageLines(entry, codes !== undefined));
-  const marks = [...new Set(entries.flatMap(({ missing }) => missing.flatMap((char) => recipe(char).marks ?? [])))].filter((mark) => !doc.glyphs.some((g) => g.name === mark));
-  return [...lines, ...(marks.length > 0 ? [`marks to draw before compose: ${marks.join(', ')}`] : []), `not possible yet: ${UNSUPPORTED_SCRIPTS}`].join('\n');
+  const needs = composeNeeds(doc, entries.flatMap(({ missing }) => missing).join(''));
+  return [...lines, ...(needs.length > 0 ? [`draw before compose (bases, skeletons and their forms, marks): ${needs.join(', ')}`] : []), `not possible yet: ${UNSUPPORTED_SCRIPTS}`].join('\n');
 }
 
 function registerRead(server: McpServer, store: Store): void {
   server.registerTool('guide', { description: 'The font format, the ops and a method for drawing a typeface. Read it once before editing.' }, () => text(GUIDE));
 
-  server.registerTool('list_fonts', { description: 'Every font: names, metrics, coverage, and each glyph in short.' }, () => guarded(() => text(listing(store))));
+  server.registerTool(
+    'list_fonts',
+    { description: 'Every font in one line. With name: that font, its metrics, coverage, each glyph in short and its checks.', inputSchema: { name: name.optional() } },
+    (args) => guarded(() => text(listing(store, args.name))),
+  );
 
   server.registerTool(
     'get_font',
@@ -108,8 +114,8 @@ function registerRead(server: McpServer, store: Store): void {
     },
     (args) =>
       guarded(() => {
-        const { svg, missing, cut } = proofSvg(store.read(args.name), args.text, { ...(args.sizes ? { sizes: args.sizes } : {}), ...(args.features ? { features: args.features } : {}) });
-        const said = [missing.length > 0 ? `not drawn yet, left out: ${JSON.stringify(missing.join(''))}` : 'every character drawn', ...(cut ? ['a line is too long at the largest size and is cut: split it with \\n'] : [])];
+        const { svg, missing, cut, fits } = proofSvg(store.read(args.name), args.text, { ...(args.sizes ? { sizes: args.sizes } : {}), ...(args.features ? { features: args.features } : {}) });
+        const said = [missing.length > 0 ? `not drawn yet, left out: ${JSON.stringify(missing.join(''))}` : 'every character drawn', ...(cut ? [`a line is too long at the largest size and is cut: about ${fits} characters fit, split it with \\n`] : [])];
         return png(svg, Number(/width="(\d+)"/.exec(svg)?.[1] ?? 1200), said.join('\n'));
       }),
   );
@@ -142,15 +148,19 @@ function registerWrite(server: McpServer, store: Store): void {
 
   server.registerTool(
     'import_font',
-    { description: 'Brings a TTF or OTF file in as a new font to change. Check that its license allows it (OFL does).', inputSchema: { file: z.string().describe('Absolute path of the .ttf or .otf file.'), name } },
+    { description: 'Brings a TTF, OTF or TTC font in as a new font: to change (its license must allow it; OFL does), or only to look at as a model for a script you draw.', inputSchema: { file: z.string().describe('Absolute path of the .ttf, .otf or .ttc file.'), name, index: z.number().int().min(0).optional().describe('Which font of a .ttc collection, from 0.') } },
     (args) =>
       guarded(() => {
         if (store.exists(args.name)) throw new FontError('font_exists', `A font named "${args.name}" exists already.`);
-        if (!/\.(ttf|otf)$/i.test(args.file) || !fs.existsSync(args.file)) throw new FontError('file_not_found', 'Give the absolute path of a .ttf or .otf file that exists.');
-        const { doc, skipped } = importFont(new Uint8Array(fs.readFileSync(args.file)), args.name);
+        if (!/\.(ttf|otf|ttc)$/i.test(args.file) || !fs.existsSync(args.file)) throw new FontError('file_not_found', 'Give the absolute path of a .ttf, .otf or .ttc file that exists.');
+        const { doc, skipped } = importFont(new Uint8Array(fs.readFileSync(args.file)), args.name, args.index ?? 0);
         store.write(doc);
         return text(`${outline(doc)}\nnot brought in: ${skipped.join(', ')}`);
       }),
+  );
+
+  server.registerTool('remove_font', { description: 'Takes a font out of the list, such as a model brought in to look at. Its file goes to fonts/.trash.', inputSchema: { name } }, (args) =>
+    guarded(() => text(`removed: ${args.name}, kept in ${path.resolve(store.remove(args.name))}`)),
   );
 
   server.registerTool('export_font', { description: 'Writes the font as an .otf file the user can install, and says where.', inputSchema: { name } }, (args) =>

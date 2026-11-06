@@ -14,18 +14,34 @@ interface Table {
   data: Uint8Array;
 }
 
-function readTables(font: Uint8Array): { flavor: number; tables: Table[] } {
+/** The tables of a font file, or of the font that starts at `start` in a collection (offsets count from the file). */
+function readTables(font: Uint8Array, start = 0): { flavor: number; tables: Table[] } {
   const view = new DataView(font.buffer, font.byteOffset, font.byteLength);
-  const count = view.getUint16(4);
+  const count = view.getUint16(start + 4);
   const tables: Table[] = [];
   for (let index = 0; index < count; index += 1) {
-    const at = 12 + index * 16;
+    const at = start + 12 + index * 16;
     const tag = String.fromCharCode(...font.subarray(at, at + 4));
     const offset = view.getUint32(at + 8);
     const length = view.getUint32(at + 12);
     tables.push({ tag, data: font.slice(offset, offset + length) });
   }
-  return { flavor: view.getUint32(0), tables };
+  return { flavor: view.getUint32(start), tables };
+}
+
+/** How many fonts a file holds: 1, or the count of a collection (.ttc). */
+export function fontCount(file: Uint8Array): number {
+  const view = new DataView(file.buffer, file.byteOffset, file.byteLength);
+  return file.length >= 12 && view.getUint32(0) === 0x74746366 ? view.getUint32(8) : 1;
+}
+
+/** One font of a collection (.ttc) as a file of its own; a plain font file is returned as it is. */
+export function fontOfCollection(file: Uint8Array, index: number): Uint8Array {
+  if (fontCount(file) === 1 && index === 0) return file;
+  const view = new DataView(file.buffer, file.byteOffset, file.byteLength);
+  if (index < 0 || index >= fontCount(file)) throw new RangeError(`This collection holds ${fontCount(file)} fonts.`);
+  const { flavor, tables } = readTables(file, view.getUint32(12 + index * 4));
+  return writeTables(flavor, tables);
 }
 
 function writeTables(flavor: number, tables: Table[]): Uint8Array {

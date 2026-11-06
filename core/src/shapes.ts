@@ -67,24 +67,25 @@ function ellipse(cx: number, cy: number, rx: number, ry: number): Contour {
   return { start: [cx + rx, cy], segments: arcSegments(cx, cy, rx, ry, 0, 360) };
 }
 
-/** A band between two ellipses from one angle to another, its ends cut along the radius. */
+/**
+ * A band between two ellipses from one angle to another. Its ends are cut along the radius, or round: half an ellipse
+ * as wide as the band, part of the same contour, so that a round end inside another stroke is not a contour of its own.
+ */
 function arc(s: Extract<Shape, { type: 'arc' }>): Contour {
   const to = s.to > s.from ? s.to : s.to + 360;
+  const [sx, sy] = [s.stroke / 2, (s.strokeY ?? s.stroke) / 2];
   const [irx, iry] = [s.rx - s.stroke, s.ry - (s.strokeY ?? s.stroke)];
   const inner = reverse({ start: point(s.cx, s.cy, irx, iry, s.from), segments: arcSegments(s.cx, s.cy, irx, iry, s.from, to) });
+  // Half an ellipse centred in the band at `angle`, swept from `sweep` round to the other side.
+  const cap = (angle: number, sweep: number): Contour['segments'] => {
+    const [cx, cy] = point(s.cx, s.cy, s.rx - sx, s.ry - sy, angle);
+    return arcSegments(cx, cy, sx, sy, sweep, sweep + 180);
+  };
+  const round = s.ends === 'round';
   return {
     start: point(s.cx, s.cy, s.rx, s.ry, s.from),
-    segments: [...arcSegments(s.cx, s.cy, s.rx, s.ry, s.from, to), { to: inner.start }, ...inner.segments],
+    segments: [...arcSegments(s.cx, s.cy, s.rx, s.ry, s.from, to), ...(round ? cap(to, to) : [{ to: inner.start }]), ...inner.segments, ...(round ? cap(s.from, s.from + 180) : [])],
   };
-}
-
-/** Half the band wide, a disc at each end of an arc. */
-function arcCaps(s: Extract<Shape, { type: 'arc' }>): Contour[] {
-  const [sx, sy] = [s.stroke / 2, (s.strokeY ?? s.stroke) / 2];
-  return [s.from, s.to].map((angle) => {
-    const [cx, cy] = point(s.cx, s.cy, s.rx - sx, s.ry - sy, angle);
-    return ellipse(cx, cy, sx, sy);
-  });
 }
 
 function point(cx: number, cy: number, rx: number, ry: number, degrees: number): Point {
@@ -107,8 +108,13 @@ function line(s: Extract<Shape, { type: 'line' }>): Contour[] {
   const [nx, ny] = [(-dy / length) * (s.width / 2), (dx / length) * (s.width / 2)];
   const body = polygon([[s.x1 - nx, s.y1 - ny], [s.x2 - nx, s.y2 - ny], [s.x2 + nx, s.y2 + ny], [s.x1 + nx, s.y1 + ny]]);
   if (s.ends !== 'round') return [body];
+  // One contour: a side, half a circle round the end, the other side, half a circle round the start.
   const r = s.width / 2;
-  return [body, ellipse(s.x1, s.y1, r, r), ellipse(s.x2, s.y2, r, r)];
+  const across = (Math.atan2(ny, nx) * 180) / Math.PI;
+  return [{
+    start: [s.x1 - nx, s.y1 - ny],
+    segments: [{ to: [s.x2 - nx, s.y2 - ny] }, ...arcSegments(s.x2, s.y2, r, r, across + 180, across + 360), { to: [s.x1 + nx, s.y1 + ny] }, ...arcSegments(s.x1, s.y1, r, r, across, across + 180)],
+  }];
 }
 
 /** Every number of the shape is finite, and a band is thinner than its ellipse. */
@@ -134,7 +140,7 @@ function contoursOf(shape: Shape): Contour[] {
       return [ellipse(shape.cx, shape.cy, shape.rx, shape.ry), reverse(inner)];
     }
     case 'arc':
-      return [arc(shape), ...(shape.ends === 'round' ? arcCaps(shape) : [])];
+      return [arc(shape)];
     case 'line':
       return line(shape);
     case 'polygon':
