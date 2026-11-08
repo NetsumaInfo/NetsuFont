@@ -101,8 +101,8 @@ nnynn ooyoo"`. Each x
 Control glyphs: 1 create, 1 to 3 edits, 2 looks. Each of the 12 families: 1 edit, 1 look, 1 fix
 at most. Spacing: one edit and one proof per family. Languages: 1 call, 2 to 4 edits, 1 proof.
 Each new script (Greek, Cyrillic): 3 to 5 edits and 2 proofs more. A script traced on a model:
-per family a look with the model, an edit, a look, a fixing edit and a last look; 60 to 80 calls
-for Devanagari. Write generator scripts with a file tool, not a shell heredoc: quotes and
+per family a look with the model, an edit, a look, a fixing edit and a last look; Devanagari took
+about 110 calls in a blind run (2026-11-08), Latin included: say so in the brief's plan. Write generator scripts with a file tool, not a shell heredoc: quotes and
 non-Latin text break it. Arabic: not measured in a blind
 run yet; in a test (2026-11-06) the skeletons with their forms, lam-alef and the dots took one edit
 of 41 ops, and one `compose` made 9 letters with their forms. Kerning: 2 proofs, 2 edits.

@@ -107,14 +107,17 @@ Build the letters that are not Latin from the parts you already have:
   bodies from 0 to the headline, as wide as their shape asks (र 489, न 607, ग 624, म 673, क 863);
   ा 260; े above from 714 to 1035; ु below from −250; ascender 1079, descender −251. Set the
   ascender and descender so before drawing: the marks pass the usual 800 and −200, and the checks
-  say lines collide. A headline at 600 beside Latin caps of 700 looked too small. Families, in
+  say lines collide. A headline at 600 beside Latin caps of 700 looked too small. A stem at the
+  right ends about 90 inside the advance, the headline running past it (measured on the model in a
+  blind run). A model keeps its own em: `list_fonts` gives its advances in its units (Nirmala UI:
+  2048), while `look_glyphs` scales it to your cap height. Families, in
   this order: the consonants with a full stem at their right (ग घ च ज ञ ण त थ ध न प ब भ म य ल व
   श ष स, then क ख फ), those without (ङ छ ट ठ ड ढ द ह र), the vowels अ आ इ ई उ ऊ ऋ ए ऐ ओ औ, the
   spacing signs ा ि ी ो ौ (ि with its headline: the text engine draws it before its consonant),
   the marks े ै ं ँ above and ु ू ृ ् ़ below (advance 0), the digits ०–९ (their own shapes, from
   the model, not the Latin figures).
-  Then the forms: `<consonant>.half` (the consonant without its stem: `copy_glyph`, remove the
-  stem), `uni0930.rphf` (a hook above, advance 0, ink left of x 0), `uni0930.blwf` (a short
+  Then the forms: `<consonant>.half` (for a consonant with its stem at the right, the letter
+  without its stem, narrower; क ख फ keep their stem and lose their right part: trace each), `uni0930.rphf` (a hook above, advance 0, ink left of x 0), `uni0930.blwf` (a short
   stroke under the stem, advance 0), the conjuncts क्ष `uni0915_uni094D_uni0937` and ज्ञ
   `uni091C_uni094D_uni091E` (त्र श्र are welcome, named the same way). The model keeps its half
   forms, reph and conjuncts under these names: trace them with `look_glyphs {glyphs:
