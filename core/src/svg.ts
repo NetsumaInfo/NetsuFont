@@ -49,13 +49,17 @@ export interface SheetOptions {
   under?: FontDoc;
 }
 
-/** The model's glyph of the same character, under the cell's own glyph, centred in the cell. */
-function underlay(doc: FontDoc, model: FontDoc, glyph: Glyph, cell: number): string {
+/**
+ * The model's glyph of the same character, centred in the cell: filled light under the cell's own glyph, and its
+ * outline again over it, so that a dark stroke drawn over the model does not hide where the model goes.
+ */
+function underlay(doc: FontDoc, model: FontDoc, glyph: Glyph, cell: number): { under: string; over: string } {
   const found = model.glyphs.find((g) => (glyph.unicode !== undefined ? g.unicode === glyph.unicode : g.name === glyph.name));
-  if (!found) return '';
+  if (!found) return { under: '', over: '' };
   const scale = doc.metrics.capHeight / model.metrics.capHeight;
-  const left = (cell - found.advance * scale) / 2;
-  return `<path transform="translate(${left} 0) scale(${scale})" d="${glyphPath(model, found)}" fill="#6aa5ff" fill-opacity="0.45"/>`;
+  const place = `transform="translate(${(cell - found.advance * scale) / 2} 0) scale(${scale})" d="${glyphPath(model, found)}"`;
+  const line = doc.unitsPerEm / 120 / scale;
+  return { under: `<path ${place} fill="#6aa5ff" fill-opacity="0.45"/>`, over: `<path ${place} fill="none" stroke="#1f6fff" stroke-width="${line}"/>` };
 }
 
 /**
@@ -79,8 +83,8 @@ export function glyphSheet(doc: FontDoc, glyphs: Glyph[], options: SheetOptions 
     // A uniXXXX name says nothing at a glance: the character follows it.
     const said = glyph.name.startsWith('uni') && glyph.unicode !== undefined ? `${glyph.name} ${String.fromCodePoint(glyph.unicode)}` : glyph.name;
     const name = `<text x="${cell / 2}" y="${height - top + label * 1.2}" font-size="${label}" font-family="monospace" text-anchor="middle" fill="${colors.label}">${escape(said)}</text>`;
-    const model = options.under ? underlay(doc, options.under, glyph, cell) : '';
-    return `<g transform="translate(${x} ${y})">${marks}${model}<path transform="translate(${left} 0)" d="${glyphPath(doc, glyph, byName)}" fill="${colors.ink}" fill-opacity="${model ? 0.8 : 1}"/>${name}</g>`;
+    const model = options.under ? underlay(doc, options.under, glyph, cell) : { under: '', over: '' };
+    return `<g transform="translate(${x} ${y})">${marks}${model.under}<path transform="translate(${left} 0)" d="${glyphPath(doc, glyph, byName)}" fill="${colors.ink}" fill-opacity="${model.under ? 0.8 : 1}"/>${model.over}${name}</g>`;
   });
   const width = columns * cell;
   const total = Math.max(1, rows) * rowHeight;

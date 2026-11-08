@@ -12,7 +12,7 @@ WORKFLOW
 2. edit_font {name, ops:[...]}. All or nothing: on an error nothing is saved and the error names the op. It answers the
    glyphs it changed, with their advance and [left right] side bearings, and checks: fix each, or keep it on purpose.
 3. look_glyphs {name, chars:"Hno"} (or glyphs:[names]): the glyphs on their lines; model:"<font id>" draws that font's
-   glyph of each character under yours, in blue, to trace a script. proof {name, text, sizes?}: words at
+   glyph of each character in blue, filled under yours and outlined over it, to trace a script. proof {name, text, sizes?}: words at
    several sizes, with spacing and kerning; "\\n" starts a line, 600 characters at most.
    get_font {name, glyphs:[names]}: the paths of those glyphs.
 4. languages {name, languages?:["fr","pl"]}: what each language lacks, what compose can make, what to draw.

@@ -88,7 +88,7 @@ function registerRead(server: McpServer, store: Store): void {
   server.registerTool(
     'look_glyphs',
     {
-      description: 'A picture of glyphs on their metric lines (baseline, x-height, cap height, ascender, descender) with their advance. With model: another font\'s glyph of each character under it, in blue, as on tracing paper.',
+      description: 'A picture of glyphs on their metric lines (baseline, x-height, cap height, ascender, descender) with their advance. With model: another font\'s glyph of each character in blue, filled under it and outlined over it, as on tracing paper.',
       inputSchema: {
         name,
         glyphs,

@@ -95,15 +95,18 @@ Build the letters that are not Latin from the parts you already have:
   between the x-height and the cap height (about 560); horizontal strokes thicker than vertical
   ones (the reverse of Latin). Final forms ך ן ף ץ go down to the descender. `proof` and the app
   set it right to left.
-- **Devanagari (hi, mr, ne)**: look at a model first (Windows has Nirmala UI, a .ttc: `index` 0;
-  else Noto Sans Devanagari, OFL). Measured in Nirmala UI, scaled to an em of 1000 with Latin caps
-  at 700 (2026-11-06): the headline's top at 728, its ink 17 past both edges so words join; most
-  consonants hang from it with a stem at their right, their body from 0 to the headline, as wide
-  as their shape asks (र 489, न 607, ग 624, म 673, क 863); ा 260; े above from 714 to 1035; ु
-  below from −250. A blind run that set the headline at 600 with Latin caps at 700 looked too
-  small beside Latin. Draw the letters, each from its model's structure, and the digits ०–९
-  from the model too: they are not the Latin figures; the spacing vowel signs ा ि ी ो ौ (ि with its headline: the text
-  engine draws it before its consonant); the marks े ै ं ँ above, ु ू ृ ् ़ below, advance 0.
+- **Devanagari (hi, mr, ne)**: trace a model (step 7; Windows has Nirmala UI, a .ttc: `index`
+  0; else Noto Sans Devanagari, OFL). Measured in Nirmala UI, scaled to an em of 1000 with Latin
+  caps at 700 (2026-11-06): the headline's top at 728, its ink 17 past both edges so words join;
+  bodies from 0 to the headline, as wide as their shape asks (र 489, न 607, ग 624, म 673, क 863);
+  ा 260; े above from 714 to 1035; ु below from −250; ascender 1079, descender −251. Set the
+  ascender and descender so before drawing: the marks pass the usual 800 and −200, and the checks
+  say lines collide. A headline at 600 beside Latin caps of 700 looked too small. Families, in
+  this order: the consonants with a full stem at their right (ग घ च ज ञ ण त थ ध न प ब भ म य ल व
+  श ष स, then क ख फ), those without (ङ छ ट ठ ड ढ द ह र), the vowels अ आ इ ई उ ऊ ऋ ए ऐ ओ औ, the
+  spacing signs ा ि ी ो ौ (ि with its headline: the text engine draws it before its consonant),
+  the marks े ै ं ँ above and ु ू ृ ् ़ below (advance 0), the digits ०–९ (their own shapes, from
+  the model, not the Latin figures).
   Then the forms: `<consonant>.half` (the consonant without its stem: `copy_glyph`, remove the
   stem), `uni0930.rphf` (a hook above, advance 0, ink left of x 0), `uni0930.blwf` (a short
   stroke under the stem, advance 0), the conjuncts क्ष `uni0915_uni094D_uni0937` and ज्ञ
