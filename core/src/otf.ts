@@ -1,5 +1,6 @@
 /// <reference path="./opentype.d.ts" />
 import opentype, { type Font as OtFont, type Glyph as OtGlyph, type Path as OtPath } from 'opentype.js';
+import { nameFeatureGlyphs, type ParsedGsub } from './featureNames';
 import { featureRules, type Rule } from './features';
 import { gdefTable, gposTable } from './gpos';
 import { glyphMap, outline } from './outline';
@@ -117,11 +118,9 @@ export function importFont(file: Uint8Array, name: string, index = 0): { doc: Fo
   const taken = new Set<string>();
   const seen = new Set<number>();
   const glyphs: Glyph[] = [];
-  const names: string[] = [];
   for (let index = 0; index < font.glyphs.length; index += 1) {
     const source = font.glyphs.get(index);
     const glyphName = nameFor(source, index, taken);
-    names.push(glyphName);
     const glyph: Glyph = { name: glyphName, advance: Math.max(0, Math.round(source.advanceWidth ?? 0)), path: fromPath(source.path) };
     if (source.unicode !== undefined && !seen.has(source.unicode)) {
       glyph.unicode = source.unicode;
@@ -129,9 +128,10 @@ export function importFont(file: Uint8Array, name: string, index = 0): { doc: Fo
     }
     glyphs.push(glyph);
   }
-  const doc = toDoc(font, name, glyphs, readKerning(font, names));
+  const named = nameFeatureGlyphs(font.tables.gsub as ParsedGsub | undefined, glyphs);
+  const doc = toDoc(font, name, glyphs, readKerning(font, glyphs.map((glyph) => glyph.name)));
   validate(doc);
-  return { doc, skipped: ['GPOS kerning', 'hinting', 'OpenType features'] };
+  return { doc, skipped: ['GPOS kerning', 'hinting', `OpenType features other than the ${named} forms and ligatures renamed to be kept`] };
 }
 
 /** The pairs of a `kern` table, by glyph name. */

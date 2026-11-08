@@ -110,8 +110,9 @@ Build the letters that are not Latin from the parts you already have:
   Then the forms: `<consonant>.half` (the consonant without its stem: `copy_glyph`, remove the
   stem), `uni0930.rphf` (a hook above, advance 0, ink left of x 0), `uni0930.blwf` (a short
   stroke under the stem, advance 0), the conjuncts क्ष `uni0915_uni094D_uni0937` and ज्ञ
-  `uni091C_uni094D_uni091E` (त्र श्र are welcome, named the same way). The model shows only full
-  letters: make the half forms from your own. A conjunct made of components (`.half` and the full
+  `uni091C_uni094D_uni091E` (त्र श्र are welcome, named the same way). The model keeps its half
+  forms, reph and conjuncts under these names: trace them with `look_glyphs {glyphs:
+  ["uni0915_uni094D_uni0937", "uni0915.half"], model}`. Conjuncts look nothing like their parts. A conjunct made of components (`.half` and the full
   letter) passes `languages`; a drawn shape, as in the model, reads better. `languages` names
   the rest.
 - **Not possible yet**: Bengali, Tamil and the other Indic scripts, Khmer, Myanmar, Tibetan,

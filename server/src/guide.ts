@@ -7,7 +7,8 @@ export const GUIDE = `NetsuFont: fonts drawn by small targeted operations. The u
 
 WORKFLOW
 1. list_fonts (one line each; {name} for one font's glyphs and checks), then create_font {name, family, style?} or
-   import_font {file, name, index?} (a .ttf, .otf, or .ttc with index; to change, its license must allow it).
+   import_font {file, name, index?} (a .ttf, .otf, or .ttc with index; to change, its license must allow it). It keeps
+   its Arabic forms, Devanagari half forms, reph and conjuncts, and ligatures, under the names below.
    remove_font {name} takes a font out (its file goes to fonts/.trash).
 2. edit_font {name, ops:[...]}. All or nothing: on an error nothing is saved and the error names the op. It answers the
    glyphs it changed, with their advance and [left right] side bearings, and checks: fix each, or keep it on purpose.

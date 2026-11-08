@@ -82,7 +82,7 @@ export function glyphSheet(doc: FontDoc, glyphs: Glyph[], options: SheetOptions 
     const marks = options.guides === false ? '' : guides(doc, 0, cell, colors.guide) + [0, glyph.advance].map((ax) => `<line x1="${left + ax}" x2="${left + ax}" y1="${-top}" y2="${-doc.metrics.descender}" stroke="${colors.guide}" stroke-width="${doc.unitsPerEm / 250}"/>`).join('');
     // A uniXXXX name says nothing at a glance: the character follows it.
     const said = glyph.name.startsWith('uni') && glyph.unicode !== undefined ? `${glyph.name} ${String.fromCodePoint(glyph.unicode)}` : glyph.name;
-    const name = `<text x="${cell / 2}" y="${height - top + label * 1.2}" font-size="${label}" font-family="monospace" text-anchor="middle" fill="${colors.label}">${escape(said)}</text>`;
+    const name = `<text x="${cell / 2}" y="${height - top + label * 1.2}" font-size="${Math.min(label, (cell * 1.6) / [...said].length)}" font-family="monospace" text-anchor="middle" fill="${colors.label}">${escape(said)}</text>`;
     const model = options.under ? underlay(doc, options.under, glyph, cell) : { under: '', over: '' };
     return `<g transform="translate(${x} ${y})">${marks}${model.under}<path transform="translate(${left} 0)" d="${glyphPath(doc, glyph, byName)}" fill="${colors.ink}" fill-opacity="${model.under ? 0.8 : 1}"/>${model.over}${name}</g>`;
   });

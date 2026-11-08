@@ -14,6 +14,7 @@ font family by family, space it, cover its languages, kern it and export it.
   starts with `pnpm dev` in its folder). With a shell and no MCP connection, the same tools:
   `pnpm -s --filter @netsufont/server mcp <tool> '@args.json' [image.png]`, from that folder.
   Always write the arguments to a file first, in UTF-8: inline JSON breaks on quotes, `&` and newlines.
+  Windows paths in JSON: forward slashes (`C:/Windows/Fonts/Nirmala.ttc`).
   Many similar ops (a script's letters and their forms): generating the JSON with a short script is fine.
 - Its `guide` holds the format, the ops and the shapes. Read it once. This page does not repeat it.
 
@@ -91,7 +92,7 @@ nnynn ooyoo"`. Each x
 9. **Kerning.** `proof` the pairs of `construction.md` §Kerning. Kern only what looks wrong
    after spacing; a first release needs 40 to 150 pairs, never a pair for every combination.
 
-10. **Deliver.** `list_fonts {name}`: no check left unexplained. `proof` a paragraph at 48, 18 and 12.
+10. **Deliver.** `list_fonts {name}`: no check left unexplained. `proof` a paragraph at 48, 18 and 12, in lines of about 60 characters.
    `export_font`, give the path, say how to install it (Windows: right click, Install), and
    what was not verified (an app the font was not tried in).
 

@@ -21,7 +21,7 @@ An app to make fonts with an AI agent. The agent draws and spaces the glyphs thr
 
 ```
 core/src/      # pure TypeScript, no DOM, no Node: types, path, validate, outline (components, layout), ops, shapes, check, svg, charset,
-               # languages, names, accents (compose), arabic, indic, features, shape, marks, layout, gpos, otf, sfnt, doc
+               # languages, names, accents (compose), arabic, indic, features, featureNames, shape, marks, layout, gpos, otf, sfnt, doc
 server/src/    # store.ts (only code that touches the disk), tools.ts (MCP tools), reply.ts (what a tool answers), guide.ts (what the agent is told), main.ts (HTTP)
 server/scripts/  # seed.ts (the example font), mcp.ts (one tool call from a shell), agent.ts (their client)
 app/src/       # components/, lib/ (useFonts, events, picked, fontFace), locales/ (fr is the source, en)

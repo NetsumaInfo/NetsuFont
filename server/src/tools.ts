@@ -25,6 +25,16 @@ function pick(doc: FontDoc, names: string[] | undefined, characters: string | un
 }
 
 /** Every font in one line each; the glyphs only of the font named. */
+/**
+ * The glyphs to show over a model: those named or of the characters, and an empty cell for each one not drawn yet, so
+ * that the model shows alone where it is to be drawn (a conjunct by its name: uni0915_uni094D_uni0937).
+ */
+function traced(doc: FontDoc, names: string[] | undefined, characters: string | undefined): Glyph[] {
+  const empty = (name: string, unicode?: number): Glyph => ({ name, ...(unicode === undefined ? {} : { unicode }), advance: 0, path: '' });
+  if (characters !== undefined) return [...new Set(characters)].map((char) => doc.glyphs.find((g) => g.unicode === char.codePointAt(0)) ?? empty(recipe(char).name, char.codePointAt(0)));
+  return (names ?? []).map((wanted) => doc.glyphs.find((g) => g.name === wanted) ?? empty(wanted));
+}
+
 function listing(store: Store, font: string | undefined): string {
   if (font !== undefined) return outline(store.read(font));
   const said = store.all().map(summary).join('\n') || 'No font yet. Create one with create_font, or bring one in with import_font.';
@@ -101,8 +111,7 @@ function registerRead(server: McpServer, store: Store): void {
       guarded(() => {
         const doc = store.read(args.name);
         const model = args.model === undefined ? undefined : store.read(args.model);
-        // With a model, a character not drawn yet shows the model alone: the cell to draw in.
-        const shown = model && args.chars !== undefined ? [...new Set(args.chars)].map((char) => doc.glyphs.find((g) => g.unicode === char.codePointAt(0)) ?? { name: recipe(char).name, unicode: char.codePointAt(0)!, advance: 0, path: '' }) : pick(doc, args.glyphs, args.chars);
+        const shown = model ? traced(doc, args.glyphs, args.chars) : pick(doc, args.glyphs, args.chars);
         if (shown.length === 0) throw new FontError('nothing_to_show', 'None of these glyphs exists yet.');
         const columns = args.columns ?? Math.min(8, shown.length);
         return png(glyphSheet(doc, shown, { columns, ...(model ? { under: model } : {}) }), Math.min(1600, columns * 200), `${shown.map((g) => g.name).join(' ')}`);
