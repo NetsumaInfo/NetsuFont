@@ -84,6 +84,12 @@ Build the letters that are not Latin from the parts you already have:
 - **Georgian (ka)**: 33 letters, no case. Round bodies on the x-height; many letters have an
   ascender (ბ ზ თ ი...) or a descender (გ დ ე ვ...), rarely both. Draw the x-height body once and
   build each letter from it: one circle language, like o.
+- **Biblical Hebrew (hbo)**: the points, and the accents of cantillation (te'amim, U+0591 to
+  U+05AF) as marks of advance 0, small and lighter than the letters. Draw each where it
+  sits over or under a letter; the font puts it on every letter. Pashta ֙, zarqa ֮ and telisha qetana
+  ֩ go past the left edge of the letter, telisha gedola ֠ past its right edge, yetiv ֚ and dehi ֭
+  below and right. Maqaf ־ is a high hyphen, paseq ׀ a thin upright, sof pasuq ׃ a colon: all three
+  spacing glyphs. Proof with Genesis 1:1 below.
 - **Yiddish (yi)**: Hebrew letters, ײ װ ױ (two letters joined, drawn as one), and points as marks
   with advance 0: patah ַ  kamatz ָ  hiriq ִ  under the letter, dagesh ּ  in it, rafe ֿ  over it.
   Draw the shin dot ׁ over the right arm of ש, where it goes: it stays where drawn.
@@ -172,6 +178,7 @@ ru  Съешь же ещё этих мягких французских було
 uk  Чуєш їх, доцю, га? Кумедна ж ти, прощайся без ґольфів!
 he  דג סקרן שט בים מאוכזב ולפתע מצא חברה
 yi  ייִדיש איז אַ שפּראַך (sample, not a pangram)
+hbo בְּרֵאשִׁ֖ית בָּרָ֣א אֱלֹהִ֑ים אֵ֥ת הַשָּׁמַ֖יִם וְאֵ֥ת הָאָֽרֶץ׃ (sample)
 ca  Jove xef, porti whisky amb quinze glaçons d’hidrogen, coi!
 is  Kæmi ný öxi hér, ykist þjófum nú bæði víl og ádrepa
 lv  Glāžšķūņa rūķīši dzērumā čiepj Baha koncertflīģeļu vākus

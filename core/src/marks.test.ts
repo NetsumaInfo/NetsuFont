@@ -25,6 +25,22 @@ function thai() {
   ]);
 }
 
+describe('Hebrew accents of the Bible', () => {
+  it('sets pashta past the left of its letter and yetiv past the right, below', () => {
+    const doc = applyOps(newFont('t', 'T'), [
+      box('uni05D0', 0x5d0, 500, 50, 0, 400, 560),
+      box('uni0599', 0x599, 0, -300, 600, 60, 120),
+      box('uni059A', 0x59a, 0, -300, -200, 60, 120),
+    ]);
+    const pashta = layout(doc, 'א֙').placed.find((p) => p.glyph.name === 'uni0599');
+    // Its right edge 30 left of the letter's ink (50), its bottom 30 above the top (560).
+    expect([pashta!.x - 300 + 60, pashta!.y + 600]).toEqual([20, 590]);
+    const yetiv = layout(doc, 'א֚').placed.find((p) => p.glyph.name === 'uni059A');
+    // Its left edge 30 right of the ink (450), its top 30 below the baseline.
+    expect([yetiv!.x - 300, yetiv!.y - 80]).toEqual([480, -30]);
+  });
+});
+
 describe('marks', () => {
   it('sets a mark on the top of its letter, a second one on the first', () => {
     const placed = layout(thai(), 'กิ่').placed;

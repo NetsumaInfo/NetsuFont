@@ -7,19 +7,24 @@ import type { FontDoc, Glyph } from './types';
 /**
  * above: sits on the top of its letter's ink. below: hangs under its ink. centre: centred across, kept at the height
  * it is drawn (a Hebrew dagesh). frame: kept where it is drawn in its letter's own coordinates (the dot of shin).
+ * aboveLeft, aboveRight, belowRight: past the left or right edge of the ink, as the Hebrew accents of the Bible that
+ * sit at the end of a word (pashta, zarqa, telisha qetana) or at its start (telisha gedola, yetiv, dehi).
  */
-export type MarkPlace = 'above' | 'below' | 'centre' | 'frame';
-export const PLACES: MarkPlace[] = ['above', 'below', 'centre', 'frame'];
+export type MarkPlace = 'above' | 'below' | 'centre' | 'frame' | 'aboveLeft' | 'aboveRight' | 'belowRight';
+export const PLACES: MarkPlace[] = ['above', 'below', 'centre', 'frame', 'aboveLeft', 'aboveRight', 'belowRight'];
 
 const inRanges = (code: number, ranges: [number, number][]): boolean => ranges.some(([from, to]) => code >= from && code <= to);
 
 const BELOW: [number, number][] = [
   [0x316, 0x319], [0x31c, 0x333], [0x339, 0x33c], [0x345, 0x345], [0x347, 0x349], [0x34d, 0x34e], [0x353, 0x356], [0x359, 0x35a],
-  [0x5b0, 0x5b8], [0x5bb, 0x5bb], [0x5bd, 0x5bd], [0x64d, 0x64d], [0x650, 0x650], [0x655, 0x656],
+  [0x591, 0x591], [0x596, 0x596], [0x59b, 0x59b], [0x5a2, 0x5a7], [0x5aa, 0x5aa],
+  [0x5b0, 0x5b8], [0x5bb, 0x5bb], [0x5bd, 0x5bd], [0x5c5, 0x5c5], [0x5c7, 0x5c7], [0x64d, 0x64d], [0x650, 0x650], [0x655, 0x656],
   [0x93c, 0x93c], [0x941, 0x944], [0x94d, 0x94d], [0x952, 0x952], [0x962, 0x963], [0xe38, 0xe3a], [0xeb8, 0xeb9], [0xebc, 0xebc],
 ];
 const CENTRE: [number, number][] = [[0x5bc, 0x5bc]];
 const FRAME: [number, number][] = [[0x5b9, 0x5ba], [0x5c1, 0x5c2]];
+/** The accents of the Bible written past the end of a word (on its left) or before its start (on its right). */
+const SIDE: Record<number, MarkPlace> = { 0x599: 'aboveLeft', 0x5a9: 'aboveLeft', 0x5ae: 'aboveLeft', 0x5a0: 'aboveRight', 0x59a: 'belowRight', 0x5ad: 'belowRight' };
 
 /** True for a glyph text engines treat as a mark: it draws a combining character and has no advance. */
 export function isMark(glyph: Glyph): boolean {
@@ -29,6 +34,7 @@ export function isMark(glyph: Glyph): boolean {
 /** Where a mark goes: by its code point when Unicode says, else by where it is drawn (below the baseline: below). */
 export function markPlace(glyph: Glyph, box: Box | undefined): MarkPlace {
   const code = glyph.unicode ?? 0;
+  if (SIDE[code]) return SIDE[code]!;
   if (inRanges(code, CENTRE)) return 'centre';
   if (inRanges(code, FRAME)) return 'frame';
   if (inRanges(code, BELOW)) return 'below';
@@ -55,6 +61,18 @@ export interface Anchors {
 
 const centre = (box: Box): number => Math.round((box.xMin + box.xMax) / 2);
 
+/** The point of a mark that goes on its letter's anchor: its bottom for a mark above, its inner edge for one at a side. */
+function markAnchor(place: MarkPlace, box: Box, gap: number): Anchor {
+  const [x, bottom, top] = [centre(box), Math.round(box.yMin) - gap, Math.round(box.yMax) + gap];
+  if (place === 'above') return [x, bottom];
+  if (place === 'below') return [x, top];
+  if (place === 'centre') return [x, 0];
+  if (place === 'aboveLeft') return [Math.round(box.xMax) + gap, bottom];
+  if (place === 'aboveRight') return [Math.round(box.xMin) - gap, bottom];
+  if (place === 'belowRight') return [Math.round(box.xMin) - gap, top];
+  return [0, 0];
+}
+
 /** The anchors of every glyph of a font. A mark's gap is its own: a Devanagari mark brings none. */
 export function anchors(doc: FontDoc): Anchors {
   const byName = glyphMap(doc);
@@ -66,13 +84,14 @@ export function anchors(doc: FontDoc): Anchors {
     if (isMark(glyph)) {
       const place = markPlace(glyph, box);
       const own = gapFor(doc, glyph);
-      const anchor: Anchor = place === 'above' ? [x, Math.round(box.yMin) - own] : place === 'below' ? [x, Math.round(box.yMax) + own] : place === 'centre' ? [x, 0] : [0, 0];
-      result.marks.set(glyph.name, { place, anchor, box });
+      result.marks.set(glyph.name, { place, anchor: markAnchor(place, box, own), box });
       if (place === 'above') result.stacks.set(glyph.name, { above: [x, Math.round(box.yMax)] });
       if (place === 'below') result.stacks.set(glyph.name, { below: [x, Math.round(box.yMin)] });
       continue;
     }
-    result.bases.set(glyph.name, { above: [x, Math.round(box.yMax)], below: [x, Math.round(Math.min(box.yMin, 0))], centre: [x, 0], frame: [0, 0] });
+    const [top, bottom] = [Math.round(box.yMax), Math.round(Math.min(box.yMin, 0))];
+    const [left, right] = [Math.round(box.xMin), Math.round(box.xMax)];
+    result.bases.set(glyph.name, { above: [x, top], below: [x, bottom], centre: [x, 0], frame: [0, 0], aboveLeft: [left, top], aboveRight: [right, top], belowRight: [right, bottom] });
   }
   return result;
 }

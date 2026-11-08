@@ -81,6 +81,8 @@ export const LANGUAGES: Language[] = [
   { code: 'ka', script: 'georgian', chars: `${span(0x10d0, 0x10f0)}0123456789.,:;!?-()„“–—…` },
   { code: 'he', script: 'hebrew', chars: HEBREW },
   { code: 'yi', script: 'hebrew', chars: `${HEBREW}װױײִַָּֿ` },
+  // Biblical Hebrew: the points (niqqud), the accents of cantillation (te'amim), maqaf, paseq and sof pasuq.
+  { code: 'hbo', script: 'hebrew', chars: `${HEBREW}${span(0x591, 0x5af)}${span(0x5b0, 0x5bc)}־ֿ׀ׁׂ׃ׇ` },
   { code: 'hi', script: 'devanagari', chars: DEVANAGARI },
   { code: 'mr', script: 'devanagari', chars: `${DEVANAGARI}ळ` },
   { code: 'ne', script: 'devanagari', chars: DEVANAGARI },
