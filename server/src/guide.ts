@@ -39,8 +39,8 @@ DOCUMENT
   ink, or under it (Unicode says, or it is drawn below the baseline); a second one stacks on the first. The Hebrew
   dagesh is centred; the shin and sin dots and holam stay where drawn in the letter's frame. Devanagari marks touch.
 - Japanese: draw_kanji {name, set:"kana"|"joyo"|"jinmeiyo" or chars, pen:{width, ends?, contrast?, angle?}, frame?} draws
-  kana and kanji from their strokes (KanjiVG), one em-wide glyph each. Voicing marks uni3099 uni309A stay where drawn
-  (compose が from か). <name>.vert: the glyph for vertical writing (feature vert).
+  kana and kanji from their strokes (KanjiVG), one em-wide glyph each. Voicing marks uni3099 uni309A, without unicode, stay
+  where drawn (compose が from か). <name>.vert: the glyph for vertical writing (feature vert).
 - Devanagari: <consonant>.half (before another consonant, the virama gone), uni0930.rphf (the reph: advance 0, ink
   above and left of x 0), uni0930.blwf (ra under a consonant: advance 0), conjuncts named by their parts
   (uni0915_uni094D_uni0937 for क्ष). The vowel sign ि is a spacing glyph: the text engine draws it first.

@@ -5,6 +5,7 @@ import { layout } from './layout';
 import { languageCoverage } from './languages';
 import { applyOps, type Op } from './ops';
 import { exportOtf } from './otf';
+import { scriptTags } from './gpos';
 
 const box = (name: string, unicode: number | undefined, advance: number, x: number, y: number, w: number, h: number): Op => ({
   op: 'set_glyph',
@@ -62,7 +63,8 @@ describe('marks', () => {
   it('writes GDEF and GPOS mark and mkmk', () => {
     const font = opentype.parse(exportOtf(thai()).buffer as ArrayBuffer) as unknown as { tables: { gpos?: { features: { tag: string }[]; lookups: { lookupType: number }[] }; gdef?: unknown } };
     expect(font.tables.gpos?.features.map((f) => f.tag)).toEqual(['mark', 'mkmk']);
-    expect(font.tables.gpos?.lookups.map((l) => l.lookupType)).toEqual([4, 6]);
+    // Extension lookups (9) hold the mark-to-base (4) and mark-to-mark (6) subtables, past 16-bit offsets.
+    expect(font.tables.gpos?.lookups.map((l) => l.lookupType)).toEqual([9, 9]);
     expect(font.tables.gdef).toBeDefined();
   });
 });
@@ -104,5 +106,14 @@ describe('Devanagari', () => {
     expect(hi.forms).toContain('uni0916.half');
     expect(hi.forms).not.toContain('uni0915.half');
     expect(hi.forms).toContain('uni091C_uni094D_uni091E');
+  });
+});
+
+describe('GPOS scripts', () => {
+  it('names hebr beside DFLT, so that the Hebrew shaper reads the marks', () => {
+    const doc = applyOps(newFont('t', 'T'), [box('uni05D0', 0x5d0, 500, 50, 0, 400, 560), box('uni05B7', 0x5b7, 0, -150, -120, 200, 50), box('A', 65, 600, 50, 0, 500, 700)]);
+    expect(scriptTags(doc)).toEqual(['DFLT', 'hebr', 'latn']);
+    const font = opentype.parse(exportOtf(doc).buffer as ArrayBuffer) as unknown as { tables: { gpos?: { scripts: { tag: string }[] } } };
+    expect(font.tables.gpos!.scripts.map((s) => s.tag)).toEqual(['DFLT', 'hebr', 'latn']);
   });
 });

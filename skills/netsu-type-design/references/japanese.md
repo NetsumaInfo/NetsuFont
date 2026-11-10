@@ -13,20 +13,25 @@ pen of the font; punctuation by hand. Every glyph is a square, an em wide.
 3. **Pen.** From the sheet: `width` near the Latin stem or a little under it (kanji have many
    strokes and darken fast); `ends` from the terminals (round, flat, square); `contrast` with
    `angle: 0` for a Mincho feel (thin horizontals), 1 for a gothic. Measured in a test
-   (2026-11-10, em 1000): width 72, round, set "吾輩は猫である" evenly at 48 and 20 px.
+   (2026-11-10, em 1000): width 72, round, set Japanese evenly at 48 and 20 px; at 12 px the kanji
+   of many strokes (輩 驚) went dark beside the kana: a blind run kept the pen under the Latin stem.
 4. **Kana first.** `draw_kanji {set:"kana", pen}`, then `look_glyphs {chars:"あいうえおかきくけこアイウエオ"}`.
    Fix the pen there, never per kanji: a pen that works on kana works on the kanji. The kana are
    where a Japanese font shows its character: redraw a few by hand (`set_glyph` with `shapes`)
-   when the brief asks for more than the pen gives.
+   when the brief asks for more than the pen gives. The voicing marks of が ぱ come out as small ticks
+   that a round pen blurs: draw `uni3099` ゛ and `uni309A` ゜ by hand, larger, in the top right of
+   the square and without unicode, then `compose` every voiced kana (がぎぐ…ぱぴぷ…ガ…パ…ヴ).
 5. **Kanji.** `draw_kanji {set:"joyo", pen}`: the 2,136 kanji for general use, in one call.
    `set:"jinmeiyo"` adds those of personal names (some have no stroke data: it lists them).
 6. **By hand**, each an em wide: the ideographic space U+3000 (empty); 、 。 in the lower left of
-   the square; 「 」 『 』 （ ） ！ ？ 〜 … 々 from the model of a Japanese font
-   (`import_font`, Yu Gothic or Meiryo on Windows, to look at only), and the digits.
+   the square; 「 （ in its right half, the corner or curve high; 」 ） in its left half, low; 『 』
+   the same, doubled; ！ ？ narrow ink centred; 〜 a wave as thick as the pen. Look at a Japanese
+   font for them (`import_font`, Yu Gothic or Meiryo on Windows, to look at only). 々 and ー come
+   from `draw_kanji` and the kana. The digits and … are those of the Latin, shared.
 7. **Vertical writing** (optional): `uni3001.vert`, `uni3002.vert` (the comma and stop in the
    upper right), `uni30FC.vert` (the long vowel mark upright), `uni300C.vert` and the other
    brackets turned: the export writes them as `vert`.
-8. **Proof.** `proof {text:"吾輩は猫である。名前はまだ無い。\nどこで生れたかとんと見当がつかぬ。", sizes:[48, 20, 12]}`:
+8. **Proof.** `proof {text:"名前はまだ無い。どこで生まれたか見当がつかぬ。\n「カタカナ」と（ひらがな）、漢字！", sizes:[48, 20, 12]}`:
    kana and kanji the same colour, nothing touching at 12 px.
 
 ## Anti-patterns

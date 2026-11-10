@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { coverage } from './charset';
 import { checkGlyphs } from './check';
 import { newFont } from './doc';
-import { applyOps } from './ops';
+import { applyOps, type Op } from './ops';
 import { exportOtf, importFont } from './otf';
 import { sideBearings } from './outline';
 import { layout } from './layout';
@@ -121,5 +121,11 @@ describe('checks', () => {
   it('finds ink outside the advance and above the ascender', () => {
     const doc = applyOps(newFont('t', 'T'), [{ op: 'set_glyph', glyph: 'I', unicode: 73, advance: 100, path: 'M0 0H300V1200H0Z' }]);
     expect(checkGlyphs(doc).map((f) => f.text).join(' ')).toMatch(/far above the ascender.*leaves the advance/);
+  });
+});
+
+describe('a bad op', () => {
+  it('names the op when a field is of the wrong kind', () => {
+    expect(() => applyOps(newFont('t', 'T'), [{ op: 'set_kern', left: 5, right: 'A', value: -20 } as unknown as Op])).toThrow('op 1 (set_kern):');
   });
 });

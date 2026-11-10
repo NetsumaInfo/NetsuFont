@@ -6,6 +6,9 @@ import type { FontDoc } from './types';
 /** Big-endian bytes, written in order. */
 class Out {
   private bytes: number[] = [];
+  u32(value: number): this {
+    return this.u16(Math.floor(value / 0x10000)).u16(value % 0x10000);
+  }
   u16(value: number): this {
     this.bytes.push((value >> 8) & 0xff, value & 0xff);
     return this;
@@ -18,7 +21,8 @@ class Out {
     return this;
   }
   add(data: Uint8Array): this {
-    this.bytes.push(...data);
+    // A loop, not push(...data): a subtable of thousands of glyphs passes the limit of a call's arguments.
+    for (const byte of data) this.bytes.push(byte);
     return this;
   }
   get size(): number {
@@ -86,17 +90,64 @@ function markSubtable(marks: Attached[], bases: { glyph: number; anchors: (Ancho
   return withChildren((o) => new Out().u16(1).u16(o[0]!).u16(o[1]!).u16(classes).u16(o[2]!).u16(o[3]!), children);
 }
 
-function lookup(type: number, subtables: Uint8Array[]): Uint8Array {
-  return withChildren((offsets) => {
-    const out = new Out().u16(type).u16(0).u16(subtables.length);
-    offsets.forEach((offset) => out.u16(offset));
-    return out;
-  }, subtables);
+interface Lookup {
+  type: number;
+  subtables: Uint8Array[];
+}
+
+/**
+ * The LookupList and, after it, every subtable: each lookup is an Extension (type 9) whose records point at their
+ * subtable with a 32-bit offset, so that a font of thousands of glyphs (all the kanji) passes the 64 KiB a 16-bit
+ * offset can reach. `at` is where the LookupList starts in the table.
+ */
+function lookupsWithData(lookups: Lookup[], at: number): Uint8Array {
+  const sizes = lookups.map((l) => 6 + l.subtables.length * 10);
+  const listSize = 2 + lookups.length * 2 + sizes.reduce((a, b) => a + b, 0);
+  const out = new Out().u16(lookups.length);
+  let offset = 2 + lookups.length * 2;
+  sizes.forEach((size) => {
+    out.u16(offset);
+    offset += size;
+  });
+  let data = at + listSize;
+  let start = 2 + lookups.length * 2;
+  for (const [i, l] of lookups.entries()) {
+    out.u16(9).u16(0).u16(l.subtables.length);
+    l.subtables.forEach((_, k) => out.u16(6 + l.subtables.length * 2 + k * 8));
+    l.subtables.forEach((subtable, k) => {
+      const record = at + start + 6 + l.subtables.length * 2 + k * 8;
+      out.u16(1).u16(l.type).u32(data - record);
+      data += subtable.length;
+    });
+    start += sizes[i]!;
+  }
+  lookups.forEach((l) => l.subtables.forEach((subtable) => out.add(subtable)));
+  return out.done();
 }
 
 /** The bases in groups small enough for 16-bit offsets: each group is a subtable with every mark. */
 function chunks<T>(items: T[], size: number): T[][] {
   return Array.from({ length: Math.max(1, Math.ceil(items.length / size)) }, (_, i) => items.slice(i * size, (i + 1) * size));
+}
+
+/** OpenType script tags by code point ranges. HarfBuzz's Hebrew shaper reads GPOS only under `hebr`: with DFLT
+ * alone it sets the marks by its own fallback, so every script the font draws gets its record. */
+const SCRIPT_RANGES: [number, number, string[]][] = [
+  [0x41, 0x24f, ['latn']], [0x1e00, 0x1eff, ['latn']], [0x370, 0x3ff, ['grek']], [0x400, 0x52f, ['cyrl']],
+  [0x530, 0x58f, ['armn']], [0x590, 0x5ff, ['hebr']], [0xfb1d, 0xfb4f, ['hebr']], [0x600, 0x6ff, ['arab']],
+  [0x750, 0x77f, ['arab']], [0xfb50, 0xfeff, ['arab']], [0x900, 0x97f, ['deva', 'dev2']], [0xe00, 0xe7f, ['thai']],
+  [0xe80, 0xeff, ['lao ']], [0x10a0, 0x10ff, ['geor']], [0x3040, 0x30ff, ['kana']], [0x4e00, 0x9fff, ['hani']],
+];
+
+/** DFLT and the tag of each script the font has a glyph for, in the order a ScriptList needs (by tag). */
+export function scriptTags(doc: FontDoc): string[] {
+  const tags = new Set<string>(['DFLT']);
+  for (const glyph of doc.glyphs) {
+    const code = glyph.unicode;
+    if (code === undefined) continue;
+    for (const [from, to, names] of SCRIPT_RANGES) if (code >= from && code <= to) names.forEach((tag) => tags.add(tag));
+  }
+  return [...tags].sort();
 }
 
 /** The GPOS table, or undefined when the font has no mark. Features mark and mkmk, for every script. */
@@ -106,21 +157,23 @@ export function gposTable(doc: FontDoc, index: Map<string, number>): Uint8Array 
   const classOf = (place: MarkPlace): number => PLACES.indexOf(place);
   const marks: Attached[] = [...found.marks].map(([name, mark]) => ({ glyph: index.get(name)!, place: classOf(mark.place), anchor: mark.anchor }));
   const bases = [...found.bases].map(([name, byPlace]) => ({ glyph: index.get(name)!, anchors: PLACES.map((place) => byPlace[place]) }));
-  const markBase = lookup(4, chunks(bases, 400).map((group) => markSubtable(marks, group, PLACES.length)));
+  const markBase: Lookup = { type: 4, subtables: chunks(bases, 400).map((group) => markSubtable(marks, group, PLACES.length)) };
   const stacking = marks.filter((mark) => mark.place <= 1);
   const stacks = [...found.stacks].map(([name, byPlace]) => ({ glyph: index.get(name)!, anchors: [byPlace.above, byPlace.below] }));
-  const markMark = lookup(6, [markSubtable(stacking, stacks, 2)]);
-  const lookupList = withChildren((offsets) => {
-    const out = new Out().u16(2);
-    offsets.forEach((offset) => out.u16(offset));
-    return out;
-  }, [markBase, markMark]);
+  const markMark: Lookup = { type: 6, subtables: [markSubtable(stacking, stacks, 2)] };
   const feature = (lookupIndex: number): Uint8Array => new Out().u16(0).u16(1).u16(lookupIndex).done();
   const featureList = withChildren((o) => new Out().u16(2).tag('mark').u16(o[0]!).tag('mkmk').u16(o[1]!), [feature(0), feature(1)]);
   const langSys = new Out().u16(0).u16(0xffff).u16(2).u16(0).u16(1).done();
   const script = withChildren((o) => new Out().u16(o[0]!).u16(0), [langSys]);
-  const scriptList = withChildren((o) => new Out().u16(1).tag('DFLT').u16(o[0]!), [script]);
-  return withChildren((o) => new Out().u16(1).u16(0).u16(o[0]!).u16(o[1]!).u16(o[2]!), [scriptList, featureList, lookupList]);
+  const tags = scriptTags(doc);
+  const scriptList = withChildren((o) => {
+    const out = new Out().u16(tags.length);
+    tags.forEach((tag, i) => out.tag(tag).u16(o[i]!));
+    return out;
+  }, tags.map(() => script));
+  // The ScriptList and FeatureList are small; the lookups and their data come last, past any 16-bit offset.
+  const at = 10 + scriptList.length + featureList.length;
+  return new Out().u16(1).u16(0).u16(10).u16(10 + scriptList.length).u16(at).add(scriptList).add(featureList).add(lookupsWithData([markBase, markMark], at)).done();
 }
 
 /** The GDEF table: each glyph's class, 1 base or 3 mark, so that lookups that skip marks can. */

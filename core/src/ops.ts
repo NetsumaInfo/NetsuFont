@@ -169,7 +169,8 @@ export function applyOps(doc: FontDoc, ops: Op[]): FontDoc {
       apply(next, op);
     } catch (error) {
       if (error instanceof FontError) throw new FontError(error.code, `op ${index + 1} (${op.op}): ${error.message}`);
-      throw error;
+      // A field of the wrong kind (a number where a name goes) fails deeper down: the agent still learns which op.
+      throw new FontError('bad_op', `op ${index + 1} (${op.op}): ${(error as Error).message}. Check its fields in the guide.`);
     }
   });
   validate(next);
