@@ -4,6 +4,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { applyOps, charsOf, composeNeeds, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
 import { z } from 'zod';
 import { GUIDE } from './guide';
+import { kanjiInput, kanjiOps } from './kanji';
 import { afterEdit, guarded, outline, png, summary, text } from './reply';
 import { LANGUAGES, type Store } from './store';
 
@@ -173,6 +174,22 @@ function registerWrite(server: McpServer, store: Store): void {
         const { doc, skipped } = importFont(new Uint8Array(fs.readFileSync(args.file)), args.name, args.index ?? 0);
         store.write(doc);
         return text(`${summary(doc)}\nnot brought in: ${skipped.join(', ')}\nlist_fonts {name} for its glyphs; look_glyphs {name, chars} to see them`);
+      }),
+  );
+
+  server.registerTool(
+    'draw_kanji',
+    {
+      description: 'Draws kanji and kana from their strokes (KanjiVG) with a pen in the style of the font: one square glyph each, the advance an em. Replaces glyphs of the same characters.',
+      inputSchema: { name, ...kanjiInput },
+    },
+    (args) =>
+      guarded(() => {
+        const before = store.read(args.name);
+        const { ops, missing } = kanjiOps(store, before, args);
+        const doc = ops.length > 0 ? applyOps(before, ops) : before;
+        if (ops.length > 0) store.write(doc);
+        return text([`drawn: ${ops.length}`, ...(missing.length > 0 ? [`no stroke data, draw by hand: ${missing.join('')}`] : []), afterEdit(before, doc)].join('\n'));
       }),
   );
 

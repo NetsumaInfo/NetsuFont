@@ -14,7 +14,7 @@ export interface Rule {
 }
 
 /** The features a glyph name suffix asks for: `a.ss01` is `a` in the stylistic set 1. */
-const SUFFIX_FEATURES: Record<string, string> = { alt: 'salt', sc: 'smcp', onum: 'onum', tnum: 'tnum', sups: 'sups', sinf: 'sinf' };
+const SUFFIX_FEATURES: Record<string, string> = { alt: 'salt', sc: 'smcp', onum: 'onum', tnum: 'tnum', sups: 'sups', sinf: 'sinf', vert: 'vert' };
 /** The features applied without the user asking: the joining forms, ligatures and required ligatures. */
 export const DEFAULT_FEATURES = ['akhn', 'rphf', 'blwf', 'half', 'init', 'medi', 'fina', 'isol', 'rlig', 'liga'];
 /** The features a user turns on: stylistic sets and alternates. Shown in the app when the font has them. */

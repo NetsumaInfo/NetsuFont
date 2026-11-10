@@ -19,3 +19,5 @@ export * from './layout';
 export * from './marks';
 export * from './gpos';
 export * from './indic';
+export * from './kanji';
+export * from './japanese';

@@ -1,5 +1,5 @@
 import { ARABIC_MARKS_ABOVE, ARABIC_MARKS_BELOW, FORM_OF, formsOf } from './arabic';
-import { BELOW, glyphName, recipe, RIGHT } from './names';
+import { BELOW, glyphName, KEEP, recipe, RIGHT } from './names';
 import { glyphBounds, glyphMap } from './outline';
 import { FontError, type FontDoc, type Glyph, type Part } from './types';
 
@@ -93,7 +93,9 @@ function place(doc: FontDoc, byName: Map<string, Glyph>, base: Glyph, marks: str
     if (!markBox) throw new FontError('empty_mark', `The mark "${cased}" is empty: draw it.`);
     const x = Math.round(centre - (markBox.xMin + markBox.xMax) / 2);
     const raise = capital && cased === name ? lift : 0;
-    if (ARABIC_MARKS_ABOVE.has(name)) {
+    if (KEEP.has(name)) {
+      parts.push({ glyph: cased, x: 0, y: 0 });
+    } else if (ARABIC_MARKS_ABOVE.has(name)) {
       parts.push({ glyph: cased, x, y: Math.max(0, Math.round(box.yMax + gap - markBox.yMin)) });
     } else if (ARABIC_MARKS_BELOW.has(name)) {
       parts.push({ glyph: cased, x, y: Math.min(0, Math.round(box.yMin - gap - markBox.yMax)) });

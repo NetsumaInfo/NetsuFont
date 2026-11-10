@@ -1,8 +1,11 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { FONT_NAME, FontError, validate, type FontDoc } from '@netsufont/core';
 
 const SUFFIX = '.nfont.json';
+/** Where the KanjiVG files are: NETSUFONT_KANJIVG, else ~/.netsufont/kanjivg/kanji. */
+export const KANJI_DIR = path.resolve(process.env.NETSUFONT_KANJIVG ?? path.join(os.homedir(), '.netsufont', 'kanjivg', 'kanji'));
 const SETTINGS_FILE = 'settings.json';
 
 /** The languages the app speaks. The first one is the one it starts in. */
@@ -17,8 +20,22 @@ function saveJson(file: string, value: unknown): void {
 
 /** The folder of fonts: one `<name>.nfont.json` per font. The only place that touches the disk. */
 export class Store {
-  constructor(readonly dir: string) {
+  /**
+   * `kanjiDir` holds the KanjiVG files, one per character (`0611b.svg`): CC BY-SA data the user downloads with
+   * `pnpm --filter @netsufont/server kanjivg`, kept in the user's home, out of the repository.
+   */
+  constructor(
+    readonly dir: string,
+    readonly kanjiDir = KANJI_DIR,
+  ) {
     fs.mkdirSync(dir, { recursive: true });
+  }
+
+  /** The KanjiVG file of a character, or undefined when it has none. Throws when the data is not downloaded. */
+  kanjiSvg(char: string): string | undefined {
+    if (!fs.existsSync(this.kanjiDir)) throw new FontError('no_kanji_data', 'The stroke data is not downloaded. The user runs: pnpm --filter @netsufont/server kanjivg (KanjiVG, CC BY-SA 3.0).');
+    const file = path.join(this.kanjiDir, `${char.codePointAt(0)!.toString(16).padStart(5, '0')}.svg`);
+    return fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : undefined;
   }
 
   private file(name: string): string {

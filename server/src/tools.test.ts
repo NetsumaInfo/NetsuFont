@@ -24,7 +24,10 @@ const said = (result: Result): string => result.content.map((part) => part.text 
 beforeEach(async () => {
   dir = fs.mkdtempSync(path.join(os.tmpdir(), 'netsufont-'));
   const [near, far] = InMemoryTransport.createLinkedPair();
-  await buildServer(new Store(dir)).connect(far);
+  // A KanjiVG folder of one: 一, a single stroke.
+  fs.mkdirSync(path.join(dir, 'kanji'));
+  fs.writeFileSync(path.join(dir, 'kanji', '04e00.svg'), '<svg><path d="M10,50C30,50 70,50 90,50"/></svg>');
+  await buildServer(new Store(path.join(dir, 'fonts'), path.join(dir, 'kanji'))).connect(far);
   client = new Client({ name: 'test', version: '0' });
   await client.connect(near);
 });
@@ -70,5 +73,13 @@ describe('the MCP tools', () => {
     expect(said(await call('list_fonts'))).toContain('model-x: "Model X" Regular, 1 glyphs');
     expect(said(await call('remove_font', { name: 'model-x' }))).toContain('.trash');
     expect(said(await call('list_fonts'))).not.toContain('model-x');
+  });
+
+  it('draws kanji from their strokes and names those without data', async () => {
+    await call('create_font', { name: 'ja', family: 'Ja' });
+    const drawn = await call('draw_kanji', { name: 'ja', chars: '一二', pen: { width: 80 } });
+    expect(said(drawn)).toContain('drawn: 1');
+    expect(said(drawn)).toContain('no stroke data, draw by hand: 二');
+    expect(said(await call('list_fonts', { name: 'ja' }))).toContain('uni4E00 "一" 1000');
   });
 });

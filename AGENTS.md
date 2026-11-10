@@ -6,12 +6,12 @@ An app to make fonts with an AI agent. The agent draws and spaces the glyphs thr
 
 ## Status (2026-10-25, first slice, shapes, languages, skill)
 
-- `core/`: the font document, the ops, validation, shapes (rect, ellipse, ring, arc, line, polygon turned into paths), checks (a counter not cut, ink outside the advance or the lines), languages (63 languages in 10 scripts, Biblical Hebrew with its accents included, how each character is made), `compose` (accented letters from base and marks; Greek and Cyrillic letters shaped as Latin ones; Arabic letters from skeleton and dots, with their forms), features (GSUB rules read from glyph names: Arabic forms, ligatures, stylistic sets), shaping and layout (a simple bidi, Arabic joining, Devanagari reordering, ligatures, marks on anchors, kerning), SVG pictures (glyph sheet, text proof), coverage of character sets, OTF export (opentype.js, CFF outlines, plus a `kern` table written by `core/src/sfnt.ts`, a GSUB table, and GDEF and GPOS mark positioning written by `core/src/gpos.ts`), and import of a TTF, an OTF or one font of a TTC (to change, or as a model to look at). Unit tested.
+- `core/`: the font document, the ops, validation, shapes (rect, ellipse, ring, arc, line, polygon turned into paths), checks (a counter not cut, ink outside the advance or the lines), languages (64 languages in 11 scripts, Biblical Hebrew with its accents and Japanese included, how each character is made), `compose` (accented letters from base and marks; Greek and Cyrillic letters shaped as Latin ones; Arabic letters from skeleton and dots, with their forms), features (GSUB rules read from glyph names: Arabic forms, ligatures, stylistic sets), shaping and layout (a simple bidi, Arabic joining, Devanagari reordering, ligatures, marks on anchors, kerning), SVG pictures (glyph sheet, text proof), coverage of character sets, OTF export (opentype.js, CFF outlines, plus a `kern` table written by `core/src/sfnt.ts`, a GSUB table, and GDEF and GPOS mark positioning written by `core/src/gpos.ts`), and import of a TTF, an OTF or one font of a TTC (to change, or as a model to look at). Unit tested.
 - `server/`: local HTTP server. `/mcp` is the MCP endpoint (stateless streamable HTTP); `/api/fonts` and `/api/events` feed the app. Fonts are files in `fonts/`.
 - `app/`: web front (Vite, React, Tailwind v4). Read only. The list of fonts, the glyph grid or one glyph on its lines, a text proof set by the browser with the font compiled to OTF, and a panel (glyph, metrics, coverage, kerning). The choice is in the address (`#/netsu-pixel/g`). English and French.
 - `fonts/netsu-pixel.nfont.json` is drawn by `server/scripts/seed.ts` through the tools (en, fr, es, de, nl). `galet` (fr, pl) and `rivet` (en, ru, el) were drawn by agents that had only the skill.
 - The method of drawing a font is a skill, `netsu-type-design`, in `skills/`. `server/src/guide.ts` holds the format; the skill holds the method. The NetsuSkills repository publishes a copy.
-- Not yet: styles shared by a family (weights), Indic scripts other than Devanagari, Khmer, Myanmar, CJK, a lint of the style, GPOS kerning, TTF and WOFF2 export, contextual alternates, editing by hand in the app. See `docs/STATUS.md`.
+- Not yet: styles shared by a family (weights), Indic scripts other than Devanagari, Khmer, Myanmar, Chinese, Korean, a lint of the style, GPOS kerning, TTF and WOFF2 export, contextual alternates, editing by hand in the app. See `docs/STATUS.md`.
 
 ## Read first
 
@@ -21,9 +21,9 @@ An app to make fonts with an AI agent. The agent draws and spaces the glyphs thr
 
 ```
 core/src/      # pure TypeScript, no DOM, no Node: types, path, validate, outline (components, layout), ops, shapes, check, svg, charset,
-               # languages, names, accents (compose), arabic, indic, features, featureNames, shape, marks, layout, gpos, otf, sfnt, doc
-server/src/    # store.ts (only code that touches the disk), tools.ts (MCP tools), reply.ts (what a tool answers), guide.ts (what the agent is told), main.ts (HTTP)
-server/scripts/  # seed.ts (the example font), mcp.ts (one tool call from a shell), agent.ts (their client)
+               # languages, names, accents (compose), arabic, indic, japanese, kanji, features, featureNames, shape, marks, layout, gpos, otf, sfnt, doc
+server/src/    # store.ts (only code that touches the disk), tools.ts (MCP tools), kanji.ts (draw_kanji), reply.ts (what a tool answers), guide.ts (what the agent is told), main.ts (HTTP)
+server/scripts/  # seed.ts (the example font), mcp.ts (one tool call from a shell), agent.ts (their client), kanjivg.ts (stroke data, CC BY-SA, to ~/.netsufont)
 app/src/       # components/, lib/ (useFonts, events, picked, fontFace), locales/ (fr is the source, en)
 fonts/         # <name>.nfont.json, one per font; exports/ (git-ignored) holds the .otf files, .trash/ (git-ignored) the fonts remove_font took out
 skills/        # netsu-type-design: written for an agent that has only its folder and the guide
@@ -48,7 +48,7 @@ Ports: app **1450**, server **6220** (1420, 1430 and 1440 belong to other Netsu 
 - Everything written in the repository is in **English**, in simple sentences. Only the conversation with the maintainer may be in French.
 - **Say what is measured or verified and what is not.**
 - A logo or an icon shown in a README or a page has a **transparent background** and fills its frame: its view box is cut to its visible pixels, glow included. Never a square of background colour around it.
-- Licenses: MIT, Apache, BSD, MPL only. FontForge and Fontra are GPL: they are not used. A font brought in with `import_font` keeps its own license; the user checks it.
+- Licenses: MIT, Apache, BSD, MPL only. Data under another license (KanjiVG, CC BY-SA) is downloaded by the user, never committed. FontForge and Fontra are GPL: they are not used. A font brought in with `import_font` keeps its own license; the user checks it.
 - File ≤ 300 lines (ceiling 400), function ≤ 40, React component ≤ 200. No dead code.
 - No hard-coded visible text: `app/src/locales/fr/` (the source for wording), then every other language, same change.
 - Every change of a font goes through `applyOps` (`core/src/ops.ts`): all or nothing, validated. A document that is saved can always be drawn and exported.

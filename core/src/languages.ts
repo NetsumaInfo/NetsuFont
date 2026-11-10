@@ -1,8 +1,9 @@
 import { formsOf, LAM_ALEF } from './arabic';
+import { JAPANESE_PUNCTUATION, JOYO, KANA } from './japanese';
 import { glyphName } from './names';
 import type { FontDoc } from './types';
 
-export type Script = 'latin' | 'greek' | 'cyrillic' | 'armenian' | 'georgian' | 'hebrew' | 'arabic' | 'devanagari' | 'thai' | 'lao';
+export type Script = 'latin' | 'greek' | 'cyrillic' | 'armenian' | 'georgian' | 'hebrew' | 'arabic' | 'devanagari' | 'thai' | 'lao' | 'japanese';
 
 /**
  * The letters each language needs beyond the basic Latin set, lowercase then uppercase, and its own punctuation.
@@ -88,6 +89,8 @@ export const LANGUAGES: Language[] = [
   { code: 'ne', script: 'devanagari', chars: DEVANAGARI },
   { code: 'th', script: 'thai', chars: `${span(0xe01, 0xe3a)}${span(0xe3f, 0xe4e)}${span(0xe50, 0xe59)}0123456789.,:;!?-()"'–—…` },
   { code: 'lo', script: 'lao', chars: 'ກຂຄງຈຊຍດຕຖທນບປຜຝພຟມຢຣລວສຫອຮໜໝະັາຳິີຶືຸູົຼຽເແໂໃໄໆ່້໊໋໌ໍ໐໑໒໓໔໕໖໗໘໙0123456789.,:;!?-()–—…' },
+  // Japanese: the kana, the punctuation and the 2,136 kanji for general use. draw_kanji draws the kanji from KanjiVG.
+  { code: 'ja', script: 'japanese', chars: `${KANA}${JAPANESE_PUNCTUATION}${JOYO}` },
   { code: 'ar', script: 'arabic', chars: `ءآأؤإئابةتثجحخدذرزسشصضطظعغفقكلمنهوىي٠١٢٣٤٥٦٧٨٩${ARABIC_PUNCT}` },
   { code: 'fa', script: 'arabic', chars: `ءآأؤئابپةتثجچحخدذرزژسشصضطظعغفقکگلمنهوی۰۱۲۳۴۵۶۷۸۹${ARABIC_PUNCT}` },
   { code: 'ur', script: 'arabic', chars: `ءآأؤئابپتٹثجچحخدڈذرڑزژسشصضطظعغفقکگلمںنوہھیے۰۱۲۳۴۵۶۷۸۹۔${ARABIC_PUNCT}` },
@@ -95,7 +98,7 @@ export const LANGUAGES: Language[] = [
 
 /** Scripts the format cannot serve yet, and why. */
 export const UNSUPPORTED_SCRIPTS =
-  'Bengali, Tamil, Telugu and the other Indic scripts beyond Devanagari, Khmer, Myanmar, Tibetan, Sinhala: each reorders its own way (split vowels, other pre-base signs), not written yet. Chinese, Japanese, Korean: thousands of glyphs.';
+  'Bengali, Tamil, Telugu and the other Indic scripts beyond Devanagari, Khmer, Myanmar, Tibetan, Sinhala: each reorders its own way (split vowels, other pre-base signs), not written yet. Chinese and Korean: thousands of glyphs, and no stroke data for their forms yet.';
 
 /** Every character a language needs: basic Latin first for a Latin language, then its own. */
 export function charsOf(language: Language): string[] {

@@ -5,12 +5,14 @@ import { nameOf } from './charset';
 export const MARKS: Record<number, string> = {
   0x300: 'grave', 0x301: 'acute', 0x302: 'circumflex', 0x303: 'tilde', 0x304: 'macron', 0x306: 'breve', 0x307: 'dotaccent',
   0x308: 'dieresis', 0x309: 'hookabove', 0x30a: 'ring', 0x30b: 'hungarumlaut', 0x30c: 'caron', 0x31b: 'horn', 0x323: 'dotbelow',
-  0x326: 'commaaccent', 0x327: 'cedilla', 0x328: 'ogonek',
+  0x326: 'commaaccent', 0x327: 'cedilla', 0x328: 'ogonek', 0x3099: 'uni3099', 0x309a: 'uni309A',
 };
 
 /** Marks that hang below the baseline, or sit at the right of the letter, instead of above it. */
 export const BELOW = new Set(['dotbelow', 'commaaccent', 'cedilla', 'ogonek']);
 export const RIGHT = new Set(['horn']);
+/** Marks kept where they are drawn: the Japanese voicing marks sit in the top right of a kana's square. */
+export const KEEP = new Set(['uni3099', 'uni309A']);
 
 /** Letters with no decomposition, by their usual glyph name. */
 const NAMED: Record<string, string> = {

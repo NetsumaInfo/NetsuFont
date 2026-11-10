@@ -1,6 +1,6 @@
 ---
 name: netsu-type-design
-description: Use when the user asks to create, draw, design or redesign a font, typeface, alphabet or set of letters in NetsuFont (the netsufont MCP server), from a style brief or from an imported TTF or OTF — including spacing, kerning, accents, other scripts (Polish, Vietnamese, Greek, Cyrillic, Armenian, Georgian, Hebrew, Arabic, Persian, Urdu, Hindi, Thai, Lao…), ligatures and stylistic alternates, and exporting the .otf. Do NOT use for choosing or pairing existing fonts for a site, for logos and wordmarks (netsu-app-icon), or for animated icons (netsu-icon-motion).
+description: Use when the user asks to create, draw, design or redesign a font, typeface, alphabet or set of letters in NetsuFont (the netsufont MCP server), from a style brief or from an imported TTF or OTF — including spacing, kerning, accents, other scripts (Polish, Vietnamese, Greek, Cyrillic, Armenian, Georgian, Hebrew, Arabic, Persian, Urdu, Hindi, Thai, Lao, Japanese…), ligatures and stylistic alternates, and exporting the .otf. Do NOT use for choosing or pairing existing fonts for a site, for logos and wordmarks (netsu-app-icon), or for animated icons (netsu-icon-motion).
 ---
 
 # NetsuTypeDesign
@@ -159,6 +159,7 @@ and legible at 12 px; the weakest were & 2 @ and the Greek ζ ξ ς.
 | Every pair kerned "just in case" | Space first, kern the few pairs still wrong |
 | Accented letters drawn whole, each a little different | Marks drawn once, letters made with `compose` |
 | "Supports Polish" because ą ę exist | `languages` reports the language complete, and its pangram is proofed |
+| Kanji drawn one by one | `draw_kanji` with one pen for every kanji (`references/japanese.md`) |
 | Bengali, Tamil or Chinese promised | Said plainly: not possible yet (the languages answer says why) |
 | Marks placed by hand on each letter | Marks drawn once with advance 0: the font's GPOS puts them on every letter |
 | A script drawn from memory, letters guessed | A model font looked at first; the letters drawn from it, in the font's own style |
@@ -172,3 +173,4 @@ and legible at 12 px; the weakest were & 2 @ and the Greek ζ ξ ς.
   shape recipes, optical corrections, spacing values, pairs to kern.
 - `references/languages.md` — step 7: drawing marks, letters of each language and script
   (Arabic joining forms included), pangrams for proof.
+- `references/japanese.md` — step 7 for `ja`: kana and kanji from their strokes with `draw_kanji`.

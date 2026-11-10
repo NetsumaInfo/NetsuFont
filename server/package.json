@@ -8,6 +8,7 @@
     "start": "tsx src/main.ts",
     "seed": "tsx scripts/seed.ts",
     "mcp": "tsx scripts/mcp.ts",
+    "kanjivg": "tsx scripts/kanjivg.ts",
     "check": "tsc --noEmit",
     "test": "vitest run"
   },

@@ -125,7 +125,8 @@ Build the letters that are not Latin from the parts you already have:
   letter) passes `languages`; a drawn shape, as in the model, reads better. `languages` names
   the rest.
 - **Not possible yet**: Bengali, Tamil and the other Indic scripts, Khmer, Myanmar, Tibetan,
-  Sinhala (each reorders its own way); Chinese, Japanese, Korean (thousands of glyphs). Say so.
+  Sinhala (each reorders its own way); Chinese and Korean (thousands of glyphs). Say so.
+  Japanese is possible: load `references/japanese.md`.
 
 ## 3b. Arabic, Persian, Urdu
 
