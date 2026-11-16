@@ -39,7 +39,9 @@
   },
   "grid": {
     "filter": "Filter: name or characters",
-    "none": "No glyph matches."
+    "none": "No glyph matches.",
+    "more_one": "Show the last glyph",
+    "more_other": "Show more ({{count}} left)"
   },
   "stage": {
     "back": "All glyphs",

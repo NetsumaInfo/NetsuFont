@@ -39,7 +39,9 @@
   },
   "grid": {
     "filter": "Filtrer : nom ou caractères",
-    "none": "Aucun glyphe ne correspond."
+    "none": "Aucun glyphe ne correspond.",
+    "more_one": "Afficher le dernier glyphe",
+    "more_other": "Afficher plus ({{count}} restants)"
   },
   "stage": {
     "back": "Tous les glyphes",
