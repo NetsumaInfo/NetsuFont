@@ -17,7 +17,7 @@ WORKFLOW
    several sizes, with spacing and kerning; "\\n" starts a line, 600 characters at most.
    get_font {name, glyphs:[names]}: the paths of those glyphs.
 4. languages {name, languages?:["fr","pl"]}: what each language lacks, what compose can make, what to draw.
-5. export_font {name}: an .otf the user installs. set_language: the app speaks the user's language.
+5. export_font {name}: an .otf the user installs and a .woff2 for web pages. set_language: the app speaks the user's language.
 
 DOCUMENT
 - Font units, y UP from the baseline (y 0). New fonts: unitsPerEm 1000, ascender 800, capHeight 700, xHeight 500, descender -200.

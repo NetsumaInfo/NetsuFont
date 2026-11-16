@@ -1,58 +1,8 @@
-// GDEF and GPOS tables written by hand: opentype.js writes neither. GDEF says which glyphs are marks; GPOS attaches
-// each mark to its letter (`mark`) and to the mark under it (`mkmk`), at the anchors of `marks.ts`.
+// GDEF and GPOS tables written by hand: opentype.js writes neither. GDEF says which glyphs are marks; GPOS kerns the
+// pairs (`kern`) and attaches each mark to its letter (`mark`) and to the mark under it (`mkmk`), at the anchors of `marks.ts`.
 import { anchors, PLACES, type Anchor, type MarkPlace } from './marks';
+import { coverage, Out, withChildren } from './otl';
 import type { FontDoc } from './types';
-
-/** Big-endian bytes, written in order. */
-class Out {
-  private bytes: number[] = [];
-  u32(value: number): this {
-    return this.u16(Math.floor(value / 0x10000)).u16(value % 0x10000);
-  }
-  u16(value: number): this {
-    this.bytes.push((value >> 8) & 0xff, value & 0xff);
-    return this;
-  }
-  i16(value: number): this {
-    return this.u16(value < 0 ? value + 0x10000 : value);
-  }
-  tag(value: string): this {
-    for (const char of value.padEnd(4)) this.bytes.push(char.charCodeAt(0));
-    return this;
-  }
-  add(data: Uint8Array): this {
-    // A loop, not push(...data): a subtable of thousands of glyphs passes the limit of a call's arguments.
-    for (const byte of data) this.bytes.push(byte);
-    return this;
-  }
-  get size(): number {
-    return this.bytes.length;
-  }
-  done(): Uint8Array {
-    return Uint8Array.from(this.bytes);
-  }
-}
-
-/** A table that points at its children: the header, then each child, offsets counted from the start. */
-function withChildren(head: (offsets: number[]) => Out, children: Uint8Array[]): Uint8Array {
-  const size = head(children.map(() => 0)).size;
-  const offsets: number[] = [];
-  let at = size;
-  for (const child of children) {
-    offsets.push(at);
-    at += child.length;
-  }
-  if (at > 0xffff) throw new Error('A GPOS subtable is too large: split it.');
-  const out = head(offsets);
-  children.forEach((child) => out.add(child));
-  return out.done();
-}
-
-const coverage = (glyphs: number[]): Uint8Array => {
-  const out = new Out().u16(1).u16(glyphs.length);
-  glyphs.forEach((glyph) => out.u16(glyph));
-  return out.done();
-};
 
 const anchor = ([x, y]: Anchor): Uint8Array => new Out().u16(1).i16(x).i16(y).done();
 
@@ -92,6 +42,8 @@ function markSubtable(marks: Attached[], bases: { glyph: number; anchors: (Ancho
 
 interface Lookup {
   type: number;
+  /** 8 skips marks: a pair kerns across a harakat or a point between its letters. */
+  flag: number;
   subtables: Uint8Array[];
 }
 
@@ -112,7 +64,7 @@ function lookupsWithData(lookups: Lookup[], at: number): Uint8Array {
   let data = at + listSize;
   let start = 2 + lookups.length * 2;
   for (const [i, l] of lookups.entries()) {
-    out.u16(9).u16(0).u16(l.subtables.length);
+    out.u16(9).u16(l.flag).u16(l.subtables.length);
     l.subtables.forEach((_, k) => out.u16(6 + l.subtables.length * 2 + k * 8));
     l.subtables.forEach((subtable, k) => {
       const record = at + start + 6 + l.subtables.length * 2 + k * 8;
@@ -150,21 +102,74 @@ export function scriptTags(doc: FontDoc): string[] {
   return [...tags].sort();
 }
 
-/** The GPOS table, or undefined when the font has no mark. Features mark and mkmk, for every script. */
-export function gposTable(doc: FontDoc, index: Map<string, number>): Uint8Array | undefined {
+/** A PairPos subtable, format 1: for each first glyph, its second glyphs and the change of its advance. */
+function pairSubtable(firsts: [number, [number, number][]][]): Uint8Array {
+  const sets = firsts.map(([, seconds]) => {
+    const out = new Out().u16(seconds.length);
+    seconds.forEach(([glyph, value]) => out.u16(glyph).i16(value));
+    return out.done();
+  });
+  return withChildren((o) => {
+    const out = new Out().u16(1).u16(o[0]!).u16(4).u16(0).u16(firsts.length);
+    sets.forEach((_, i) => out.u16(o[i + 1]!));
+    return out;
+  }, [coverage(firsts.map(([glyph]) => glyph)), ...sets]);
+}
+
+/** The kerning as one lookup, its first glyphs split into subtables that stay under 64 KiB. */
+function kernLookup(doc: FontDoc, index: Map<string, number>): Lookup | undefined {
+  const byFirst = new Map<number, [number, number][]>();
+  for (const kern of doc.kerning) {
+    if (kern.value === 0) continue;
+    const first = index.get(kern.left)!;
+    byFirst.set(first, [...(byFirst.get(first) ?? []), [index.get(kern.right)!, kern.value]]);
+  }
+  if (byFirst.size === 0) return undefined;
+  const firsts = [...byFirst].sort((a, b) => a[0] - b[0]).map(([glyph, seconds]): [number, [number, number][]] => [glyph, seconds.sort((a, b) => a[0] - b[0])]);
+  const groups: [number, [number, number][]][][] = [[]];
+  let size = 10;
+  for (const first of firsts) {
+    const cost = 8 + first[1].length * 4;
+    if (size + cost > 60000 && groups[groups.length - 1]!.length > 0) {
+      groups.push([]);
+      size = 10;
+    }
+    groups[groups.length - 1]!.push(first);
+    size += cost;
+  }
+  return { type: 2, flag: 8, subtables: groups.map(pairSubtable) };
+}
+
+/** The mark-to-base and mark-to-mark lookups, or none when the font has no mark. */
+function markLookups(doc: FontDoc, index: Map<string, number>): { tag: string; lookup: Lookup }[] {
   const found = anchors(doc);
-  if (found.marks.size === 0) return undefined;
+  if (found.marks.size === 0) return [];
   const classOf = (place: MarkPlace): number => PLACES.indexOf(place);
   const marks: Attached[] = [...found.marks].map(([name, mark]) => ({ glyph: index.get(name)!, place: classOf(mark.place), anchor: mark.anchor }));
   const bases = [...found.bases].map(([name, byPlace]) => ({ glyph: index.get(name)!, anchors: PLACES.map((place) => byPlace[place]) }));
-  const markBase: Lookup = { type: 4, subtables: chunks(bases, 400).map((group) => markSubtable(marks, group, PLACES.length)) };
   const stacking = marks.filter((mark) => mark.place <= 1);
   const stacks = [...found.stacks].map(([name, byPlace]) => ({ glyph: index.get(name)!, anchors: [byPlace.above, byPlace.below] }));
-  const markMark: Lookup = { type: 6, subtables: [markSubtable(stacking, stacks, 2)] };
+  return [
+    { tag: 'mark', lookup: { type: 4, flag: 0, subtables: chunks(bases, 400).map((group) => markSubtable(marks, group, PLACES.length)) } },
+    { tag: 'mkmk', lookup: { type: 6, flag: 0, subtables: [markSubtable(stacking, stacks, 2)] } },
+  ];
+}
+
+/** The GPOS table, or undefined when the font has neither kerning nor marks. Features kern, mark, mkmk, for every script. */
+export function gposTable(doc: FontDoc, index: Map<string, number>): Uint8Array | undefined {
+  const kern = kernLookup(doc, index);
+  // Features in the order of their tags, as a FeatureList asks: kern, mark, mkmk. Feature i uses lookup i.
+  const features = [...(kern ? [{ tag: 'kern', lookup: kern }] : []), ...markLookups(doc, index)];
+  if (features.length === 0) return undefined;
   const feature = (lookupIndex: number): Uint8Array => new Out().u16(0).u16(1).u16(lookupIndex).done();
-  const featureList = withChildren((o) => new Out().u16(2).tag('mark').u16(o[0]!).tag('mkmk').u16(o[1]!), [feature(0), feature(1)]);
-  const langSys = new Out().u16(0).u16(0xffff).u16(2).u16(0).u16(1).done();
-  const script = withChildren((o) => new Out().u16(o[0]!).u16(0), [langSys]);
+  const featureList = withChildren((o) => {
+    const out = new Out().u16(features.length);
+    features.forEach((f, i) => out.tag(f.tag).u16(o[i]!));
+    return out;
+  }, features.map((_, i) => feature(i)));
+  const langSys = new Out().u16(0).u16(0xffff).u16(features.length);
+  features.forEach((_, i) => langSys.u16(i));
+  const script = withChildren((o) => new Out().u16(o[0]!).u16(0), [langSys.done()]);
   const tags = scriptTags(doc);
   const scriptList = withChildren((o) => {
     const out = new Out().u16(tags.length);
@@ -173,7 +178,8 @@ export function gposTable(doc: FontDoc, index: Map<string, number>): Uint8Array 
   }, tags.map(() => script));
   // The ScriptList and FeatureList are small; the lookups and their data come last, past any 16-bit offset.
   const at = 10 + scriptList.length + featureList.length;
-  return new Out().u16(1).u16(0).u16(10).u16(10 + scriptList.length).u16(at).add(scriptList).add(featureList).add(lookupsWithData([markBase, markMark], at)).done();
+  const lookups = lookupsWithData(features.map((f) => f.lookup), at);
+  return new Out().u16(1).u16(0).u16(10).u16(10 + scriptList.length).u16(at).add(scriptList).add(featureList).add(lookups).done();
 }
 
 /** The GDEF table: each glyph's class, 1 base or 3 mark, so that lookups that skip marks can. */

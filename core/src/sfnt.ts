@@ -9,13 +9,13 @@ function checksum(bytes: Uint8Array): number {
   return sum;
 }
 
-interface Table {
+export interface Table {
   tag: string;
   data: Uint8Array;
 }
 
 /** The tables of a font file, or of the font that starts at `start` in a collection (offsets count from the file). */
-function readTables(font: Uint8Array, start = 0): { flavor: number; tables: Table[] } {
+export function readTables(font: Uint8Array, start = 0): { flavor: number; tables: Table[] } {
   const view = new DataView(font.buffer, font.byteOffset, font.byteLength);
   const count = view.getUint16(start + 4);
   const tables: Table[] = [];

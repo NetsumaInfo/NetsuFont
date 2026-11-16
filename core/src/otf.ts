@@ -34,7 +34,8 @@ function notdef(doc: FontDoc): OtGlyph {
 
 /**
  * The font as an OpenType file with CFF outlines (.otf). Components are drawn into each glyph, quadratic
- * curves become cubic, the kerning is written as a `kern` table and the features asked for by glyph names
+ * curves become cubic, the kerning is written twice, as GPOS `kern` (read by today's apps) and as a legacy `kern`
+ * table (read by older ones), and the features asked for by glyph names
  * (Arabic joining forms, ligatures, stylistic sets: see `featureRules`) as a GSUB table.
  */
 export function exportOtf(doc: FontDoc): Uint8Array {

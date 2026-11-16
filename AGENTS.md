@@ -6,12 +6,12 @@ An app to make fonts with an AI agent. The agent draws and spaces the glyphs thr
 
 ## Status (2026-10-25, first slice, shapes, languages, skill)
 
-- `core/`: the font document, the ops, validation, shapes (rect, ellipse, ring, arc, line, polygon turned into paths), checks (a counter not cut, ink outside the advance or the lines), languages (67 languages in 13 scripts, Biblical Hebrew with its accents, Japanese, Chinese and Korean included, how each character is made), `compose` (accented letters from base and marks; Greek and Cyrillic letters shaped as Latin ones; Arabic letters from skeleton and dots, with their forms), features (GSUB rules read from glyph names: Arabic forms, ligatures, stylistic sets), shaping and layout (a simple bidi, Arabic joining, Devanagari reordering, ligatures, marks on anchors, kerning), SVG pictures (glyph sheet, text proof), coverage of character sets, OTF export (opentype.js, CFF outlines, plus a `kern` table written by `core/src/sfnt.ts`, a GSUB table, and GDEF and GPOS mark positioning written by `core/src/gpos.ts`), and import of a TTF, an OTF or one font of a TTC (to change, or as a model to look at). Unit tested.
+- `core/`: the font document, the ops, validation, shapes (rect, ellipse, ring, arc, line, polygon turned into paths), checks (a counter not cut, ink outside the advance or the lines), languages (67 languages in 13 scripts, Biblical Hebrew with its accents, Japanese, Chinese and Korean included, how each character is made), `compose` (accented letters from base and marks; Greek and Cyrillic letters shaped as Latin ones; Arabic letters from skeleton and dots, with their forms), features (GSUB rules read from glyph names: Arabic forms, ligatures, stylistic sets), shaping and layout (a simple bidi, Arabic joining, Devanagari reordering, ligatures, marks on anchors, kerning), SVG pictures (glyph sheet, text proof), coverage of character sets, OTF export (opentype.js, CFF outlines, plus a `kern` table written by `core/src/sfnt.ts`, a GSUB table, and GDEF and GPOS kerning and mark positioning written by `core/src/gpos.ts`), WOFF2 export (`core/src/woff2.ts`), and import of a TTF, an OTF or one font of a TTC (to change, or as a model to look at). Unit tested.
 - `server/`: local HTTP server. `/mcp` is the MCP endpoint (stateless streamable HTTP); `/api/fonts` and `/api/events` feed the app. Fonts are files in `fonts/`.
 - `app/`: web front (Vite, React, Tailwind v4). Read only. The list of fonts, the glyph grid or one glyph on its lines, a text proof set by the browser with the font compiled to OTF, and a panel (glyph, metrics, coverage, kerning). The choice is in the address (`#/netsu-pixel/g`). English and French.
 - `fonts/netsu-pixel.nfont.json` is drawn by `server/scripts/seed.ts` through the tools (en, fr, es, de, nl). `galet` (fr, pl) and `rivet` (en, ru, el) were drawn by agents that had only the skill.
 - The method of drawing a font is a skill, `netsu-type-design`, in `skills/`. `server/src/guide.ts` holds the format; the skill holds the method. The NetsuSkills repository publishes a copy.
-- Not yet: styles shared by a family (weights), Indic scripts other than Devanagari, Khmer, Myanmar, a lint of the style, GPOS kerning, TTF and WOFF2 export, contextual alternates, editing by hand in the app. See `docs/STATUS.md`.
+- Not yet: styles shared by a family (weights), Indic scripts other than Devanagari, Khmer, Myanmar, a lint of the style, TTF export, GPOS kerning read on import, contextual alternates, editing by hand in the app. See `docs/STATUS.md`.
 
 ## Read first
 
@@ -21,11 +21,11 @@ An app to make fonts with an AI agent. The agent draws and spaces the glyphs thr
 
 ```
 core/src/      # pure TypeScript, no DOM, no Node: types, path, validate, outline (components, layout), ops, shapes, check, svg, charset,
-               # languages, names, accents (compose), arabic, indic, japanese, chinese, korean, kanji, hangul, features, featureNames, shape, marks, layout, gpos, otf, sfnt, doc
+               # languages, names, accents (compose), arabic, indic, japanese, chinese, korean, kanji, hangul, features, featureNames, shape, marks, layout, otl, gpos, otf, sfnt, woff2, doc
 server/src/    # store.ts (only code that touches the disk), tools.ts (MCP tools), kanji.ts (draw_kanji), reply.ts (what a tool answers), guide.ts (what the agent is told), main.ts (HTTP)
 server/scripts/  # seed.ts (the example font), mcp.ts (one tool call from a shell), agent.ts (their client), kanjivg.ts and hanzi.ts (stroke data, CC BY-SA and Arphic, to ~/.netsufont)
 app/src/       # components/, lib/ (useFonts, events, picked, fontFace), locales/ (fr is the source, en)
-fonts/         # <name>.nfont.json, one per font; exports/ (git-ignored) holds the .otf files, .trash/ (git-ignored) the fonts remove_font took out
+fonts/         # <name>.nfont.json, one per font; exports/ (git-ignored) holds the .otf and .woff2 files, .trash/ (git-ignored) the fonts remove_font took out
 skills/        # netsu-type-design: written for an agent that has only its folder and the guide
 docs/          # STATUS.md
 ```

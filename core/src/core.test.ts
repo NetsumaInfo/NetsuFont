@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import opentype from 'opentype.js';
 import { coverage } from './charset';
 import { checkGlyphs } from './check';
 import { newFont } from './doc';
@@ -103,6 +104,15 @@ describe('font file', () => {
     expect(back.kerning).toEqual([{ left: 'H', right: 'H', value: -40 }]);
     // The component glyph is drawn whole in the file.
     expect(parsePath(back.glyphs.find((g) => g.unicode === 0x1e24)!.path).filter((c) => c.type === 'M')).toHaveLength(2);
+  });
+
+  it('writes the kerning as GPOS too, which skips marks', () => {
+    const doc = applyOps(withGlyphs(), [{ op: 'set_kern', left: 'H', right: 'H', value: -40 }]);
+    const font = opentype.parse(exportOtf(doc).buffer as ArrayBuffer);
+    const gpos = (font.tables as { gpos?: unknown }).gpos as { features: { tag: string }[]; lookups: { lookupType: number; lookupFlag: number }[] };
+    expect(gpos.features.map((f) => f.tag)).toContain('kern');
+    // An Extension (9) around a PairPos: opentype.js does not open Extensions, fontTools and HarfBuzz do.
+    expect(gpos.lookups[0]).toMatchObject({ lookupType: 9, lookupFlag: 8 });
   });
 
   it('refuses a file that is not a font', () => {

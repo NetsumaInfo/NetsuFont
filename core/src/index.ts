@@ -6,6 +6,7 @@ export * from './ops';
 export * from './svg';
 export * from './charset';
 export * from './otf';
+export * from './woff2';
 export * from './doc';
 export * from './check';
 export * from './shapes';
