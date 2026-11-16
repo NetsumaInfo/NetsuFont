@@ -1,6 +1,6 @@
 ---
 name: netsu-type-design
-description: Use when the user asks to create, draw, design or redesign a font, typeface, alphabet or set of letters in NetsuFont (the netsufont MCP server), from a style brief or from an imported TTF or OTF — including spacing, kerning, accents, other scripts (Polish, Vietnamese, Greek, Cyrillic, Armenian, Georgian, Hebrew, Arabic, Persian, Urdu, Hindi, Thai, Lao, Japanese, Chinese, Korean…), ligatures and stylistic alternates, and exporting the .otf. Do NOT use for choosing or pairing existing fonts for a site, for logos and wordmarks (netsu-app-icon), or for animated icons (netsu-icon-motion).
+description: Use when the user asks to create, draw, design or redesign a font, typeface, alphabet or set of letters in NetsuFont (the netsufont MCP server), from a style brief or from an imported TTF or OTF — including spacing, kerning, accents, other scripts (Polish, Vietnamese, Greek, Cyrillic, Armenian, Georgian, Hebrew, Arabic, Persian, Urdu, Hindi, Bengali, Punjabi, Gujarati, Tamil, Thai, Lao, Japanese, Chinese, Korean…), ligatures and stylistic alternates, and exporting the .otf. Do NOT use for choosing or pairing existing fonts for a site, for logos and wordmarks (netsu-app-icon), or for animated icons (netsu-icon-motion).
 ---
 
 # NetsuTypeDesign
@@ -76,7 +76,7 @@ nnynn ooyoo"`. Each x
 7. **Languages.** `languages {languages:[...the brief's codes]}`. Load
    `references/languages.md` before drawing marks or letters of another script. Draw the marks,
    then one `compose` with every letter it can make, then draw what is left. A script you cannot
-   draw from memory (Devanagari, Thai, Arabic letters you are unsure of): first bring in a font of
+   draw from memory (Devanagari and the other Indic scripts, Thai, Arabic letters you are unsure of): first bring in a font of
    that script as a **model** (`import_font {name:"model-deva"}`). Then, family by family (6 to 8
    letters): `look_glyphs {name, chars, model:"model-deva"}` shows the model in each cell, filled
    blue under your glyph and outlined over it, even before you draw. Draw your letters in your

@@ -1,6 +1,7 @@
 // An imported font keeps its forms and ligatures by giving their glyphs the names NetsuFont reads features from: the
-// initial beh becomes `uni0628.init`, a Devanagari half ka `uni0915.half`, the conjunct ksha
+// initial beh becomes `uni0628.init`, a Devanagari half ka `uni0915.half`, a Bengali ya-phala `uni09AF.pstf`, the conjunct ksha
 // `uni0915_uni094D_uni0937`. Export then writes the same features back, and a model shows its forms by name.
+import { INDIC, viramaName } from './indic';
 import { glyphName } from './names';
 import type { Glyph } from './types';
 
@@ -47,12 +48,13 @@ function rulesOf(gsub: ParsedGsub, tag: string, scripts: string[]): { sub: numbe
   });
 }
 
-const DEVANAGARI = ['dev2', 'deva'];
-const VIRAMA = 'uni094D';
+const INDIC_TAGS = INDIC.flatMap((script) => script.tags);
+const VIRAMAS = new Set(INDIC.map(viramaName));
+const RAS = new Set(INDIC.flatMap((script) => script.ras.map((ra) => glyphName(String.fromCodePoint(ra)))));
 
 /**
  * Renames the glyphs a feature makes, when they have no code point and their new name is free: Arabic forms, the
- * Devanagari half forms, reph, ra below and conjuncts, and ligatures. Returns how many were renamed.
+ * Indic half forms, reph, forms below and after, conjuncts, and ligatures. Returns how many were renamed.
  */
 export function nameFeatureGlyphs(gsub: ParsedGsub | undefined, glyphs: Glyph[]): number {
   if (!gsub) return 0;
@@ -78,10 +80,12 @@ export function nameFeatureGlyphs(gsub: ParsedGsub | undefined, glyphs: Glyph[])
     }
   });
   for (const form of ['init', 'medi', 'fina', 'isol']) for (const rule of rulesOf(gsub, form, ['arab'])) rename(rule.by, `${nameOf(rule.sub[0]!)}.${form}`);
-  for (const rule of rulesOf(gsub, 'half', DEVANAGARI)) if (nameOf(rule.sub[1]!) === VIRAMA) rename(rule.by, `${nameOf(rule.sub[0]!)}.half`);
-  for (const rule of rulesOf(gsub, 'rphf', DEVANAGARI)) if (nameOf(rule.sub[0]!) === 'uni0930') rename(rule.by, 'uni0930.rphf');
-  for (const rule of rulesOf(gsub, 'blwf', DEVANAGARI)) if (nameOf(rule.sub[1]!) === 'uni0930') rename(rule.by, 'uni0930.blwf');
-  for (const [tag, scripts] of [['akhn', DEVANAGARI], ['rlig', ['arab']], ['liga', ['latn', 'DFLT']]] as const) {
+  for (const rule of rulesOf(gsub, 'half', INDIC_TAGS)) if (VIRAMAS.has(nameOf(rule.sub[1]!))) rename(rule.by, `${nameOf(rule.sub[0]!)}.half`);
+  for (const rule of rulesOf(gsub, 'rphf', INDIC_TAGS)) if (RAS.has(nameOf(rule.sub[0]!))) rename(rule.by, `${nameOf(rule.sub[0]!)}.rphf`);
+  for (const form of ['blwf', 'pstf']) {
+    for (const rule of rulesOf(gsub, form, INDIC_TAGS)) if (rule.sub.length === 2 && VIRAMAS.has(nameOf(rule.sub[0]!))) rename(rule.by, `${nameOf(rule.sub[1]!)}.${form}`);
+  }
+  for (const [tag, scripts] of [['akhn', INDIC_TAGS], ['psts', INDIC_TAGS], ['rlig', ['arab']], ['liga', ['latn', 'DFLT']]] as const) {
     for (const rule of rulesOf(gsub, tag, [...scripts])) rename(rule.by, rule.sub.map(nameOf).join('_'));
   }
   return renamed;

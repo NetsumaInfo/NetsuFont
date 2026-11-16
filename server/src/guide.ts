@@ -8,7 +8,7 @@ export const GUIDE = `NetsuFont: fonts drawn by small targeted operations. The u
 WORKFLOW
 1. list_fonts (one line each; {name} for one font's glyphs and checks), then create_font {name, family, style?} or
    import_font {file, name, index?} (a .ttf, .otf, or .ttc with index; to change, its license must allow it). It keeps
-   its Arabic forms, Devanagari half forms, reph and conjuncts, and ligatures, under the names below.
+   its Arabic forms, Indic forms and conjuncts, and ligatures, under the names below.
    remove_font {name} takes a font out (its file goes to fonts/.trash).
 2. edit_font {name, ops:[...]}. All or nothing: on an error nothing is saved and the error names the op. It answers the
    glyphs it changed, with their advance and [left right] side bearings, and checks: fix each, or keep it on purpose.
@@ -34,19 +34,22 @@ DOCUMENT
   "<mark>.case" is the flatter one for capitals, above the cap height; without it, compose raises the lowercase one.
   dotlessi carries the accents of i.
 - Right to left (Hebrew, Arabic): proof and the app set it so. In such text a kerning pair's left is the letter read first.
-- Marks with a unicode (accents typed after a letter, Hebrew points, Arabic harakat, Thai and Devanagari vowel signs):
+- Marks with a unicode (accents typed after a letter, Hebrew points, Arabic harakat, Thai and Indic vowel signs):
   advance 0, drawn once anywhere. The export (GDEF, GPOS mark and mkmk) and proof set each on the top of its letter's
   ink, or under it (Unicode says, or it is drawn below the baseline); a second one stacks on the first. The Hebrew
-  dagesh is centred; the shin and sin dots and holam stay where drawn in the letter's frame. Devanagari marks touch.
+  dagesh is centred; the shin and sin dots and holam stay where drawn in the letter's frame. Indic marks touch, Tamil's excepted.
 - Japanese, Chinese, Korean: draw_kanji {name, set or chars, from?, pen:{width, ends?, contrast?, angle?, terminals?}, frame?} draws
   them from their strokes with the pen, one em-wide glyph each. Sets: kana joyo jinmeiyo (KanjiVG), hanzi1 hanzi2 hanzi3
   hant (Make Me a Hanzi; from:"hanzi" for chars), hangul hangul_all jamo (composed from letters, no data). contrast:
   the share of the width left along angle (0.25: a quarter). terminals:"song": strokes made level and upright, a
   triangle on each horizontal's end. <name>.zht: the glyph traditional Chinese text uses (feature locl). Voicing marks uni3099 uni309A, without unicode, stay
   where drawn (compose が from か). <name>.vert: the glyph for vertical writing (feature vert).
-- Devanagari: <consonant>.half (before another consonant, the virama gone), uni0930.rphf (the reph: advance 0, ink
-  above and left of x 0), uni0930.blwf (ra under a consonant: advance 0), conjuncts named by their parts
-  (uni0915_uni094D_uni0937 for क्ष). The vowel sign ि is a spacing glyph: the text engine draws it first.
+- Indic (Devanagari, Bengali, Gurmukhi, Gujarati, Tamil): <consonant>.half (before another consonant, the virama
+  gone), <ra>.rphf (the reph: advance 0, ink above and left of x 0), <consonant>.blwf (under the consonant before it:
+  advance 0), <consonant>.pstf (after it: Bengali ya-phala uni09AF.pstf), conjuncts named by their parts
+  (uni0915_uni094D_uni0937 for क्ष), a letter drawn with its vowel the same way (Tamil கு uni0B95_uni0BC1). Vowel
+  signs drawn before their consonant (ि, Bengali ি ে ৈ, Tamil ெ ே ை) are spacing glyphs: the text engine draws them
+  first. Vowel signs in two parts (ো ৌ ொ ோ ௌ) are split by the engine: compose makes their glyph from the parts.
 - Arabic: a joining letter is its glyph (isolated, with unicode) and forms without unicode: <name>.init (word start, joins
   on its left edge), .medi (both edges), .fina (word end, joins on its right edge). ا د ذ ر ز و ة join only on the right:
   .fina alone. Lam-alef ligatures uni0644_uni0627, uni0644_uni0623, uni0644_uni0625, uni0644_uni0622, each with .fina.

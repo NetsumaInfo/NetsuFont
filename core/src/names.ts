@@ -1,15 +1,18 @@
 import { ARABIC_PARTS, FORM_OF } from './arabic';
 import { nameOf } from './charset';
+import { indicOf } from './indic';
 
 /** The spacing accent drawn for each combining mark, by its usual glyph name. */
 export const MARKS: Record<number, string> = {
   0x300: 'grave', 0x301: 'acute', 0x302: 'circumflex', 0x303: 'tilde', 0x304: 'macron', 0x306: 'breve', 0x307: 'dotaccent',
   0x308: 'dieresis', 0x309: 'hookabove', 0x30a: 'ring', 0x30b: 'hungarumlaut', 0x30c: 'caron', 0x31b: 'horn', 0x323: 'dotbelow',
   0x326: 'commaaccent', 0x327: 'cedilla', 0x328: 'ogonek', 0x3099: 'uni3099', 0x309a: 'uni309A',
+  // The nukta of Devanagari, Bengali, Gurmukhi and Gujarati: a dot under the consonant (ড় = ড and nukta).
+  0x93c: 'uni093C', 0x9bc: 'uni09BC', 0xa3c: 'uni0A3C', 0xabc: 'uni0ABC',
 };
 
 /** Marks that hang below the baseline, or sit at the right of the letter, instead of above it. */
-export const BELOW = new Set(['dotbelow', 'commaaccent', 'cedilla', 'ogonek']);
+export const BELOW = new Set(['dotbelow', 'commaaccent', 'cedilla', 'ogonek', 'uni093C', 'uni09BC', 'uni0A3C', 'uni0ABC']);
 export const RIGHT = new Set(['horn']);
 /** Marks kept where they are drawn: the Japanese voicing marks sit in the top right of a kana's square. */
 export const KEEP = new Set(['uni3099', 'uni309A']);
@@ -52,6 +55,8 @@ export interface Recipe {
   /** The glyph it is built on, when it is not drawn on its own. */
   base?: string;
   marks?: string[];
+  /** The marks go after the base, side by side: the two parts of a split Indic vowel sign (ো is ে and া). */
+  beside?: boolean;
 }
 
 /** An Arabic letter made of a skeleton and dots, or a Persian yeh made of other letters' forms. */
@@ -74,6 +79,8 @@ export function recipe(char: string): Recipe {
   if (same) return { name, unicode, base: glyphName(same), marks: [] };
   const arabic = arabicRecipe(char, name, unicode);
   if (arabic) return arabic;
+  const split = indicOf(unicode)?.split[unicode];
+  if (split) return { name, unicode, base: hex(split[0]), marks: [hex(split[1])], beside: true };
   const [baseChar, ...rest] = [...char.normalize('NFD')];
   const marks = rest.map((mark) => COMMA_FOR_CEDILLA[char] ?? MARKS[mark.codePointAt(0)!]);
   if (rest.length === 0 || !baseChar || marks.some((mark) => mark === undefined)) return { name, unicode };

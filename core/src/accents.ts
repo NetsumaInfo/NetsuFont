@@ -10,6 +10,7 @@ interface Build {
   base: string;
   marks: string[];
   capital: boolean;
+  beside?: boolean;
 }
 
 /** The glyphs to make for a character: itself, and the forms of an Arabic letter from the forms of its skeleton. */
@@ -17,7 +18,7 @@ function buildsOf(char: string): Build[] {
   const made = recipe(char);
   if (!made.base) throw new FontError('not_composed', `"${char}" is drawn on its own, not composed: draw it as ${made.name} with set_glyph.`);
   const capital = char !== char.toLowerCase();
-  const own: Build = { name: made.name, unicode: made.unicode, base: made.base, marks: made.marks ?? [], capital };
+  const own: Build = { name: made.name, unicode: made.unicode, base: made.base, marks: made.marks ?? [], capital, ...(made.beside ? { beside: true } : {}) };
   const forms = formsOf(char).map((form) => {
     const other = FORM_OF[char]?.[form];
     return { name: `${made.name}.${form}`, base: `${other ? glyphName(other) : made.base}.${form}`, marks: own.marks, capital };
@@ -56,9 +57,10 @@ export function composeLetters(doc: FontDoc, chars: string): string[] {
   if (lacking.length > 0) throw new FontError('glyph_not_found', `Draw these first: ${lacking.join(', ')}. Marks are drawn above the x-height or below the baseline.`);
   return builds.map((build) => {
     const base = byName.get(build.base)!;
-    const parts = place(doc, byName, base, build.marks, build.capital);
+    const parts = build.beside ? beside(base, build.marks.map((name) => byName.get(name)!)) : place(doc, byName, base, build.marks, build.capital);
+    const advance = build.beside ? parts.reduce((total, part) => total + byName.get(part.glyph)!.advance, 0) : base.advance;
     const existing = doc.glyphs.find((glyph) => glyph.name === build.name);
-    const glyph: Glyph = { name: build.name, ...(build.unicode === undefined ? {} : { unicode: build.unicode }), advance: base.advance, path: '', components: parts };
+    const glyph: Glyph = { name: build.name, ...(build.unicode === undefined ? {} : { unicode: build.unicode }), advance, path: '', components: parts };
     if (existing) {
       for (const key of Object.keys(existing) as (keyof Glyph)[]) delete existing[key];
       Object.assign(existing, glyph);
@@ -77,6 +79,16 @@ function lackingOf(builds: Build[], byName: Map<string, Glyph>): string[] {
 export function composeNeeds(doc: FontDoc, chars: string): string[] {
   const composable = [...new Set(chars)].filter((char) => recipe(char).base !== undefined);
   return lackingOf(composable.flatMap(buildsOf), glyphMap(doc));
+}
+
+/** Glyphs one after the other, each at the advance of those before it. */
+function beside(base: Glyph, others: Glyph[]): Part[] {
+  let x = 0;
+  return [base, ...others].map((glyph) => {
+    const part = { glyph: glyph.name, x, y: 0 };
+    x += glyph.advance;
+    return part;
+  });
 }
 
 function place(doc: FontDoc, byName: Map<string, Glyph>, base: Glyph, marks: string[], capital: boolean): Part[] {

@@ -124,8 +124,22 @@ Build the letters that are not Latin from the parts you already have:
   ["uni0915_uni094D_uni0937", "uni0915.half"], model}`. Conjuncts look nothing like their parts. A conjunct made of components (`.half` and the full
   letter) passes `languages`; a drawn shape, as in the model, reads better. `languages` names
   the rest.
-- **Not possible yet**: Bengali, Tamil and the other Indic scripts, Khmer, Myanmar, Tibetan,
-  Sinhala (each reorders its own way). Say so.
+- **Bengali and Assamese (bn, as), Gurmukhi (pa), Gujarati (gu), Tamil (ta)**: trace a model as
+  for Devanagari; Nirmala UI (index 0) draws all four. Measured in it, scaled to Latin caps at 700
+  (2026-11-16; not drawn here yet): Bengali and Gurmukhi hang from a headline whose top is at 728,
+  its ink 17 past both edges, as Devanagari; Gujarati has no headline, its bodies from 0 to about
+  712 and their side bearings open (ક ink 47 to 529 on 585); Tamil has none either, its bodies from
+  0 to 584 (Latin x-height 512), some with a tail to −209 (ந ர). Vowel signs drawn before their
+  consonant are spacing glyphs: ি ে ৈ, ਿ, િ, ெ ே ை. Signs in two parts (ো ৌ ொ ோ ௌ): draw their
+  parts (ে া ৗ, ெ ே ா ௗ) and `compose` makes the whole. Forms, as `languages` names them:
+  Bengali the reph `uni09B0.rphf` (Assamese `uni09F0.rphf`), ra-phala `uni09B0.blwf`, ya-phala
+  `uni09AF.pstf` (a spacing hook after the letter), ten common conjuncts and রু রূ; Gurmukhi
+  ra, ha and va below (`uni0A30.blwf`, `uni0A39.blwf`, `uni0A35.blwf`); Gujarati as Devanagari
+  (half forms, reph, ra below, ક્ષ જ્ઞ) and રુ રૂ; Tamil each consonant with ு and ூ drawn as one
+  (கு `uni0B95_uni0BC1`, 36 glyphs, their shapes differ: trace each), டி டீ, க்ஷ, ஸ்ரீ. The
+  Tamil pulli ் sits above the letter. No blind run has drawn these scripts yet.
+- **Not possible yet**: Telugu, Kannada, Malayalam, Odia, Sinhala, Khmer, Myanmar, Tibetan (each
+  reorders its own way). Say so.
   Japanese, Chinese and Korean: load `references/cjk.md`.
 
 ## 3b. Arabic, Persian, Urdu
@@ -194,6 +208,10 @@ ka  ქართული ენა — სწრაფი ყავისფე
 ar  نص حكيم له سر قاطع وذو شأن عظيم مكتوب على ثوب أخضر ومغلف بجلد أزرق
 fa  بر اثر چنین تلقین و شستشوی مغزی جامعی، سطح و پایه‌ی ذهن و فهم و نظر بعضی اشخاص
 hi  ऋषियों को सताने वाले दुष्ट राक्षसों के राजा रावण का सर्वनाश करने वाले विष्णुवतार भगवान श्रीराम
+bn  বাংলা ভাষা পৃথিবীর অন্যতম প্রধান ভাষা। ক্ষমা, রুমাল, বর্ষা, কৌতুক, বাক্য, প্রেম (sample)
+pa  ਪੰਜਾਬੀ ਭਾਸ਼ਾ ਗੁਰਮੁਖੀ ਲਿਪੀ ਵਿੱਚ ਲਿਖੀ ਜਾਂਦੀ ਹੈ। ਪ੍ਰੇਮ (sample)
+gu  ગુજરાતી ભાષા ગુજરાતી લિપિમાં લખાય છે. ક્ષમા, ધર્મ, પ્રેમ (sample)
+ta  தமிழ் மொழி உலகின் மிகப் பழமையான மொழிகளில் ஒன்று. கூட்டம், டிசம்பர், ஸ்ரீ (sample)
 th  เป็นมนุษย์สุดประเสริฐเลิศคุณค่า กว่าบรรดาฝูงสัตว์เดรัจฉาน
 lo  ພາສາລາວ (sample)
 ur  ٹھنڈ میں، ایک قحط زدہ گاؤں سے گذرتے وقت ایک چڑچڑے، باأثر و فارغ شخص کو بعض جل پری نما اژدہے نظر آئے

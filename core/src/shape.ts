@@ -1,6 +1,6 @@
 import { isRtl, joiningOf, MIRROR, type Joining } from './arabic';
 import { DEFAULT_FEATURES, featureRules, type Rule } from './features';
-import { isConsonant, reorderIndic } from './indic';
+import { isConsonant, reorderIndic, splitVowels } from './indic';
 import type { FontDoc, Glyph } from './types';
 
 /** A glyph set on a line: its embedding level (odd: right to left) and, for a mark, the item it sits on. */
@@ -90,8 +90,8 @@ interface Logical {
 
 const isMarkChar = (item: Logical): boolean => /\p{M}/u.test(item.char) && item.glyph.advance === 0;
 
-/** The ligature passes, in the order text engines apply them: Devanagari conjuncts, then below and half forms, then the rest. */
-const PASSES: (string | undefined)[] = ['akhn', 'blwf', 'half', undefined];
+/** The ligature passes, in the order text engines apply them: Indic conjuncts, then below, half and post forms, then the rest. */
+const PASSES: (string | undefined)[] = ['akhn', 'blwf', 'half', 'pstf', undefined];
 
 /**
  * One pass of ligatures, the longest first at each place. The required Arabic ligatures look past marks (lam, a
@@ -141,8 +141,8 @@ function substitute(doc: FontDoc, logical: Logical[], features: string[], langua
   // A rule for some languages applies only in text of one of them (locl): traditional Chinese punctuation.
   const rules = featureRules(doc).filter((rule) => (rule.languages ? language !== undefined && rule.languages.includes(language) : on.has(rule.feature)));
   const singles = new Map(rules.filter((rule) => rule.sub.length === 1).map((rule) => [`${rule.feature} ${rule.sub[0]}`, rule.by]));
-  const rephRule = rules.find((rule) => rule.feature === 'rphf');
-  const reph = rephRule ? (ra: Logical): Logical => ({ ...ra, glyph: byName.get(rephRule.by)! }) : undefined;
+  const rephs = new Map(rules.filter((rule) => rule.feature === 'rphf').map((rule) => [rule.sub[0]!, rule.by]));
+  const reph = (ra: Logical): Logical | undefined => (rephs.has(ra.glyph.name) ? { ...ra, glyph: byName.get(rephs.get(ra.glyph.name)!)! } : undefined);
   const ordered = reorderIndic(logical, reph);
   const forms = joiningForms(ordered.map((item) => joiningOf(item.char)));
   let items = ordered.map((item, i) => {
@@ -163,7 +163,7 @@ function substitute(doc: FontDoc, logical: Logical[], features: string[], langua
  * in the order they are drawn, left to right. A character the font does not draw is left out and named in `missing`.
  */
 export function shapeLine(doc: FontDoc, text: string, features: string[] = [], language?: string): { items: Item[]; missing: string[] } {
-  const chars = [...text];
+  const chars = [...splitVowels(text)];
   const levels = bidiLevels(chars);
   const byCode = new Map(doc.glyphs.flatMap((glyph) => (glyph.unicode === undefined ? [] : [[glyph.unicode, glyph] as const])));
   const missing: string[] = [];
