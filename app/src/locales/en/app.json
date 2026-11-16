@@ -56,7 +56,9 @@
     "missing": "Not drawn yet, shown in a fallback font: {{chars}}",
     "error": "The font could not be compiled: {{error}}",
     "features": "Glyph sets",
-    "samples": "Sample texts"
+    "samples": "Sample texts",
+    "lang": "Language of the text",
+    "langAuto": "Language: automatic"
   },
   "panel": {
     "glyph": "Glyph",

@@ -56,7 +56,9 @@
     "missing": "Pas encore dessinés, montrés dans une police de secours : {{chars}}",
     "error": "La police n'a pas pu être compilée : {{error}}",
     "features": "Jeux de glyphes",
-    "samples": "Textes d’essai"
+    "samples": "Textes d’essai",
+    "lang": "Langue du texte",
+    "langAuto": "Langue : automatique"
   },
   "panel": {
     "glyph": "Glyphe",

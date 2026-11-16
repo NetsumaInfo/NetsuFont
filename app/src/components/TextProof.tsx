@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { layout, optionalFeatures, type FontDoc } from '@netsufont/core';
+import { layout, openTypeLanguage, optionalFeatures, type FontDoc } from '@netsufont/core';
 import { useFontFace } from '../lib/fontFace';
 import { SAMPLES } from '../lib/samples';
 
@@ -29,18 +29,13 @@ function FeatureToggles({ available, on, toggle }: { available: string[]; on: st
   );
 }
 
-/** A menu of sample texts, one per language, named in the app's language. */
-function SamplePicker({ onPick }: { onPick(text: string): void }) {
-  const { t, i18n } = useTranslation();
+/** A menu of languages, named in the app's language with their code: for a sample text, or the language of the text. */
+function LanguageMenu({ label, value, first, onPick }: { label: string; value: string; first: string; onPick(code: string): void }) {
+  const { i18n } = useTranslation();
   const names = new Intl.DisplayNames([i18n.language], { type: 'language' });
   return (
-    <select
-      aria-label={t('proof.samples')}
-      value=""
-      onChange={(event) => event.target.value && onPick(SAMPLES[event.target.value]!)}
-      className="rounded-control border border-border bg-bg px-2 py-1 text-muted"
-    >
-      <option value="">{t('proof.samples')}</option>
+    <select aria-label={label} value={value} onChange={(event) => onPick(event.target.value)} className="rounded-control border border-border bg-bg px-2 py-1 text-muted">
+      <option value="">{first}</option>
       {Object.keys(SAMPLES).map((code) => (
         <option key={code} value={code}>
           {names.of(code) ?? code} · {code}
@@ -52,16 +47,23 @@ function SamplePicker({ onPick }: { onPick(text: string): void }) {
 
 /**
  * Text the user types, set with the font compiled to a real OTF, at several sizes, on paper. The browser sets each
- * line in its own direction: Hebrew and Arabic right to left, with the font's joining forms and ligatures.
+ * line in its own direction: Hebrew and Arabic right to left, with the font's joining forms and ligatures. The text is
+ * marked with its language, so that the browser uses that language's forms (locl: traditional Chinese punctuation).
  */
 export function TextProof({ doc }: { doc: FontDoc }) {
   const { t } = useTranslation();
   const [sample, setSample] = useState<string>(() => t('proof.sample'));
   const [features, setFeatures] = useState<string[]>([]);
+  const [lang, setLang] = useState('');
+  const pick = (code: string) => {
+    if (!code) return;
+    setSample(SAMPLES[code]!);
+    setLang(code);
+  };
   const { family, error } = useFontFace(doc);
   const available = optionalFeatures(doc);
   const on = features.filter((feature) => available.includes(feature));
-  const { missing } = layout(doc, sample.replace(/\n/g, ''));
+  const { missing } = layout(doc, sample.replace(/\n/g, ''), [], openTypeLanguage(lang));
   const toggle = (feature: string) => setFeatures((now) => (now.includes(feature) ? now.filter((f) => f !== feature) : [...now, feature]));
   const settings = on.map((feature) => `"${feature}" 1`).join(', ') || 'normal';
   return (
@@ -75,7 +77,8 @@ export function TextProof({ doc }: { doc: FontDoc }) {
         className="resize-none rounded-control border border-border bg-bg p-2 outline-none focus:border-primary"
       />
       <div className="flex flex-wrap items-center gap-3">
-        <SamplePicker onPick={setSample} />
+        <LanguageMenu label={t('proof.samples')} value="" first={t('proof.samples')} onPick={pick} />
+        <LanguageMenu label={t('proof.lang')} value={lang} first={t('proof.langAuto')} onPick={setLang} />
         <FeatureToggles available={available} on={on} toggle={toggle} />
       </div>
       <p className="text-muted">
@@ -86,7 +89,7 @@ export function TextProof({ doc }: { doc: FontDoc }) {
           SIZES.map((size) => (
             <div key={size} className="flex items-baseline gap-3">
               <span className="w-8 shrink-0 font-mono text-xs text-muted">{size}</span>
-              <div style={{ fontFamily: `"${family}", monospace`, fontSize: size, lineHeight: 1.4, fontFeatureSettings: settings }} className="min-w-0 flex-1 break-words whitespace-pre-wrap">
+              <div lang={lang || undefined} style={{ fontFamily: `"${family}", monospace`, fontSize: size, lineHeight: 1.4, fontFeatureSettings: settings }} className="min-w-0 flex-1 break-words whitespace-pre-wrap">
                 {sample.split('\n').map((line, index) => (
                   <p key={index} dir="auto">
                     {line || ' '}
