@@ -103,7 +103,8 @@ Build the letters that are not Latin from the parts you already have:
   set it right to left.
 - **Devanagari (hi, mr, ne)**: trace a model (step 7; Windows has Nirmala UI, a .ttc: `index`
   0; else Noto Sans Devanagari, OFL). Measured in Nirmala UI, scaled to an em of 1000 with Latin
-  caps at 700 (2026-11-06): the headline's top at 728, its ink 17 past both edges so words join;
+  caps at 700 (2026-11-06): the headline's top at 728, its ink 17 past both edges so words join
+  (side bearings −17 and −17: `set_spacing` with 0 leaves gaps);
   bodies from 0 to the headline, as wide as their shape asks (र 489, न 607, ग 624, म 673, क 863);
   ा 260; े above from 714 to 1035; ु below from −250; ascender 1079, descender −251. Set the
   ascender and descender so before drawing: the marks pass the usual 800 and −200, and the checks
@@ -126,9 +127,16 @@ Build the letters that are not Latin from the parts you already have:
   the rest.
 - **Bengali and Assamese (bn, as), Gurmukhi (pa), Gujarati (gu), Tamil (ta)**: trace a model as
   for Devanagari; Nirmala UI (index 0) draws all four. Measured in it, scaled to Latin caps at 700
-  (2026-11-16; not drawn here yet): Bengali and Gurmukhi hang from a headline whose top is at 728,
-  its ink 17 past both edges, as Devanagari; Gujarati has no headline, its bodies from 0 to about
-  712 and their side bearings open (ક ink 47 to 529 on 585); Tamil has none either, its bodies from
+  (2026-11-16): Bengali and Gurmukhi hang from a headline whose top is at 728, its ink 17 past
+  both edges, as Devanagari. Bengali: headline 656 to 728, stems about 70 wide; letters wide (ক
+  878, ন 689, র ব 608, ম 726, ল 721, া 251 advance); ং is a spacing sign (advance 466, a ring
+  and tail from −59 to 645, under the headline), as ঃ; the reph sits on the headline, from 728 to
+  1080 and x −487 to −129 (set the ascender to 1080 first); the ya-phala is a spacing glyph with
+  its headline (advance 329). A blind run (Nodi, 2026-11-17) drew letters 560 wide, then had to
+  rescale them; it made ং a mark, and its conjuncts were two letters squeezed side by side: they
+  pass `languages` and read as nothing. Trace every conjunct and রু from the model by its name
+  (`look_glyphs {glyphs, model}`), and spend the budget on two passes per family. Gujarati has
+  no headline, its bodies from 0 to about 712 and their side bearings open (ક ink 47 to 529 on 585); Tamil has none either, its bodies from
   0 to 584 (Latin x-height 512), some with a tail to −209 (ந ர). Vowel signs drawn before their
   consonant are spacing glyphs: ি ে ৈ, ਿ, િ, ெ ே ை. Signs in two parts (ো ৌ ொ ோ ௌ): draw their
   parts (ে া ৗ, ெ ே ா ௗ) and `compose` makes the whole. Forms, as `languages` names them:
@@ -137,7 +145,7 @@ Build the letters that are not Latin from the parts you already have:
   ra, ha and va below (`uni0A30.blwf`, `uni0A39.blwf`, `uni0A35.blwf`); Gujarati as Devanagari
   (half forms, reph, ra below, ક્ષ જ્ઞ) and રુ રૂ; Tamil each consonant with ு and ூ drawn as one
   (கு `uni0B95_uni0BC1`, 36 glyphs, their shapes differ: trace each), டி டீ, க்ஷ, ஸ்ரீ. The
-  Tamil pulli ் sits above the letter. No blind run has drawn these scripts yet.
+  Tamil pulli ் sits above the letter. Only Bengali has been drawn blind (once); the others not yet.
 - **Not possible yet**: Telugu, Kannada, Malayalam, Odia, Sinhala, Khmer, Myanmar, Tibetan (each
   reorders its own way). Say so.
   Japanese, Chinese and Korean: load `references/cjk.md`.

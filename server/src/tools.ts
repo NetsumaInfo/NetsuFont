@@ -52,7 +52,6 @@ function languageLines(entry: LanguageCoverage, detail: boolean): string[] {
   const others = entry.missing.filter((char) => !strokes.includes(char));
   const built = others.filter((char) => recipe(char).base !== undefined);
   const named = others.filter((char) => recipe(char).base === undefined).map((char) => `${char} ${recipe(char).name}`);
-  const drawn = named.length > 60 ? [...named.slice(0, 60), `and ${named.length - 60} more`] : named;
   // A form of a letter that compose makes (ب from ٮ) comes with that letter; the others are drawn.
   const composed = new Set(charsOf(SCRIPTS.find((l) => l.code === entry.code)!).filter((char) => recipe(char).base !== undefined).map((char) => recipe(char).name));
   const forms = entry.forms.filter((name) => !composed.has(name.split('.')[0]!));
@@ -60,7 +59,7 @@ function languageLines(entry: LanguageCoverage, detail: boolean): string[] {
     head,
     ...(strokes.length > 0 ? [`  draw_kanji: ${strokes.length} characters (${strokes.slice(0, 12).join('')}…)`] : []),
     ...(built.length > 0 ? [`  compose: ${built.join('')}`] : []),
-    ...(drawn.length > 0 ? [`  draw: ${drawn.join(', ')}`] : []),
+    ...(named.length > 0 ? [`  draw: ${named.join(', ')}`] : []),
     ...(forms.length > 0 ? [`  draw forms and ligatures: ${forms.join(', ')}`] : []),
   ];
 }

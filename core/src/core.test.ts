@@ -132,6 +132,14 @@ describe('checks', () => {
     const doc = applyOps(newFont('t', 'T'), [{ op: 'set_glyph', glyph: 'I', unicode: 73, advance: 100, path: 'M0 0H300V1200H0Z' }]);
     expect(checkGlyphs(doc).map((f) => f.text).join(' ')).toMatch(/far above the ascender.*leaves the advance/);
   });
+
+  it('asks an advance of a letter or a spacing sign drawn with none', () => {
+    const doc = applyOps(newFont('t', 'T'), [
+      { op: 'set_glyph', glyph: 'uni0995', unicode: 0x995, advance: 0, path: 'M0 0H300V500H0Z' },
+      { op: 'set_glyph', glyph: 'uni0982', unicode: 0x982, advance: 0, path: 'M0 0H100V100H0Z' },
+    ]);
+    expect(checkGlyphs(doc).map((f) => f.text)).toEqual([expect.stringContaining('not a combining mark'), expect.stringContaining('spacing sign')]);
+  });
 });
 
 describe('a bad op', () => {

@@ -26,7 +26,7 @@
 
 ## Verified
 
-- `pnpm check` and `pnpm test` pass: 69 tests in core, 5 on the MCP tools.
+- `pnpm check` and `pnpm test` pass: 70 tests in core, 5 on the MCP tools.
 - Every recipe in `skills/netsu-type-design/references/construction.md` was drawn and set in `proof` (2026-10-25).
 - A blind run: a Sonnet agent with only the skill drew Galet (fr, pl complete; a–z, A–Z, figures, punctuation, 76 kerning pairs) and exported it, in about 95 calls. A second run on the corrected skill drew Rivet (en, ru, el complete, 230 glyphs, 90 kerning pairs) in about 61 calls. The findings of both runs were fixed; the text corrected after the second has not run blind. Details in NetsuSkills `docs/JOURNAL.md`.
 - Netsu Pixel covers en, fr, es, de, nl, its accents placed by `compose`.
@@ -46,7 +46,8 @@
   - Prakash, with the model under its glyphs: unreadable; the agent's dark strokes hid the model.
   - Usha, with the model outlined over its glyphs, Devanagari metrics and two passes per family asked: 68 calls; most consonants right (ग च द र व ब ट ठ ड ढ ह प ण), words read from context; the conjuncts क्ष ज्ञ श्र wrong, because the model had lost them. Since then `import_font` keeps them (below). No run has been made since that change.
   - Varsha (2026-11-08), with the conjuncts and half forms traced by name on the model: about 118 calls, past the budget. Most consonants right; reph and ra below right (सर्वनाश, श्रीराम); common words read (के, रावण का, हिंदी, भगवान). Still weak: ज स श भ ल and the conjunct क्ष; not comfortable to read yet. The skill now gives the stem's place, the model's units and the half forms of क ख फ.
-- Hebrew, Vietnamese, Armenian, Georgian, Thai drawn by an agent with only the skill: no blind run yet. Greek and Cyrillic were drawn once (Rivet).
+- Nodi (2026-11-17), Bengali with Latin, Sonnet with the skill alone: bn 99/99 and en 81/81 in about 55 calls, 171 glyphs, 73 pairs. The shaping worked at once (reph, ya-phala, ra-phala, ো ৌ); the Latin is clean. The Bengali does not read as text: many letters knotted (ঙ ঞ ট ঠ ছ জ ড ঢ ল শ ম ফ ভ), খ ধ ষ স confused, the conjuncts two letters squeezed side by side, ং drawn as a mark. Fixed after it: `languages` no longer cuts its list (it hid the punctuation), a check says when a letter or a spacing sign has advance 0, and the skill gives Bengali widths, stems, ং, reph and ya-phala measured in Nirmala UI, and says to trace each conjunct. Not run again since.
+- Hebrew, Vietnamese, Armenian, Georgian, Thai, Gurmukhi, Gujarati, Tamil drawn by an agent with only the skill: no blind run yet. Greek and Cyrillic were drawn once (Rivet).
 - Arabic, verified 2026-11-06 on a monoline test font drawn through the tools (35 skeleton glyphs, 9 letters composed with their forms): Chrome sets the exported OTF right to left with its joining forms, lam-alef and `ss01`; `proof` sets the same words in the same order. Not verified: Windows apps, Word, Persian and Urdu text, lam-alef with a harakat between (the ligature skips marks now; not tried in a browser).
 - Kerning in right-to-left text: `proof` reads a pair in reading order; that browsers do the same with the `kern` table is not verified.
 - Devanagari in Chrome, verified 2026-11-06 on a test font drawn through the tools: the reordered i, the conjunct, the reph, the half form and the ra below come out as in `proof` (GSUB).
