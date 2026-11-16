@@ -14,6 +14,8 @@ export interface Pen {
   contrast?: number;
   /** The direction, in degrees, a stroke is thinnest along: 0 makes horizontals thin, as in Mincho. */
   angle?: number;
+  /** song: a small triangle on the end of each horizontal stroke (the uroko of Mincho and Song faces). */
+  terminals?: 'song';
 }
 
 /** Where the 109-unit box of KanjiVG goes in the glyph, in font units, y up. */
@@ -170,10 +172,65 @@ export function kanjiPath(svg: string, pen: Pen, frame: Frame): string {
 export function drawLines(lines: Point[][], pen: Pen): string {
   return lines
     // The outline thinned too: a point that moves it by less than 0.8 unit adds bytes, not shape.
-    .map((line) => simplify(strokeOutline(line, pen), 0.8))
+    .flatMap((line) => [simplify(strokeOutline(line, pen), 0.8), ...(pen.terminals === 'song' ? uroko(line, pen) : [])])
     .map((outline) => (area(outline) < 0 ? outline.reverse() : outline))
     .map(relative)
     .join('');
+}
+
+/**
+ * The triangle Song and Mincho faces put on the right end of a horizontal stroke: it rises from the stroke's top a
+ * little before its end and comes down past it. Only for a stroke that runs mostly left to right.
+ */
+function uroko(line: Point[], pen: Pen): Point[][] {
+  const [start, end] = [line[0]!, line[line.length - 1]!];
+  const [dx, dy] = [end[0] - start[0], end[1] - start[1]];
+  if (dx < pen.width * 1.5 || Math.abs(dy) > dx * 0.3) return [];
+  const w = pen.width;
+  const thin = halfWidth(pen, [1, 0]);
+  const [x, y] = end;
+  return [[[x - 1.05 * w, y + thin], [x - 0.15 * w, y + thin + 0.7 * w], [x + 0.16 * w, y - thin]]];
+}
+
+/**
+ * The line without the flicks a brush leaves at its two ends: a first or last piece shorter than a fifth of the
+ * stroke that turns more than 35°. A Song face draws a stroke straight and lets its terminals say the rest.
+ */
+function unflick(line: Point[]): Point[] {
+  const length = line.slice(1).reduce((sum, p, i) => sum + Math.hypot(p[0] - line[i]![0], p[1] - line[i]![1]), 0);
+  let points = line;
+  const short = (a: Point, b: Point): boolean => Math.hypot(b[0] - a[0], b[1] - a[1]) < length / 5;
+  if (points.length > 2 && short(points[0]!, points[1]!) && turnAt(points[0]!, points[1]!, points[2]!) > 35) points = points.slice(1);
+  const n = points.length;
+  if (n > 2 && short(points[n - 2]!, points[n - 1]!) && turnAt(points[n - 3]!, points[n - 2]!, points[n - 1]!) > 35) points = points.slice(0, -1);
+  return points;
+}
+
+/**
+ * The line with its nearly level pieces made level and its nearly upright pieces upright (within 12°): a brush
+ * writes horizontals rising a little, a Song face draws them flat.
+ */
+function straighten(line: Point[]): Point[] {
+  const points = line.map((p): Point => [p[0], p[1]]);
+  const tilt = Math.tan((12 * Math.PI) / 180);
+  const kind = (i: number): 'h' | 'v' | undefined => {
+    const [dx, dy] = [points[i + 1]![0] - points[i]![0], points[i + 1]![1] - points[i]![1]];
+    return Math.abs(dy) <= Math.abs(dx) * tilt ? 'h' : Math.abs(dx) <= Math.abs(dy) * tilt ? 'v' : undefined;
+  };
+  // A run of level pieces takes one height, a run of upright ones one x: no step between two pieces of one run.
+  for (let i = 0; i < points.length - 1; ) {
+    const k = kind(i);
+    let end = i + 1;
+    while (k && end < points.length - 1 && kind(end) === k) end += 1;
+    if (k) {
+      const axis = k === 'h' ? 1 : 0;
+      const run = points.slice(i, end + 1);
+      const mean = run.reduce((sum, p) => sum + p[axis], 0) / run.length;
+      run.forEach((p) => (p[axis] = mean));
+    }
+    i = end;
+  }
+  return points;
 }
 
 /** The turn at a point, in degrees: 0 when the line goes straight on. */
@@ -209,5 +266,6 @@ export function hanziPath(medians: number[][][], pen: Pen, frame: Frame): string
   const scale = (frame.right - frame.left) / 1024;
   if (medians.length === 0) throw new FontError('bad_kanji_data', 'This character has no stroke.');
   // Smoothed, then thinned again: a curve keeps the points that bend it by more than 1.5 units of 1024.
-  return drawLines(medians.map((median) => simplify(smooth(median as Point[]), 1.5).map(([x, y]): Point => [frame.left + x * scale, frame.top - (900 - y) * scale])), pen);
+  const clean = (median: Point[]): Point[] => (pen.terminals === 'song' ? straighten(unflick(median)) : median);
+  return drawLines(medians.map((median) => simplify(smooth(clean(median as Point[])), 1.5).map(([x, y]): Point => [frame.left + x * scale, frame.top - (900 - y) * scale])), pen);
 }

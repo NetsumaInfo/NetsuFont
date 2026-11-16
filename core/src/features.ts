@@ -11,7 +11,15 @@ export interface Rule {
   script: ScriptTag;
   sub: string[];
   by: string;
+  /** The OpenType languages the rule is for; every language when left out. */
+  languages?: string[];
 }
+
+/**
+ * The glyphs a language swaps in (feature locl), by suffix: `uniFF0C.zht` is the full-width comma of traditional
+ * Chinese (centred), used when the text is marked zh-Hant or zh-HK.
+ */
+const LOCAL: Record<string, { script: ScriptTag; languages: string[] }> = { zht: { script: 'hani', languages: ['ZHT ', 'ZHH '] } };
 
 /** The features a glyph name suffix asks for: `a.ss01` is `a` in the stylistic set 1. */
 const SUFFIX_FEATURES: Record<string, string> = { alt: 'salt', sc: 'smcp', onum: 'onum', tnum: 'tnum', sups: 'sups', sinf: 'sinf', vert: 'vert' };
@@ -23,7 +31,7 @@ export const OPTIONAL_FEATURE = /^(ss(0[1-9]|1\d|20)|salt|smcp|onum|tnum|sups|si
 const FORMS = new Set<string>(['init', 'medi', 'fina', 'isol']);
 
 /** The script tag of the rules of a glyph: Arabic and Devanagari have their own, every other script shares DFLT. */
-export type ScriptTag = 'DFLT' | 'arab' | 'dev2';
+export type ScriptTag = 'DFLT' | 'arab' | 'dev2' | 'hani';
 
 /** The code point a glyph stands for: its own, else that of the glyph its name starts with (uni0628.init). */
 function rootCode(glyph: Glyph | undefined, byName: Map<string, Glyph>): number | undefined {
@@ -76,6 +84,8 @@ function single(glyph: Glyph, byName: Map<string, Glyph>): Rule | undefined {
   if (FORMS.has(suffix)) return script === 'arab' ? { feature: suffix, script, sub: [from], by: glyph.name } : undefined;
   const indic = indicRule(source, suffix, glyph.name);
   if (indic) return indic;
+  const local = LOCAL[suffix];
+  if (local) return { feature: 'locl', script: local.script, languages: local.languages, sub: [from], by: glyph.name };
   const feature = /^ss(0[1-9]|1\d|20)$/.test(suffix) ? suffix : SUFFIX_FEATURES[suffix];
   return feature ? { feature, script, sub: [from], by: glyph.name } : undefined;
 }

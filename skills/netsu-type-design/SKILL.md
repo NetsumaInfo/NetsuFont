@@ -100,7 +100,8 @@ nnynn ooyoo"`. Each x
 
 Control glyphs: 1 create, 1 to 3 edits, 2 looks. Each of the 12 families: 1 edit, 1 look, 1 fix
 at most. Spacing: one edit and one proof per family. Languages: 1 call, 2 to 4 edits, 1 proof.
-Each new script (Greek, Cyrillic): 3 to 5 edits and 2 proofs more. A script traced on a model:
+Each new script (Greek, Cyrillic): 3 to 5 edits and 2 proofs more. Japanese or Chinese with Latin:
+31 to 35 calls in two blind runs, `draw_kanji` doing the thousands. A script traced on a model:
 per family a look with the model, an edit, a look, a fixing edit and a last look; Devanagari took
 about 110 calls in a blind run (2026-11-08), Latin included: say so in the brief's plan. Write generator scripts with a file tool, not a shell heredoc: quotes and
 non-Latin text break it. Arabic: not measured in a blind

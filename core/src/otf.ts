@@ -78,8 +78,10 @@ function addFeatures(font: OtFont, rules: Rule[], index: Map<string, number>): v
   const sorted = [...rules].sort((a, b) => (a.feature === b.feature ? (a.script < b.script ? -1 : 1) : a.feature < b.feature ? -1 : 1));
   for (const rule of sorted) {
     const by = index.get(rule.by)!;
-    if (rule.sub.length === 1) font.substitution.addSingle(rule.feature, { sub: index.get(rule.sub[0]!)!, by }, rule.script, 'dflt');
-    else font.substitution.addLigature(rule.feature, { sub: rule.sub.map((name) => index.get(name)!), by }, rule.script, 'dflt');
+    for (const language of rule.languages ?? ['dflt']) {
+      if (rule.sub.length === 1) font.substitution.addSingle(rule.feature, { sub: index.get(rule.sub[0]!)!, by }, rule.script, language);
+      else font.substitution.addLigature(rule.feature, { sub: rule.sub.map((name) => index.get(name)!), by }, rule.script, language);
+    }
   }
 }
 

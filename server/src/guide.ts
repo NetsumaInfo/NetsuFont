@@ -38,9 +38,11 @@ DOCUMENT
   advance 0, drawn once anywhere. The export (GDEF, GPOS mark and mkmk) and proof set each on the top of its letter's
   ink, or under it (Unicode says, or it is drawn below the baseline); a second one stacks on the first. The Hebrew
   dagesh is centred; the shin and sin dots and holam stay where drawn in the letter's frame. Devanagari marks touch.
-- Japanese, Chinese, Korean: draw_kanji {name, set or chars, from?, pen:{width, ends?, contrast?, angle?}, frame?} draws
+- Japanese, Chinese, Korean: draw_kanji {name, set or chars, from?, pen:{width, ends?, contrast?, angle?, terminals?}, frame?} draws
   them from their strokes with the pen, one em-wide glyph each. Sets: kana joyo jinmeiyo (KanjiVG), hanzi1 hanzi2 hanzi3
-  hant (Make Me a Hanzi; from:"hanzi" for chars), hangul hangul_all jamo (composed from letters, no data). Voicing marks uni3099 uni309A, without unicode, stay
+  hant (Make Me a Hanzi; from:"hanzi" for chars), hangul hangul_all jamo (composed from letters, no data). contrast:
+  the share of the width left along angle (0.25: a quarter). terminals:"song": strokes made level and upright, a
+  triangle on each horizontal's end. <name>.zht: the glyph traditional Chinese text uses (feature locl). Voicing marks uni3099 uni309A, without unicode, stay
   where drawn (compose が from か). <name>.vert: the glyph for vertical writing (feature vert).
 - Devanagari: <consonant>.half (before another consonant, the virama gone), uni0930.rphf (the reph: advance 0, ink
   above and left of x 0), uni0930.blwf (ra under a consonant: advance 0), conjuncts named by their parts

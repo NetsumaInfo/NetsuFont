@@ -1,8 +1,10 @@
+import opentype from 'opentype.js';
 import { describe, expect, it } from 'vitest';
 import { newFont } from './doc';
 import { hanziPath, kanjiPath, kanjiStrokes } from './kanji';
 import { languageCoverage } from './languages';
 import { applyOps } from './ops';
+import { exportOtf } from './otf';
 import { bounds, parsePath } from './path';
 
 /** A KanjiVG file of one: a horizontal stroke, then a vertical one written as a smooth curve, relative. */
@@ -58,5 +60,26 @@ describe('hanzi from medians', () => {
     expect(hans!.missing).toContain('们');
     expect(hant!.missing).toContain('們');
     expect(hans!.of).toBeGreaterThan(3500);
+  });
+});
+
+describe('Song terminals and local forms', () => {
+  it('puts a triangle on the end of a level stroke and makes a brush stroke level', () => {
+    // A horizontal that rises 4% and ends in a short flick down: a Song pen draws it level, with its triangle.
+    const medians = [[[100, 400], [500, 410], [880, 420], [900, 380]]];
+    const plain = hanziPath(medians, { width: 80, contrast: 0.25, ends: 'flat' }, { left: 0, right: 1024, top: 900 });
+    const song = hanziPath(medians, { width: 80, contrast: 0.25, ends: 'flat', terminals: 'song' }, { left: 0, right: 1024, top: 900 });
+    expect(song.match(/M/g)).toHaveLength(2);
+    expect(plain.match(/M/g)).toHaveLength(1);
+  });
+
+  it('writes a .zht glyph as locl for traditional Chinese', () => {
+    const doc = applyOps(newFont('t', 'T'), [
+      { op: 'set_glyph', glyph: 'uniFF0C', unicode: 0xff0c, advance: 1000, shapes: [{ type: 'rect', x: 100, y: -60, w: 100, h: 140 }] },
+      { op: 'set_glyph', glyph: 'uniFF0C.zht', advance: 1000, shapes: [{ type: 'rect', x: 450, y: 200, w: 100, h: 140 }] },
+    ]);
+    const bytes = exportOtf(doc);
+    const font = opentype.parse(bytes.buffer as ArrayBuffer) as unknown as { substitution: { getSingle(f: string, s: string, l: string): { sub: number; by: number }[] } };
+    expect(font.substitution.getSingle('locl', 'hani', 'ZHT ')).toEqual([{ sub: 2, by: 3 }]);
   });
 });
