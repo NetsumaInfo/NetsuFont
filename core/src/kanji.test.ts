@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { newFont } from './doc';
-import { kanjiPath, kanjiStrokes } from './kanji';
+import { hanziPath, kanjiPath, kanjiStrokes } from './kanji';
 import { languageCoverage } from './languages';
 import { applyOps } from './ops';
 import { bounds, parsePath } from './path';
@@ -42,5 +42,21 @@ describe('Japanese', () => {
     const ja = languageCoverage(doc, ['ja'])[0]!;
     expect(ja.of).toBeGreaterThan(2136 + 170);
     expect(ja.missing).toContain('漢');
+  });
+});
+
+describe('hanzi from medians', () => {
+  it('draws each median in the frame, its corners kept sharp', () => {
+    // 口 drawn as one stroke: down the left, across the bottom: a corner of 90°. Box of 1024, top 900.
+    const d = hanziPath([[[100, 800], [100, 100], [900, 100]]], { width: 64, ends: 'flat' }, { left: 0, right: 1024, top: 900 });
+    const box = bounds(parsePath(d))!;
+    expect([Math.round(box.xMin), Math.round(box.xMax), Math.round(box.yMin), Math.round(box.yMax)]).toEqual([68, 900, 68, 800]);
+  });
+
+  it('counts simplified and traditional Chinese', () => {
+    const [hans, hant] = languageCoverage(newFont('t', 'T'), ['zh-Hans', 'zh-Hant']);
+    expect(hans!.missing).toContain('们');
+    expect(hant!.missing).toContain('們');
+    expect(hans!.of).toBeGreaterThan(3500);
   });
 });

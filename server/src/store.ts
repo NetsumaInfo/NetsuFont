@@ -6,6 +6,8 @@ import { FONT_NAME, FontError, validate, type FontDoc } from '@netsufont/core';
 const SUFFIX = '.nfont.json';
 /** Where the KanjiVG files are: NETSUFONT_KANJIVG, else ~/.netsufont/kanjivg/kanji. */
 export const KANJI_DIR = path.resolve(process.env.NETSUFONT_KANJIVG ?? path.join(os.homedir(), '.netsufont', 'kanjivg', 'kanji'));
+/** Where the Make Me a Hanzi strokes are: NETSUFONT_HANZI, else ~/.netsufont/hanzi/graphics.txt. */
+export const HANZI_FILE = path.resolve(process.env.NETSUFONT_HANZI ?? path.join(os.homedir(), '.netsufont', 'hanzi', 'graphics.txt'));
 const SETTINGS_FILE = 'settings.json';
 
 /** The languages the app speaks. The first one is the one it starts in. */
@@ -27,15 +29,38 @@ export class Store {
   constructor(
     readonly dir: string,
     readonly kanjiDir = KANJI_DIR,
+    readonly hanziFile = HANZI_FILE,
   ) {
     fs.mkdirSync(dir, { recursive: true });
   }
 
-  /** The KanjiVG file of a character, or undefined when it has none. Throws when the data is not downloaded. */
+  /** Which stroke data the user has downloaded. */
+  strokeData(): { kanjivg: boolean; hanzi: boolean } {
+    return { kanjivg: fs.existsSync(this.kanjiDir), hanzi: fs.existsSync(this.hanziFile) };
+  }
+
+  /** The KanjiVG file of a character, or undefined when it has none or the data is not downloaded. */
   kanjiSvg(char: string): string | undefined {
-    if (!fs.existsSync(this.kanjiDir)) throw new FontError('no_kanji_data', 'The stroke data is not downloaded. The user runs: pnpm --filter @netsufont/server kanjivg (KanjiVG, CC BY-SA 3.0).');
     const file = path.join(this.kanjiDir, `${char.codePointAt(0)!.toString(16).padStart(5, '0')}.svg`);
     return fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : undefined;
+  }
+
+  private hanzi?: Map<string, number[][][]>;
+
+  /**
+   * The medians of a character in Make Me a Hanzi (Arphic Public License data the user downloads with
+   * `pnpm --filter @netsufont/server hanzi`), or undefined. The file is read once, on first use.
+   */
+  hanziMedians(char: string): number[][][] | undefined {
+    if (!this.hanzi) {
+      if (!fs.existsSync(this.hanziFile)) return undefined;
+      const lines = fs.readFileSync(this.hanziFile, 'utf8').split('\n').filter(Boolean);
+      this.hanzi = new Map(lines.map((line) => {
+        const entry = JSON.parse(line) as { character: string; medians: number[][][] };
+        return [entry.character, entry.medians];
+      }));
+    }
+    return this.hanzi.get(char);
   }
 
   private file(name: string): string {

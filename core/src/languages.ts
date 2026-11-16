@@ -1,9 +1,11 @@
 import { formsOf, LAM_ALEF } from './arabic';
+import { HANS_PUNCTUATION, HANT_PUNCTUATION, HANZI_1, HANZI_TRADITIONAL } from './chinese';
 import { JAPANESE_PUNCTUATION, JOYO, KANA } from './japanese';
+import { HANGUL_KSX, JAMO } from './korean';
 import { glyphName } from './names';
 import type { FontDoc } from './types';
 
-export type Script = 'latin' | 'greek' | 'cyrillic' | 'armenian' | 'georgian' | 'hebrew' | 'arabic' | 'devanagari' | 'thai' | 'lao' | 'japanese';
+export type Script = 'latin' | 'greek' | 'cyrillic' | 'armenian' | 'georgian' | 'hebrew' | 'arabic' | 'devanagari' | 'thai' | 'lao' | 'japanese' | 'chinese' | 'korean';
 
 /**
  * The letters each language needs beyond the basic Latin set, lowercase then uppercase, and its own punctuation.
@@ -91,6 +93,12 @@ export const LANGUAGES: Language[] = [
   { code: 'lo', script: 'lao', chars: 'ກຂຄງຈຊຍດຕຖທນບປຜຝພຟມຢຣລວສຫອຮໜໝະັາຳິີຶືຸູົຼຽເແໂໃໄໆ່້໊໋໌ໍ໐໑໒໓໔໕໖໗໘໙0123456789.,:;!?-()–—…' },
   // Japanese: the kana, the punctuation and the 2,136 kanji for general use. draw_kanji draws the kanji from KanjiVG.
   { code: 'ja', script: 'japanese', chars: `${KANA}${JAPANESE_PUNCTUATION}${JOYO}` },
+  // Chinese: the 3,500 characters in common use (level 1 of the 2013 table), simplified or in their traditional forms,
+  // and the digits. draw_kanji draws them from Make Me a Hanzi.
+  { code: 'zh-Hans', script: 'chinese', chars: `${HANS_PUNCTUATION}0123456789${HANZI_1}` },
+  { code: 'zh-Hant', script: 'chinese', chars: `${HANT_PUNCTUATION}0123456789${HANZI_TRADITIONAL}` },
+  // Korean: the 2,350 syllables of KS X 1001 and the letters; draw_kanji composes them. Punctuation is the Latin one.
+  { code: 'ko', script: 'korean', chars: `${HANGUL_KSX}${JAMO}0123456789.,:;!?'"-()~·“”‘’…` },
   { code: 'ar', script: 'arabic', chars: `ءآأؤإئابةتثجحخدذرزسشصضطظعغفقكلمنهوىي٠١٢٣٤٥٦٧٨٩${ARABIC_PUNCT}` },
   { code: 'fa', script: 'arabic', chars: `ءآأؤئابپةتثجچحخدذرزژسشصضطظعغفقکگلمنهوی۰۱۲۳۴۵۶۷۸۹${ARABIC_PUNCT}` },
   { code: 'ur', script: 'arabic', chars: `ءآأؤئابپتٹثجچحخدڈذرڑزژسشصضطظعغفقکگلمںنوہھیے۰۱۲۳۴۵۶۷۸۹۔${ARABIC_PUNCT}` },
@@ -98,7 +106,7 @@ export const LANGUAGES: Language[] = [
 
 /** Scripts the format cannot serve yet, and why. */
 export const UNSUPPORTED_SCRIPTS =
-  'Bengali, Tamil, Telugu and the other Indic scripts beyond Devanagari, Khmer, Myanmar, Tibetan, Sinhala: each reorders its own way (split vowels, other pre-base signs), not written yet. Chinese and Korean: thousands of glyphs, and no stroke data for their forms yet.';
+  'Bengali, Tamil, Telugu and the other Indic scripts beyond Devanagari, Khmer, Myanmar, Tibetan, Sinhala: each reorders its own way (split vowels, other pre-base signs), not written yet.';
 
 /** Every character a language needs: basic Latin first for a Latin language, then its own. */
 export function charsOf(language: Language): string[] {

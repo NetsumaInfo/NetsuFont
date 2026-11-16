@@ -9,6 +9,7 @@
     "seed": "tsx scripts/seed.ts",
     "mcp": "tsx scripts/mcp.ts",
     "kanjivg": "tsx scripts/kanjivg.ts",
+    "hanzi": "tsx scripts/hanzi.ts",
     "check": "tsc --noEmit",
     "test": "vitest run"
   },

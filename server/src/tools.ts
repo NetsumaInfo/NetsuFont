@@ -180,16 +180,21 @@ function registerWrite(server: McpServer, store: Store): void {
   server.registerTool(
     'draw_kanji',
     {
-      description: 'Draws kanji and kana from their strokes (KanjiVG) with a pen in the style of the font: one square glyph each, the advance an em. Replaces glyphs of the same characters.',
+      description: 'Draws kanji, kana and hanzi from their strokes (KanjiVG for Japanese, Make Me a Hanzi for Chinese) with a pen in the style of the font: one square glyph each, the advance an em. Replaces glyphs of the same characters.',
       inputSchema: { name, ...kanjiInput },
     },
     (args) =>
       guarded(() => {
         const before = store.read(args.name);
-        const { ops, missing } = kanjiOps(store, before, args);
+        const { ops, missing, fallback } = kanjiOps(store, before, args);
         const doc = ops.length > 0 ? applyOps(before, ops) : before;
         if (ops.length > 0) store.write(doc);
-        return text([`drawn: ${ops.length}`, ...(missing.length > 0 ? [`no stroke data, draw by hand: ${missing.join('')}`] : []), afterEdit(before, doc)].join('\n'));
+        const said = [
+          `drawn: ${ops.length}`,
+          ...(fallback.length > 0 ? [`from the other stroke data (check their form): ${fallback.join('')}`] : []),
+          ...(missing.length > 0 ? [`no stroke data, draw by hand: ${missing.join('')}`] : []),
+        ];
+        return text([...said, afterEdit(before, doc)].join('\n'));
       }),
   );
 

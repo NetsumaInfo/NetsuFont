@@ -21,3 +21,6 @@ export * from './gpos';
 export * from './indic';
 export * from './kanji';
 export * from './japanese';
+export * from './chinese';
+export * from './korean';
+export * from './hangul';

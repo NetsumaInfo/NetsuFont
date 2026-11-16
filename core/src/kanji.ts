@@ -3,7 +3,7 @@
 // never stored in this repository, only read from where the user put it.
 import { FontError } from './types';
 
-type Point = [number, number];
+export type Point = [number, number];
 
 /** The pen a kanji is drawn with: its width in font units, its ends, and how it thins along one direction. */
 export interface Pen {
@@ -154,7 +154,7 @@ const area = (points: Point[]): number => points.reduce((sum, [x0, y0], i) => {
 function relative(outline: Point[]): string {
   const points = outline.map(([x, y]): Point => [Math.round(x), Math.round(y)]).filter((p, i, all) => i === 0 || p[0] !== all[i - 1]![0] || p[1] !== all[i - 1]![1]);
   const steps = points.slice(1).map(([x, y], i) => `${x - points[i]![0]} ${y - points[i]![1]}`);
-  return `M${points[0]![0]} ${points[0]![1]}l${steps.join(" ")}z`;
+  return `M${points[0]![0]} ${points[0]![1]}l${steps.join(' ')}z`;
 }
 
 /**
@@ -163,10 +163,51 @@ function relative(outline: Point[]): string {
  */
 export function kanjiPath(svg: string, pen: Pen, frame: Frame): string {
   const scale = (frame.right - frame.left) / 109;
-  return kanjiStrokes(svg)
-    .map((line) => line.map(([x, y]): Point => [frame.left + x * scale, frame.top - y * scale]))
-    .map((line) => strokeOutline(line, pen))
+  return drawLines(kanjiStrokes(svg).map((line) => line.map(([x, y]): Point => [frame.left + x * scale, frame.top - y * scale])), pen);
+}
+
+/** Lines in font units drawn with the pen: one outline each, counterclockwise. */
+export function drawLines(lines: Point[][], pen: Pen): string {
+  return lines
+    // The outline thinned too: a point that moves it by less than 0.8 unit adds bytes, not shape.
+    .map((line) => simplify(strokeOutline(line, pen), 0.8))
     .map((outline) => (area(outline) < 0 ? outline.reverse() : outline))
     .map(relative)
     .join('');
+}
+
+/** The turn at a point, in degrees: 0 when the line goes straight on. */
+function turnAt(a: Point, b: Point, c: Point): number {
+  const [u, v] = [unit([b[0] - a[0], b[1] - a[1]]), unit([c[0] - b[0], c[1] - b[1]])];
+  return (Math.acos(Math.max(-1, Math.min(1, u[0] * v[0] + u[1] * v[1]))) * 180) / Math.PI;
+}
+
+/** A line through the points, curved between them (Catmull-Rom) but kept sharp where it turns more than 50°. */
+function smooth(points: Point[], steps = 6): Point[] {
+  const out: Point[] = [points[0]!];
+  for (let i = 0; i < points.length - 1; i += 1) {
+    const corner = (k: number): boolean => k <= 0 || k >= points.length - 1 || turnAt(points[k - 1]!, points[k]!, points[k + 1]!) > 50;
+    const p1 = points[i]!;
+    const p2 = points[i + 1]!;
+    const p0 = corner(i) ? p1 : points[i - 1]!;
+    const p3 = corner(i + 1) ? p2 : points[i + 2]!;
+    for (let s = 1; s <= steps; s += 1) {
+      const t = s / steps;
+      const at = (k: 0 | 1): number =>
+        0.5 * (2 * p1[k] + (p2[k] - p0[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t * t + (3 * p1[k] - p0[k] - 3 * p2[k] + p3[k]) * t * t * t);
+      out.push([at(0), at(1)]);
+    }
+  }
+  return out;
+}
+
+/**
+ * A hanzi as SVG path data in font units, from Make Me a Hanzi: the median of each stroke, points in a box of 1024, y
+ * up, its top at 900 and its bottom at −124. The medians are smoothed, then drawn with the pen like a kanji.
+ */
+export function hanziPath(medians: number[][][], pen: Pen, frame: Frame): string {
+  const scale = (frame.right - frame.left) / 1024;
+  if (medians.length === 0) throw new FontError('bad_kanji_data', 'This character has no stroke.');
+  // Smoothed, then thinned again: a curve keeps the points that bend it by more than 1.5 units of 1024.
+  return drawLines(medians.map((median) => simplify(smooth(median as Point[]), 1.5).map(([x, y]): Point => [frame.left + x * scale, frame.top - (900 - y) * scale])), pen);
 }

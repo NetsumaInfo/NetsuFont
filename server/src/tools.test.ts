@@ -27,7 +27,8 @@ beforeEach(async () => {
   // A KanjiVG folder of one: 一, a single stroke.
   fs.mkdirSync(path.join(dir, 'kanji'));
   fs.writeFileSync(path.join(dir, 'kanji', '04e00.svg'), '<svg><path d="M10,50C30,50 70,50 90,50"/></svg>');
-  await buildServer(new Store(path.join(dir, 'fonts'), path.join(dir, 'kanji'))).connect(far);
+  // No Chinese data: a character KanjiVG lacks has no other source.
+  await buildServer(new Store(path.join(dir, 'fonts'), path.join(dir, 'kanji'), path.join(dir, 'none.txt'))).connect(far);
   client = new Client({ name: 'test', version: '0' });
   await client.connect(near);
 });
