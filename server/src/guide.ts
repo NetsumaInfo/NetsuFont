@@ -13,7 +13,7 @@ WORKFLOW
 2. edit_font {name, ops:[...]}. All or nothing: on an error nothing is saved and the error names the op. It answers the
    glyphs it changed, with their advance and [left right] side bearings, and checks: fix each, or keep it on purpose.
 3. look_glyphs {name, chars:"Hno"} (or glyphs:[names]): the glyphs on their lines; model:"<font id>" draws that font's
-   glyph of each character in blue, filled under yours and outlined over it, to trace a script. proof {name, text, sizes?}: words at
+   glyph of each character in blue, filled under yours and outlined over it, to trace a script. proof {name, text, sizes?, features?, lang?}: words at
    several sizes, with spacing and kerning; "\\n" starts a line, 600 characters at most.
    get_font {name, glyphs:[names]}: the paths of those glyphs.
 4. languages {name, languages?:["fr","pl"]}: what each language lacks, what compose can make, what to draw.
@@ -79,7 +79,7 @@ MORE OPS
 {op:"set_spacing", glyph, left?, right?}   moves the drawing to these side bearings; the advance follows
 {op:"center", glyphs, advance}   one advance for all, the ink centred: figures that line up in tables, a monospace
 {op:"transform", glyphs?, scale?, slant?, translate?}   every glyph when glyphs is left out. scale n or [x,y] (x below 0
-   mirrors the glyph in its advance: N into И); slant
+   mirrors the glyph in its advance: N into И; y below 0 mirrors it round the baseline: 6 into 9 with a translate); slant
    in degrees, positive leans right; then translate [x,y]. The advance follows the x scale.
 {op:"set_kern", left, right, value}   glyph names or characters ("period" or "."); negative brings the pair closer; 0 removes it
 {op:"compose", chars:"éèçÀ"}   makes letters from glyphs already drawn: base + marks, placed (centred, stacked,

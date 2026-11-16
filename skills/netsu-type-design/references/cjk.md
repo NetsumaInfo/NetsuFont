@@ -18,11 +18,16 @@ a square, an em wide.
    the share of the width left along `angle` (0.25 with `angle: 0`: horizontals a quarter as thick),
    1 for a gothic. For a Song or Mincho face add `terminals: "song"`: it makes the data's slanting
    brush strokes level and upright and puts a triangle on each horizontal's end; without it a pen
-   with contrast reads as a fine brush (kai), as a blind run found. Measured (2026-11-16): width 80,
-   contrast 0.25, flat, song, read as a Song face on 云山三王書国永東語言. Measured (2026-11-10 and
+   with contrast reads as a fine brush (kai), as a blind run found. It also thins the falling strokes
+   to the left to a point and widens those to the right at their foot. The Chinese data is written
+   with a brush: `song` makes a Song-flavoured face from it, not a drawn Song: say so in the brief.
+   Width 80, contrast 0.25, flat, song: level strokes, triangles and tapers on 汉字是世界上最古老的文人大. Measured (2026-11-10 and
    2026-11-16, em 1000): width 72 round set Japanese and Chinese evenly at 48 and 20 px, width 66
-   Korean; at 12 px the characters of many strokes (輩 驚) went dark: keep the pen under the stem.
-   Set the pen on a first small set, look, then never change it for one character.
+   Korean; at 12 px the characters of many strokes (輩 驚) went dark. Match the colour of the Latin:
+   in two blind runs a pen of 66 beside Latin stems of 76 made Hangul look light, a pen of 80 beside
+   74 made hanzi look heavy. Proof a mixed line (`Hanbit 한빛`, `Mingshu 明書`) and move the pen or
+   the stems until both have one colour. Set the pen on a first small set, look, then never change it
+   for one character. `set_metrics` takes only the ascender and the descender here.
 4. **Latin in the square.** The descender line is −120: the Latin descenders of p q g j y fit
    in it, short, or the descender goes lower and the lines open. Say which in the sheet.
 5. **Proof** at `[48, 20, 12]`: the text below for each language; nothing touching at 12 px.
@@ -63,7 +68,8 @@ a square, an em wide.
 - `draw_kanji {set:"jamo", pen}` then `look_glyphs {chars:"ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎㅏㅗ"}`: fix the pen.
 - `draw_kanji {set:"hangul", pen}`: the 2,350 syllables of KS X 1001, composed from the letters by
   the shape of their vowel and their final. `hangul_all`: all 11,172 (a large file).
-- Korean uses the Latin punctuation and digits: they must be drawn for `ko` to be complete.
+- Korean uses the Latin punctuation and digits, with “ ” ‘ ’ · ~ …: they must be drawn for `ko` to be
+  complete. Rare syllables (뷁) are outside the 2,350: they need `hangul_all`.
 - Proof: `모든 인간은 태어날 때부터 자유로우며\n다람쥐 헌 쳇바퀴에 타고파`
 
 ## Anti-patterns

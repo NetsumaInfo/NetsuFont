@@ -116,6 +116,15 @@ export function featureRules(doc: FontDoc): Rule[] {
   });
 }
 
+/** The OpenType language of a language tag, for the rules a language swaps in: zh-Hant is ZHT, zh-HK is ZHH. */
+export function openTypeLanguage(tag: string | undefined): string | undefined {
+  if (!tag) return undefined;
+  const lower = tag.toLowerCase();
+  if (lower === 'zh-hk' || lower === 'zh-hant-hk') return 'ZHH ';
+  if (lower.startsWith('zh-hant') || lower === 'zh-tw') return 'ZHT ';
+  return undefined;
+}
+
 /** The optional features a font has, for the app to offer: ss01, salt, smcp… */
 export function optionalFeatures(doc: FontDoc): string[] {
   return [...new Set(featureRules(doc).map((rule) => rule.feature).filter((feature) => OPTIONAL_FEATURE.test(feature)))].sort();

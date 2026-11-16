@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import type { FontDoc } from '@netsufont/core';
+import type { FontSummary } from '../lib/useFonts';
 
 interface FontListProps {
-  fonts: FontDoc[];
+  fonts: FontSummary[];
   current?: string;
   onSelect(font: string): void;
 }
@@ -25,7 +25,7 @@ export function FontList({ fonts, current, onSelect }: FontListProps) {
             {font.family} <span className="text-muted">{font.style}</span>
           </span>
           <span className="font-mono text-muted">
-            {font.name} · {t('list.glyphs', { count: font.glyphs.length })}
+            {font.name} · {t('list.glyphs', { count: font.glyphs })}
           </span>
         </button>
       ))}

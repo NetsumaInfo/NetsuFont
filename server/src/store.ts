@@ -80,13 +80,31 @@ export class Store {
     return fs.existsSync(this.file(name));
   }
 
+  /** The fonts read, by name, with the time their file was written: a Chinese font is megabytes to parse. */
+  private cache = new Map<string, { modified: number; doc: FontDoc }>();
+
+  /** When the file of a font was last written, in ms. */
+  modified(name: string): number {
+    return fs.statSync(this.file(name)).mtimeMs;
+  }
+
+  /** The font, read again only when its file changed. Callers do not change it: ops work on a copy. */
   read(name: string): FontDoc {
     const file = this.file(name);
     if (!fs.existsSync(file)) throw new FontError('font_not_found', `No font named "${name}". Existing: ${this.names().join(', ') || 'none'}.`);
+    const modified = this.modified(name);
+    const cached = this.cache.get(name);
+    if (cached && cached.modified === modified) return cached.doc;
     const doc = JSON.parse(fs.readFileSync(file, 'utf8')) as FontDoc;
     // A file changed by hand, or written by an older version: said as an error, not met later as a crash.
     validate(doc);
+    this.cache.set(name, { modified, doc });
     return doc;
+  }
+
+  /** Every font in short, for the app's list: names, glyph count, and when it changed. */
+  summaries(): { name: string; family: string; style: string; glyphs: number; modified: number }[] {
+    return this.all().map((doc) => ({ name: doc.name, family: doc.family, style: doc.style, glyphs: doc.glyphs.length, modified: this.modified(doc.name) }));
   }
 
   /** The fonts that can be read; a file that cannot is skipped, not fatal. */

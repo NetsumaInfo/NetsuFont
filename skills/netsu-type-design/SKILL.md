@@ -12,7 +12,8 @@ font family by family, space it, cover its languages, kern it and export it.
 
 - The `netsufont` MCP server. Call `list_fonts` first; if it fails, stop and say so (NetsuFont
   starts with `pnpm dev` in its folder). With a shell and no MCP connection, the same tools:
-  `pnpm -s --filter @netsufont/server mcp <tool> '@args.json' [image.png]`, from that folder.
+  `pnpm -s --filter @netsufont/server mcp <tool> '@args.json' [image.png]`, from that folder; the
+  image path absolute (the command runs in another folder).
   Always write the arguments to a file first, in UTF-8: inline JSON breaks on quotes, `&` and newlines.
   Windows paths in JSON: forward slashes (`C:/Windows/Fonts/Nirmala.ttc`).
   Many similar ops (a script's letters and their forms): generating the JSON with a short script is fine.

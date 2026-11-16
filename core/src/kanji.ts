@@ -121,12 +121,13 @@ function cap(centre: Point, [nx, ny]: Point, radius: number, steps = 6): Point[]
 }
 
 /** One stroke as one closed outline: its left side, its end, its right side back, its start. Points in font units. */
-export function strokeOutline(line: Point[], pen: Pen): Point[] {
+export function strokeOutline(line: Point[], pen: Pen, taper: (t: number) => number = () => 1): Point[] {
   if (line.length < 2) throw new FontError('bad_kanji_data', 'A stroke needs two points.');
   const directions = tangents(line);
+  const along = lengths(line);
   const sides = line.map((point, i) => {
     const [dx, dy] = directions[i]!;
-    const half = halfWidth(pen, [dx, dy]);
+    const half = halfWidth(pen, [dx, dy]) * taper(along[i]!);
     return { left: [point[0] - dy * half, point[1] + dx * half] as Point, right: [point[0] + dy * half, point[1] - dx * half] as Point, half };
   });
   const ends = pen.ends ?? 'round';
@@ -144,6 +145,28 @@ export function strokeOutline(line: Point[], pen: Pen): Point[] {
   lefts[0] = reach(lefts[0]!, back, -out);
   rights[last] = reach(rights[last]!, back, -out);
   return [...lefts, ...endCap, ...rights, ...startCap];
+}
+
+/** How far along the line each point is, from 0 at its start to 1 at its end. */
+function lengths(line: Point[]): number[] {
+  const steps = line.map((p, i) => (i === 0 ? 0 : Math.hypot(p[0] - line[i - 1]![0], p[1] - line[i - 1]![1])));
+  const total = steps.reduce((a, b) => a + b, 0) || 1;
+  let sum = 0;
+  return steps.map((step) => (sum += step) / total);
+}
+
+/**
+ * How a Song face swells and thins a stroke along its length, y up: a falling stroke to the left (撇) starts full and
+ * ends in a point; a falling stroke to the right (捺) starts light and widens to its foot. Level and upright strokes
+ * keep their width.
+ */
+function songTaper(line: Point[]): (t: number) => number {
+  const [start, end] = [line[0]!, line[line.length - 1]!];
+  const [dx, dy] = [end[0] - start[0], end[1] - start[1]];
+  const slanted = dy < 0 && Math.abs(dx) > Math.abs(dy) * 0.35;
+  if (slanted && dx < 0) return (t) => 1.15 - 0.85 * t;
+  if (slanted && dx > 0) return (t) => 0.55 + 0.8 * t * t;
+  return () => 1;
 }
 
 /** Twice the signed area: positive when the outline turns counterclockwise (y up). */
@@ -172,7 +195,7 @@ export function kanjiPath(svg: string, pen: Pen, frame: Frame): string {
 export function drawLines(lines: Point[][], pen: Pen): string {
   return lines
     // The outline thinned too: a point that moves it by less than 0.8 unit adds bytes, not shape.
-    .flatMap((line) => [simplify(strokeOutline(line, pen), 0.8), ...(pen.terminals === 'song' ? uroko(line, pen) : [])])
+    .flatMap((line) => [simplify(strokeOutline(line, pen, pen.terminals === 'song' ? songTaper(line) : undefined), 0.8), ...(pen.terminals === 'song' ? uroko(line, pen) : [])])
     .map((outline) => (area(outline) < 0 ? outline.reverse() : outline))
     .map(relative)
     .join('');

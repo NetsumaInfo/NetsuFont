@@ -35,9 +35,9 @@ function attach(found: Anchors, items: Item[], placed: Placed[], i: number, unde
  * the right. Marks sit on their letters at the anchors the exported GPOS has. A character the font does not draw is
  * left out and named in `missing`.
  */
-export function layout(doc: FontDoc, text: string, features: string[] = []): { placed: Placed[]; width: number; missing: string[] } {
+export function layout(doc: FontDoc, text: string, features: string[] = [], language?: string): { placed: Placed[]; width: number; missing: string[] } {
   const kerns = new Map(doc.kerning.map((kern) => [`${kern.left} ${kern.right}`, kern.value]));
-  const { items, missing } = shapeLine(doc, text, features);
+  const { items, missing } = shapeLine(doc, text, features, language);
   const placed: Placed[] = [];
   let x = 0;
   let previous: Item | undefined;

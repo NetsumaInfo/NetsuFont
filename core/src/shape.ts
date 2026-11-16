@@ -135,10 +135,11 @@ function matchAt(items: Logical[], at: number, rule: Rule): number[] | undefined
 }
 
 /** The letters of a line as glyphs, in the order they are read, with their joining forms, ligatures and features. */
-function substitute(doc: FontDoc, logical: Logical[], features: string[]): Logical[] {
+function substitute(doc: FontDoc, logical: Logical[], features: string[], language?: string): Logical[] {
   const byName = new Map(doc.glyphs.map((glyph) => [glyph.name, glyph]));
   const on = new Set([...DEFAULT_FEATURES, ...features]);
-  const rules = featureRules(doc).filter((rule) => on.has(rule.feature));
+  // A rule for some languages applies only in text of one of them (locl): traditional Chinese punctuation.
+  const rules = featureRules(doc).filter((rule) => (rule.languages ? language !== undefined && rule.languages.includes(language) : on.has(rule.feature)));
   const singles = new Map(rules.filter((rule) => rule.sub.length === 1).map((rule) => [`${rule.feature} ${rule.sub[0]}`, rule.by]));
   const rephRule = rules.find((rule) => rule.feature === 'rphf');
   const reph = rephRule ? (ra: Logical): Logical => ({ ...ra, glyph: byName.get(rephRule.by)! }) : undefined;
@@ -161,7 +162,7 @@ function substitute(doc: FontDoc, logical: Logical[], features: string[]): Logic
  * brackets mirrored, Arabic letters joined, ligatures made, the optional features asked for applied. The items come
  * in the order they are drawn, left to right. A character the font does not draw is left out and named in `missing`.
  */
-export function shapeLine(doc: FontDoc, text: string, features: string[] = []): { items: Item[]; missing: string[] } {
+export function shapeLine(doc: FontDoc, text: string, features: string[] = [], language?: string): { items: Item[]; missing: string[] } {
   const chars = [...text];
   const levels = bidiLevels(chars);
   const byCode = new Map(doc.glyphs.flatMap((glyph) => (glyph.unicode === undefined ? [] : [[glyph.unicode, glyph] as const])));
@@ -172,7 +173,7 @@ export function shapeLine(doc: FontDoc, text: string, features: string[] = []): 
     if (!glyph && !missing.includes(raw)) missing.push(raw);
     return glyph ? [{ glyph, level: levels[i]!, char }] : [];
   });
-  const shaped = substitute(doc, logical, features);
+  const shaped = substitute(doc, logical, [...features, ...(language ? ['locl'] : [])], language);
   let lastBase = -1;
   const items: Item[] = shaped.map((item, i) => {
     const mark = isMarkChar(item);

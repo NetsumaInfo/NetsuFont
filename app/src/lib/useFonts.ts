@@ -14,11 +14,21 @@ export async function chooseLanguage(language: Language): Promise<void> {
 
 export type ServerStatus = 'connecting' | 'online' | 'offline';
 
+/** A font in the list: enough to name it. The font itself is fetched when it is shown. */
+export interface FontSummary {
+  name: string;
+  family: string;
+  style: string;
+  glyphs: number;
+  /** When its file was last written: a new value means the font changed. */
+  modified: number;
+}
+
 interface Listing {
   dir: string;
   /** The language chosen for the app, by its user or by the agent. */
   language: Language;
-  fonts: FontDoc[];
+  fonts: FontSummary[];
 }
 
 export interface Fonts extends Listing {
@@ -57,4 +67,23 @@ export function useFonts(): Fonts {
   }, []);
 
   return state;
+}
+
+/** The font shown, fetched whole when it is picked and again when its file changes; the last one meanwhile. */
+export function useFontDoc(summary: FontSummary | undefined): FontDoc | undefined {
+  const [doc, setDoc] = useState<FontDoc>();
+  const name = summary?.name;
+  const modified = summary?.modified;
+  useEffect(() => {
+    if (name === undefined) return;
+    let alive = true;
+    void fetch(`/api/fonts/${encodeURIComponent(name)}`)
+      .then((response) => (response.ok ? (response.json() as Promise<FontDoc>) : undefined))
+      .then((font) => alive && font && setDoc(font));
+    return () => {
+      alive = false;
+    };
+  }, [name, modified]);
+  // A font of another name stays out: while the picked one loads, nothing of the old one is drawn as it.
+  return doc?.name === name ? doc : undefined;
 }

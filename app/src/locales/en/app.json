@@ -29,6 +29,7 @@
   },
   "list": {
     "title": "Fonts",
+    "loading": "Loading the font…",
     "glyphs_one": "{{count}} glyph",
     "glyphs_other": "{{count}} glyphs"
   },

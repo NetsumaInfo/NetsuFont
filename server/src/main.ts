@@ -67,9 +67,19 @@ function events(req: IncomingMessage, res: ServerResponse): void {
   });
 }
 
-/** What the app shows: every font, and the language to say it in. */
+/** What the app lists: every font in short, and the language to say it in. A font itself is asked for by name. */
 function listing(): unknown {
-  return { dir, language: store.language(), fonts: store.all() };
+  return { dir, language: store.language(), fonts: store.summaries() };
+}
+
+/** One font, whole, for the app to draw. */
+function font(res: ServerResponse, name: string): void {
+  try {
+    json(res, 200, store.read(decodeURIComponent(name)));
+  } catch (error) {
+    if (!(error instanceof FontError)) throw error;
+    json(res, 404, { error: error.code });
+  }
 }
 
 /** The one thing the app writes: the language its user picked. */
@@ -87,9 +97,10 @@ async function route(req: IncomingMessage, res: ServerResponse): Promise<void> {
     json(res, 403, { error: 'forbidden' });
     return;
   }
-  const url = (req.url ?? '/').split('?')[0];
+  const url = (req.url ?? '/').split('?')[0] ?? '/';
   if (url === '/mcp') await mcp(req, res);
   else if (url === '/api/fonts' && req.method === 'GET') json(res, 200, listing());
+  else if (url.startsWith('/api/fonts/') && req.method === 'GET') font(res, url.slice('/api/fonts/'.length));
   else if (url === '/api/events' && req.method === 'GET') events(req, res);
   else if (url === '/api/language' && req.method === 'POST') await language(req, res);
   else json(res, 404, { error: 'not_found' });

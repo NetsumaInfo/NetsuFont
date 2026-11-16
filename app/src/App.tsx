@@ -8,7 +8,7 @@ import { ConnectHelp, Header } from './components/Header';
 import { Segmented } from './components/Segmented';
 import { TextProof } from './components/TextProof';
 import { usePicked } from './lib/picked';
-import { useFonts, type ServerStatus } from './lib/useFonts';
+import { useFontDoc, useFonts, type ServerStatus } from './lib/useFonts';
 
 // A command is code, not prose: it is the same in every language.
 const START = 'pnpm dev';
@@ -41,15 +41,21 @@ export function App() {
   const [picked, pick] = usePicked();
   const [view, setView] = useState<View>('glyphs');
   // The choice, found in what the folder holds now; when it is gone, the first font.
-  const doc = fonts.find((font) => font.name === picked.font) ?? fonts[0];
+  const summary = fonts.find((font) => font.name === picked.font) ?? fonts[0];
+  const doc = useFontDoc(summary);
   const glyph = doc?.glyphs.find((g) => g.name === picked.glyph);
   const current = { font: doc?.name, glyph: glyph?.name };
 
   return (
     <div className="flex h-full flex-col gap-2 p-2">
       <Header status={status} dir={dir} language={language} current={current} onSelect={pick} />
-      {doc === undefined ? (
+      {summary === undefined ? (
         <Empty status={status} dir={dir} />
+      ) : doc === undefined ? (
+        <main className="flex min-h-0 flex-1 gap-2">
+          <FontList fonts={fonts} current={summary.name} onSelect={(font) => pick({ font })} />
+          <p className="flex-1 rounded-panel bg-surface p-3 text-muted">{t('list.loading')}</p>
+        </main>
       ) : (
         <main className="flex min-h-0 flex-1 gap-2">
           <FontList fonts={fonts} current={doc.name} onSelect={(font) => pick({ font })} />

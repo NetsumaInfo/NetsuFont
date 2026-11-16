@@ -29,6 +29,7 @@
   },
   "list": {
     "title": "Polices",
+    "loading": "Chargement de la police…",
     "glyphs_one": "{{count}} glyphe",
     "glyphs_other": "{{count}} glyphes"
   },

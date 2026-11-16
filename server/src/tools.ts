@@ -133,11 +133,12 @@ function registerRead(server: McpServer, store: Store): void {
         text: z.string().min(1).max(600).describe('"\\n" starts a new line.'),
         sizes: z.array(z.number().min(6).max(300)).max(6).optional(),
         features: z.array(z.string().regex(/^[a-z0-9]{4}$/)).max(8).optional().describe('Optional features to turn on, such as ["ss01"].'),
+        lang: z.string().max(20).optional().describe('The language of the text, such as "zh-Hant": its local forms are used.'),
       },
     },
     (args) =>
       guarded(() => {
-        const { svg, missing, cut, fits } = proofSvg(store.read(args.name), args.text, { ...(args.sizes ? { sizes: args.sizes } : {}), ...(args.features ? { features: args.features } : {}) });
+        const { svg, missing, cut, fits } = proofSvg(store.read(args.name), args.text, { ...(args.sizes ? { sizes: args.sizes } : {}), ...(args.features ? { features: args.features } : {}), ...(args.lang ? { lang: args.lang } : {}) });
         const said = [missing.length > 0 ? `not drawn yet, left out: ${JSON.stringify(missing.join(''))}` : 'every character drawn', ...(cut ? [`a line is too long at the largest size and is cut: about ${fits} characters fit, split it with \\n`] : [])];
         return png(svg, Number(/width="(\d+)"/.exec(svg)?.[1] ?? 1200), said.join('\n'));
       }),

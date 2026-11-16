@@ -5,6 +5,8 @@ import { hanziPath, kanjiPath, kanjiStrokes } from './kanji';
 import { languageCoverage } from './languages';
 import { applyOps } from './ops';
 import { exportOtf } from './otf';
+import { layout } from './layout';
+import { openTypeLanguage } from './features';
 import { bounds, parsePath } from './path';
 
 /** A KanjiVG file of one: a horizontal stroke, then a vertical one written as a smooth curve, relative. */
@@ -81,5 +83,8 @@ describe('Song terminals and local forms', () => {
     const bytes = exportOtf(doc);
     const font = opentype.parse(bytes.buffer as ArrayBuffer) as unknown as { substitution: { getSingle(f: string, s: string, l: string): { sub: number; by: number }[] } };
     expect(font.substitution.getSingle('locl', 'hani', 'ZHT ')).toEqual([{ sub: 2, by: 3 }]);
+    // proof sets text marked zh-Hant with it, and other text without.
+    expect(layout(doc, '，', [], openTypeLanguage('zh-Hant')).placed[0]!.glyph.name).toBe('uniFF0C.zht');
+    expect(layout(doc, '，').placed[0]!.glyph.name).toBe('uniFF0C');
   });
 });

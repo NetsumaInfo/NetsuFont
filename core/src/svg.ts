@@ -1,3 +1,4 @@
+import { openTypeLanguage } from './features';
 import { layout } from './layout';
 import { glyphMap, outline } from './outline';
 import { writePath } from './path';
@@ -104,6 +105,8 @@ export interface ProofOptions {
   width?: number;
   /** Optional features turned on, such as ss01. Joining forms and ligatures are always on. */
   features?: string[];
+  /** The language of the text, as a tag (zh-Hant): its local forms (locl) are used. */
+  lang?: string;
 }
 
 /**
@@ -115,7 +118,7 @@ export function proofSvg(doc: FontDoc, text: string, options: ProofOptions = {})
   const colors = options.colors ?? LIGHT;
   const sizes = options.sizes ?? [72, 36, 18];
   const byName = glyphMap(doc);
-  const rows = text.split('\n').map((line) => layout(doc, line, options.features));
+  const rows = text.split('\n').map((line) => layout(doc, line, options.features, openTypeLanguage(options.lang)));
   const missing = [...new Set(rows.flatMap((row) => row.missing))];
   const { top, height } = band(doc);
   const pad = 16;
