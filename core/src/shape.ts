@@ -141,15 +141,17 @@ function substitute(doc: FontDoc, logical: Logical[], features: string[], langua
   // A rule for some languages applies only in text of one of them (locl): traditional Chinese punctuation.
   const rules = featureRules(doc).filter((rule) => (rule.languages ? language !== undefined && rule.languages.includes(language) : on.has(rule.feature)));
   const singles = new Map(rules.filter((rule) => rule.sub.length === 1).map((rule) => [`${rule.feature} ${rule.sub[0]}`, rule.by]));
-  const rephs = new Map(rules.filter((rule) => rule.feature === 'rphf').map((rule) => [rule.sub[0]!, rule.by]));
-  const reph = (ra: Logical): Logical | undefined => (rephs.has(ra.glyph.name) ? { ...ra, glyph: byName.get(rephs.get(ra.glyph.name)!)! } : undefined);
-  const ordered = reorderIndic(logical, reph);
+  const formOf = (feature: string, at: number) => {
+    const made = new Map(rules.filter((rule) => rule.feature === feature).map((rule) => [rule.sub[at]!, rule.by]));
+    return (ra: Logical): Logical | undefined => (made.has(ra.glyph.name) ? { ...ra, glyph: byName.get(made.get(ra.glyph.name)!)! } : undefined);
+  };
+  const ordered = reorderIndic(logical, { reph: formOf('rphf', 0), pref: formOf('pref', 1) });
   const forms = joiningForms(ordered.map((item) => joiningOf(item.char)));
   let items = ordered.map((item, i) => {
     const by = forms[i] ? singles.get(`${forms[i]} ${item.glyph.name}`) : undefined;
     return by ? { ...item, glyph: byName.get(by)! } : item;
   });
-  const several = rules.filter((rule) => rule.sub.length > 1 && rule.feature !== 'rphf');
+  const several = rules.filter((rule) => rule.sub.length > 1 && rule.feature !== 'rphf' && rule.feature !== 'pref');
   for (const pass of PASSES) items = ligatures(items, several.filter((rule) => (pass ? rule.feature === pass : !PASSES.includes(rule.feature))), byName);
   return items.map((item) => {
     const feature = features.find((f) => singles.has(`${f} ${item.glyph.name}`));

@@ -25,7 +25,7 @@ describe('Indic syllables', () => {
   });
 
   it('draws the pre-base vowel first and puts the Bengali reph before a vowel sign that follows', () => {
-    const reph = (ra: { char: string }): { char: string } => ({ char: `R${ra.char}` });
+    const reph = { reph: (ra: { char: string }): { char: string } => ({ char: `R${ra.char}` }), pref: () => undefined };
     expect(chars(reorderIndic(unit('কি'), reph))).toBe('িক');
     expect(chars(reorderIndic(unit('র্কা'), reph))).toBe('কRরা');
     expect(chars(reorderIndic(unit('র্কি'), reph))).toBe('িকRর');
@@ -57,5 +57,20 @@ describe('Indic forms', () => {
     const [ta] = languageCoverage(newFont('t', 'T'), ['ta']);
     expect(ta!.forms).toContain('uni0B95_uni0BC1');
     expect(ta!.forms).toHaveLength(40);
+  });
+});
+
+describe('Odia and Malayalam', () => {
+  it('draws the Malayalam ra after a virama before its consonant, and the dot reph after it', () => {
+    const movers = { reph: () => undefined, pref: (ra: { char: string }) => ({ char: `P${ra.char}` }) };
+    expect(chars(reorderIndic(unit('ക്ര'), movers))).toBe('Pരക');
+    expect(chars(reorderIndic(unit('ക്രെ'), movers))).toBe('െPരക');
+    expect(chars(reorderIndic(unit('ൎക'), movers))).toBe('കൎ');
+  });
+
+  it('puts the Odia reph after its consonant, before a vowel sign that follows', () => {
+    const movers = { reph: (ra: { char: string }) => ({ char: `R${ra.char}` }), pref: () => undefined };
+    expect(chars(reorderIndic(unit('ର୍କା'), movers))).toBe('କRରା');
+    expect(chars(reorderIndic(unit('କୋ'.normalize('NFD')), movers))).toBe('େକା');
   });
 });

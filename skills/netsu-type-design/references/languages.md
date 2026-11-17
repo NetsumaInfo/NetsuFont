@@ -154,8 +154,16 @@ Build the letters that are not Latin from the parts you already have:
   (half forms, reph, ra below, ક્ષ જ્ઞ) and રુ રૂ; Tamil each consonant with ு and ூ drawn as one
   (கு `uni0B95_uni0BC1`, 36 glyphs, their shapes differ: trace each), டி டீ, க்ஷ, ஸ்ரீ. The
   Tamil pulli ் sits above the letter. Only Bengali has been drawn blind (once); the others not yet.
-- **Not possible yet**: Telugu, Kannada, Malayalam, Odia, Sinhala, Khmer, Myanmar, Tibetan (each
-  reorders its own way). Say so.
+- **Odia (or), Malayalam (ml)**: trace Nirmala UI too (2026-11-17, measured, not drawn here
+  yet). Odia: round tops at 728, no headline, letters about 683 wide with side bearings of 39;
+  ି is a mark above (772 to 909), the reph sits from 728 to 1015 and left of x 0. Malayalam:
+  bodies to 712 and wide (ക 1179, ന 1016, ര 824, ാ 565); ു is spacing (advance 375, down to
+  −251); ് and the dot reph ൎ are marks above (767 to 1019); the ra before its consonant
+  `uni0D30.pref` is a narrow spacing glyph (advance 287), the ya-phala `uni0D2F.pstf` advance
+  532. The model has most conjuncts by name; in Odia it lacks eight of the ten `languages`
+  counts and in Malayalam three (it builds them another way): draw those from its forms below.
+- **Not possible yet**: Telugu, Kannada (each consonant drawn again with each vowel sign),
+  Sinhala, Khmer, Myanmar, Tibetan. Say so.
   Japanese, Chinese and Korean: load `references/cjk.md`.
 
 ## 3b. Arabic, Persian, Urdu
@@ -227,6 +235,8 @@ hi  ऋषियों को सताने वाले दुष्ट र�
 bn  বাংলা ভাষা পৃথিবীর অন্যতম প্রধান ভাষা। ক্ষমা, রুমাল, বর্ষা, কৌতুক, বাক্য, প্রেম (sample)
 pa  ਪੰਜਾਬੀ ਭਾਸ਼ਾ ਗੁਰਮੁਖੀ ਲਿਪੀ ਵਿੱਚ ਲਿਖੀ ਜਾਂਦੀ ਹੈ। ਪ੍ਰੇਮ (sample)
 gu  ગુજરાતી ભાષા ગુજરાતી લિપિમાં લખાય છે. ક્ષમા, ધર્મ, પ્રેમ (sample)
+or  ଓଡ଼ିଆ ଭାଷା ଏକ ପ୍ରାଚୀନ ଭାଷା। କ୍ଷମା, ଧର୍ମ, ସତ୍ୟ (sample)
+ml  മലയാളം ഒരു ദ്രാവിഡ ഭാഷയാണ്. ക്രമം, സത്യം, കേരളം (sample)
 ta  தமிழ் மொழி உலகின் மிகப் பழமையான மொழிகளில் ஒன்று. கூட்டம், டிசம்பர், ஸ்ரீ (sample)
 th  เป็นมนุษย์สุดประเสริฐเลิศคุณค่า กว่าบรรดาฝูงสัตว์เดรัจฉาน
 lo  ພາສາລາວ (sample)

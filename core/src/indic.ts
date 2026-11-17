@@ -15,6 +15,10 @@ export interface IndicScript {
   ras: number[];
   /** Where the reph goes: after the vowel signs that follow (Devanagari), or before them. */
   rephLast: boolean;
+  /** The ra that, after a virama, is drawn before its consonant (pref: Malayalam ക്ര). */
+  pref?: number;
+  /** A reph typed as a letter before its consonant and drawn after it, on top (Malayalam ൎ). */
+  dotReph?: number;
 }
 
 export const INDIC: IndicScript[] = [
@@ -25,6 +29,14 @@ export const INDIC: IndicScript[] = [
   },
   { tags: ['gur2', 'guru'], from: 0xa00, prebase: [0xa3f], split: {}, ras: [], rephLast: false },
   { tags: ['gjr2', 'gujr'], from: 0xa80, prebase: [0xabf], split: {}, ras: [0xab0], rephLast: false },
+  {
+    tags: ['ory2', 'orya'], from: 0xb00, prebase: [0xb47], split: { 0xb48: [0xb47, 0xb56], 0xb4b: [0xb47, 0xb3e], 0xb4c: [0xb47, 0xb57] },
+    ras: [0xb30], rephLast: false,
+  },
+  {
+    tags: ['mlm2', 'mlym'], from: 0xd00, prebase: [0xd46, 0xd47, 0xd48], split: { 0xd4a: [0xd46, 0xd3e], 0xd4b: [0xd47, 0xd3e], 0xd4c: [0xd46, 0xd57] },
+    ras: [], rephLast: false, pref: 0xd30, dotReph: 0xd4e,
+  },
   {
     tags: ['tml2', 'taml'], from: 0xb80, prebase: [0xbc6, 0xbc7, 0xbc8], split: { 0xbca: [0xbc6, 0xbbe], 0xbcb: [0xbc7, 0xbbe], 0xbcc: [0xbc6, 0xbd7] },
     ras: [], rephLast: false,
@@ -38,12 +50,12 @@ export const isIndic = (code: number): boolean => indicOf(code) !== undefined;
 export const viramaOf = (script: IndicScript): number => script.from + 0x4d;
 export const viramaName = (script: IndicScript): string => hex(viramaOf(script));
 
-/** A consonant: those of the block, those with a nukta, and the Assamese ra and wa. */
+/** A consonant: those of the block, those with a nukta, the Assamese ra and wa, the Odia wa. */
 export function isConsonant(code: number): boolean {
   const script = indicOf(code);
   if (!script) return false;
   const at = code - script.from;
-  return (at >= 0x15 && at <= 0x39) || (at >= 0x58 && at <= 0x5f) || (script.from === 0x980 && (at === 0x70 || at === 0x71));
+  return (at >= 0x15 && at <= 0x39) || (at >= 0x58 && at <= 0x5f) || (script.from === 0x980 && at === 0x70) || ((script.from === 0x980 || script.from === 0xb00) && at === 0x71);
 }
 
 /** A vowel sign, not the virama nor the nukta: what a ligature of a consonant and its vowel holds. */
@@ -73,7 +85,7 @@ function syllables<T extends Unit>(items: T[]): T[][] {
   items.forEach((item, i) => {
     const [code, before] = [codeOf(item), codeOf(items[i - 1])];
     const script = indicOf(code);
-    const joined = script !== undefined && before === viramaOf(script);
+    const joined = script !== undefined && (before === viramaOf(script) || before === script.dotReph);
     const starts = !script || indicOf(before) !== script || (/\p{L}/u.test(item.char) && !joined);
     if (starts || out.length === 0) out.push([item]);
     else out[out.length - 1]!.push(item);
@@ -81,11 +93,26 @@ function syllables<T extends Unit>(items: T[]): T[][] {
   return out;
 }
 
+/** The forms a font has that move in a syllable: the reph, and the ra drawn before its consonant. */
+export interface Movers<T> {
+  reph(ra: T): T | undefined;
+  pref(ra: T): T | undefined;
+}
+
+/** The ra after a virama, as the font's pre-base form, moved to the start of the syllable. */
+function moveRa<T extends Unit>(letters: T[], script: IndicScript, pref: (ra: T) => T | undefined): T[] {
+  const at = letters.findIndex((item, k) => k > 0 && codeOf(item) === viramaOf(script) && codeOf(letters[k + 1]) === script.pref);
+  const made = at > 0 ? pref(letters[at + 1]!) : undefined;
+  return made ? [made, ...letters.slice(0, at), ...letters.slice(at + 2)] : letters;
+}
+
 /** One syllable in the order it is drawn: the reph moved to its place, the vowel signs drawn before go first. */
-function reorder<T extends Unit>(syllable: T[], reph: (ra: T) => T | undefined): T[] {
+function reorder<T extends Unit>(syllable: T[], movers: Movers<T>): T[] {
   let letters = [...syllable];
   const script = indicOf(codeOf(letters[0]));
   if (!script) return letters;
+  if (script.dotReph !== undefined && codeOf(letters[0]) === script.dotReph && letters.length > 1) letters = [letters[1]!, letters[0]!, ...letters.slice(2)];
+  const reph = movers.reph;
   const [first, second, third] = letters.map(codeOf);
   const made = script.ras.includes(first!) && second === viramaOf(script) && third !== undefined && isConsonant(third) ? reph(letters[0]!) : undefined;
   if (made) {
@@ -93,6 +120,7 @@ function reorder<T extends Unit>(syllable: T[], reph: (ra: T) => T | undefined):
     const after = script.rephLast ? -1 : rest.findIndex((item) => /\p{Mc}/u.test(item.char) && !script.prebase.includes(codeOf(item)));
     letters = after < 0 ? [...rest, made] : [...rest.slice(0, after), made, ...rest.slice(after)];
   }
+  if (script.pref !== undefined) letters = moveRa(letters, script, movers.pref);
   const at = letters.findIndex((item) => script.prebase.includes(codeOf(item)));
   if (at > 0) letters = [letters[at]!, ...letters.slice(0, at), ...letters.slice(at + 1)];
   return letters;
@@ -100,8 +128,9 @@ function reorder<T extends Unit>(syllable: T[], reph: (ra: T) => T | undefined):
 
 /**
  * The letters of a line in the order they are drawn: in each Indic syllable, a ra and virama before a consonant become
- * the reph (when `reph` gives one) at its place, and a vowel sign drawn before its consonant goes first.
+ * the reph (when the font has one) at its place, a Malayalam ra after a virama its form before the consonant, and a
+ * vowel sign drawn before its consonant goes first.
  */
-export function reorderIndic<T extends Unit>(items: T[], reph: (ra: T) => T | undefined): T[] {
-  return syllables(items).flatMap((syllable) => reorder(syllable, reph));
+export function reorderIndic<T extends Unit>(items: T[], movers: Movers<T>): T[] {
+  return syllables(items).flatMap((syllable) => reorder(syllable, movers));
 }

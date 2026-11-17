@@ -68,7 +68,7 @@ function spelling(glyphs: Glyph[]): (name: string) => string | undefined {
     if (!script || form === undefined) return name;
     const virama = viramaName(script);
     if (form === 'half' || form === 'rphf') return `${base}_${virama}`;
-    return form === 'blwf' || form === 'pstf' ? `${virama}_${base}` : name;
+    return form === 'blwf' || form === 'pstf' || form === 'pref' ? `${virama}_${base}` : name;
   };
 }
 
@@ -105,7 +105,7 @@ export function nameFeatureGlyphs(gsub: ParsedGsub | undefined, glyphs: Glyph[])
   for (const form of ['init', 'medi', 'fina', 'isol']) for (const rule of rulesOf(gsub, form, ['arab'])) rename(rule.by, `${nameOf(rule.sub[0]!)}.${form}`);
   for (const rule of rulesOf(gsub, 'half', INDIC_TAGS)) if (VIRAMAS.has(nameOf(rule.sub[1]!))) rename(rule.by, `${nameOf(rule.sub[0]!)}.half`);
   for (const rule of rulesOf(gsub, 'rphf', INDIC_TAGS)) if (RAS.has(nameOf(rule.sub[0]!))) rename(rule.by, `${nameOf(rule.sub[0]!)}.rphf`);
-  for (const form of ['blwf', 'pstf']) {
+  for (const form of ['blwf', 'pstf', 'pref']) {
     for (const rule of rulesOf(gsub, form, INDIC_TAGS)) if (rule.sub.length === 2 && VIRAMAS.has(nameOf(rule.sub[0]!))) rename(rule.by, `${nameOf(rule.sub[1]!)}.${form}`);
   }
   const spell = spelling(glyphs);

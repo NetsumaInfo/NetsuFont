@@ -11,6 +11,8 @@ const BENGALI_LETTERS = 'অআইঈউঊঋএঐওঔকখগঘঙচছ�
 const BENGALI_SIGNS = `ািীুূৃেৈোৌংঃঁ়্ৗ০১২৩৪৫৬৭৮৯${DANDA}${PUNCT}`;
 const GURMUKHI = `ੳਅੲਆਇਈਉਊਏਐਓਔਸਹਕਖਗਘਙਚਛਜਝਞਟਠਡਢਣਤਥਦਧਨਪਫਬਭਮਯਰਲਵੜਸ਼ਖ਼ਗ਼ਜ਼ਫ਼ਲ਼ਾਿੀੁੂੇੈੋੌਂੰੱ਼੍੦੧੨੩੪੫੬੭੮੯${DANDA}${PUNCT}`;
 const GUJARATI = `અઆઇઈઉઊઋએઐઓઔઍઑકખગઘઙચછજઝઞટઠડઢણતથદધનપફબભમયરલવશષસહળાિીુૂૃેૈોૌૅૉંઃઁ઼્૦૧૨૩૪૫૬૭૮૯${PUNCT}`;
+const ODIA = `ଅଆଇଈଉଊଋଏଐଓଔକଖଗଘଙଚଛଜଝଞଟଠଡଢଣତଥଦଧନପଫବଭମଯରଲଳଶଷସହୟୱଡ଼ଢ଼ାିୀୁୂୃେୈୋୌଂଃଁ଼୍ୖୗ୦୧୨୩୪୫୬୭୮୯${DANDA}${PUNCT}`;
+const MALAYALAM = `അആഇഈഉഊഋഎഏഐഒഓഔകഖഗഘങചഛജഝഞടഠഡഢണതഥദധനപഫബഭമയരലവശഷസഹളഴറൺൻർൽൾൿാിീുൂൃെേൈൊോൌ്ംഃൗൎ0123456789${PUNCT}`;
 const TAMIL = `அஆஇஈஉஊஎஏஐஒஓஔஃகஙசஞடணதநபமயரலவழளறனஜஷஸஹாிீுூெேைொோௌ்ௗ0123456789${PUNCT}`;
 
 export const INDIC_CHARS: Record<string, string> = {
@@ -22,6 +24,8 @@ export const INDIC_CHARS: Record<string, string> = {
   pa: GURMUKHI,
   gu: GUJARATI,
   ta: TAMIL,
+  or: ODIA,
+  ml: MALAYALAM,
 };
 
 /** The consonants that take a half form before another consonant (Devanagari, Gujarati). The others keep their virama. */
@@ -44,6 +48,15 @@ export function indicForms(code: string): string[] {
   }
   if (code === 'pa') return forms('ਰਹਵ', 'blwf');
   if (code === 'gu') return [...forms(HALF.gujr!, 'half'), 'uni0AB0.rphf', 'uni0AB0.blwf', joined('ક્ષ'), joined('જ્ઞ'), joined('રુ'), joined('રૂ')];
+  if (code === 'or') {
+    const conjuncts = ['କ୍ଷ', 'ଜ୍ଞ', 'ଙ୍କ', 'ନ୍ତ', 'ନ୍ଦ', 'ଣ୍ଡ', 'ତ୍ତ', 'ଷ୍ଟ', 'ସ୍ତ', 'ମ୍ପ'];
+    return ['uni0B30.rphf', 'uni0B30.blwf', 'uni0B2F.pstf', ...conjuncts.map(joined)];
+  }
+  if (code === 'ml') {
+    const doubled = [...'കങചഞടണതനപമയലവള'].map((c) => joined(`${c}്${c}`));
+    const conjuncts = ['ന്ത', 'ങ്ക', 'ഞ്ച', 'ണ്ട', 'മ്പ', 'ക്ഷ', 'ന്ദ', 'സ്ത'];
+    return ['uni0D30.pref', 'uni0D2F.pstf', 'uni0D35.pstf', ...doubled, ...conjuncts.map(joined)];
+  }
   if (code === 'ta') {
     const vowels = [...TAMIL_CONSONANTS].flatMap((c) => [joined(`${c}ு`), joined(`${c}ூ`)]);
     return [...vowels, joined('டி'), joined('டீ'), joined('க்ஷ'), joined('ஸ்ரீ')];

@@ -1,6 +1,6 @@
 ---
 name: netsu-type-design
-description: Use when the user asks to create, draw, design or redesign a font, typeface, alphabet or set of letters in NetsuFont (the netsufont MCP server), from a style brief or from an imported TTF or OTF — including spacing, kerning, accents, other scripts (Polish, Vietnamese, Greek, Cyrillic, Armenian, Georgian, Hebrew, Arabic, Persian, Urdu, Hindi, Bengali, Punjabi, Gujarati, Tamil, Thai, Lao, Japanese, Chinese, Korean…), ligatures and stylistic alternates, and exporting the .otf. Do NOT use for choosing or pairing existing fonts for a site, for logos and wordmarks (netsu-app-icon), or for animated icons (netsu-icon-motion).
+description: Use when the user asks to create, draw, design or redesign a font, typeface, alphabet or set of letters in NetsuFont (the netsufont MCP server), from a style brief or from an imported TTF or OTF — including spacing, kerning, accents, other scripts (Polish, Vietnamese, Greek, Cyrillic, Armenian, Georgian, Hebrew, Arabic, Persian, Urdu, Hindi, Bengali, Punjabi, Gujarati, Odia, Tamil, Malayalam, Thai, Lao, Japanese, Chinese, Korean…), ligatures and stylistic alternates, and exporting the .otf. Do NOT use for choosing or pairing existing fonts for a site, for logos and wordmarks (netsu-app-icon), or for animated icons (netsu-icon-motion).
 ---
 
 # NetsuTypeDesign

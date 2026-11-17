@@ -45,12 +45,14 @@ DOCUMENT
   the share of the width left along angle (0.25: a quarter). terminals:"song": strokes made level and upright, a
   triangle on each horizontal's end. <name>.zht: the glyph traditional Chinese text uses (feature locl). Voicing marks uni3099 uni309A, without unicode, stay
   where drawn (compose が from か). <name>.vert: the glyph for vertical writing (feature vert).
-- Indic (Devanagari, Bengali, Gurmukhi, Gujarati, Tamil): <consonant>.half (before another consonant, the virama
+- Indic (Devanagari, Bengali, Gurmukhi, Gujarati, Odia, Tamil, Malayalam): <consonant>.half (before another consonant, the virama
   gone), <ra>.rphf (the reph: advance 0, ink above and left of x 0), <consonant>.blwf (under the consonant before it:
-  advance 0), <consonant>.pstf (after it: Bengali ya-phala uni09AF.pstf), conjuncts named by their parts
+  advance 0), <consonant>.pstf (after it: Bengali ya-phala uni09AF.pstf), uni0D30.pref (Malayalam ra after a virama,
+  drawn before its consonant: a spacing glyph), conjuncts named by their parts
   (uni0915_uni094D_uni0937 for क्ष), a letter drawn with its vowel the same way (Tamil கு uni0B95_uni0BC1). Vowel
-  signs drawn before their consonant (ि, Bengali ি ে ৈ, Tamil ெ ே ை) are spacing glyphs: the text engine draws them
-  first. Vowel signs in two parts (ো ৌ ொ ோ ௌ) are split by the engine: compose makes their glyph from the parts.
+  signs drawn before their consonant (ि, Bengali ি ে ৈ, Odia େ, Tamil ெ ே ை, Malayalam െ േ ൈ) are spacing glyphs: the engine draws them
+  first. Vowel signs in two parts (ো ৌ ୈ ୋ ୌ ொ ோ ௌ ൊ ോ ൌ) are split by the engine: compose makes their glyph from the parts.
+  The Malayalam dot reph ൎ, typed before its consonant, is drawn after it: advance 0, ink above and left of x 0.
 - Arabic: a joining letter is its glyph (isolated, with unicode) and forms without unicode: <name>.init (word start, joins
   on its left edge), .medi (both edges), .fina (word end, joins on its right edge). ا د ذ ر ز و ة join only on the right:
   .fina alone. Lam-alef ligatures uni0644_uni0627, uni0644_uni0623, uni0644_uni0625, uni0644_uni0622, each with .fina.

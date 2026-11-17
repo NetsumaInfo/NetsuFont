@@ -24,7 +24,7 @@ const LOCAL: Record<string, { script: ScriptTag; languages: string[] }> = { zht:
 /** The features a glyph name suffix asks for: `a.ss01` is `a` in the stylistic set 1. */
 const SUFFIX_FEATURES: Record<string, string> = { alt: 'salt', sc: 'smcp', onum: 'onum', tnum: 'tnum', sups: 'sups', sinf: 'sinf', vert: 'vert' };
 /** The features applied without the user asking: the joining forms, ligatures and required ligatures. */
-export const DEFAULT_FEATURES = ['akhn', 'rphf', 'blwf', 'half', 'pstf', 'psts', 'init', 'medi', 'fina', 'isol', 'rlig', 'liga'];
+export const DEFAULT_FEATURES = ['akhn', 'rphf', 'pref', 'blwf', 'half', 'pstf', 'psts', 'init', 'medi', 'fina', 'isol', 'rlig', 'liga'];
 /** The features a user turns on: stylistic sets and alternates. Shown in the app when the font has them. */
 export const OPTIONAL_FEATURE = /^(ss(0[1-9]|1\d|20)|salt|smcp|onum|tnum|sups|sinf|dlig)$/;
 
@@ -97,7 +97,8 @@ function single(glyph: Glyph, byName: Map<string, Glyph>): Rule | undefined {
 
 /**
  * The forms of an Indic consonant: `.half` (before another consonant, the virama gone), `.rphf` (ra on top of the
- * next consonant: the reph), `.blwf` (under the consonant before it: ra below), `.pstf` (after it: the Bengali ya-phala).
+ * next consonant: the reph), `.blwf` (under the consonant before it: ra below), `.pstf` (after it: the Bengali ya-phala),
+ * `.pref` (the Malayalam ra, drawn before the consonant it follows).
  */
 function indicRule(source: Glyph, suffix: string, by: string): Rule | undefined {
   const code = source.unicode;
@@ -107,6 +108,7 @@ function indicRule(source: Glyph, suffix: string, by: string): Rule | undefined 
   if (suffix === 'half') return { feature: 'half', script: tag, sub: [source.name, virama], by };
   if (suffix === 'rphf' && script.ras.includes(code)) return { feature: 'rphf', script: tag, sub: [source.name, virama], by };
   if (suffix === 'blwf' || suffix === 'pstf') return { feature: suffix, script: tag, sub: [virama, source.name], by };
+  if (suffix === 'pref' && code === script.pref) return { feature: 'pref', script: tag, sub: [virama, source.name], by };
   return undefined;
 }
 
