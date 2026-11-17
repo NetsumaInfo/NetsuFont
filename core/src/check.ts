@@ -71,6 +71,8 @@ function uncut(glyph: Glyph, commands: Command[]): Finding[] {
 
 /** Tamil ு and ூ: spacing for Unicode, but a font draws them under a grantha letter (ஜு) as marks, or as part of a ligature. */
 const TAMIL_U = [0xbc1, 0xbc2];
+/** The Malayalam dot reph ൎ: a letter for Unicode, drawn as a mark with advance 0 over the consonant before it. */
+const DOT_REPH = 0xd4e;
 
 /** Ink far above the ascender or below the descender is cut by many apps. */
 function outOfBounds(doc: FontDoc, glyph: Glyph, commands: Command[]): Finding[] {
@@ -84,7 +86,7 @@ function outOfBounds(doc: FontDoc, glyph: Glyph, commands: Command[]): Finding[]
   if (box.yMin < doc.metrics.descender - margin) said.push({ glyph: glyph.name, text: `reaches y ${Math.round(box.yMin)}, below the descender ${doc.metrics.descender}.` });
   if (glyph.unicode !== undefined && glyph.advance === 0 && /\p{Mc}/u.test(String.fromCodePoint(glyph.unicode)) && !TAMIL_U.includes(glyph.unicode)) said.push({ glyph: glyph.name, text: 'is a spacing sign, drawn beside its letter (Bengali ং ঃ, the vowel signs া ি): give it its advance.' });
   // A mark is placed by compose, wherever it is drawn.
-  if (glyph.unicode !== undefined && !/\p{M}/u.test(String.fromCodePoint(glyph.unicode)) && (box.xMin < -margin || box.xMax > glyph.advance + margin)) said.push({ glyph: glyph.name, text: glyph.advance === 0 ? `advance 0 but it draws a character that is not a combining mark: give it its advance.` : `ink from x ${Math.round(box.xMin)} to ${Math.round(box.xMax)} leaves the advance 0 to ${glyph.advance}: it will touch its neighbours.` });
+  if (glyph.unicode !== undefined && !/\p{M}/u.test(String.fromCodePoint(glyph.unicode)) && glyph.unicode !== DOT_REPH && (box.xMin < -margin || box.xMax > glyph.advance + margin)) said.push({ glyph: glyph.name, text: glyph.advance === 0 ? `advance 0 but it draws a character that is not a combining mark: give it its advance.` : `ink from x ${Math.round(box.xMin)} to ${Math.round(box.xMax)} leaves the advance 0 to ${glyph.advance}: it will touch its neighbours.` });
   return said;
 }
 

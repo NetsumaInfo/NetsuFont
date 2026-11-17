@@ -161,7 +161,8 @@ Build the letters that are not Latin from the parts you already have:
   −251); ് and the dot reph ൎ are marks above (767 to 1019); the ra before its consonant
   `uni0D30.pref` is a narrow spacing glyph (advance 287), the ya-phala `uni0D2F.pstf` advance
   532. The model has most conjuncts by name; in Odia it lacks eight of the ten `languages`
-  counts and in Malayalam three (it builds them another way): draw those from its forms below.
+  counts and in Malayalam three, ണ്ണ ല്ല സ്ത (it builds them another way), and the va-phala
+  `uni0D35.pstf`: draw those as the shapes they are, not two letters side by side.
 - **Telugu (te), Kannada (kn)**: trace Nirmala UI (2026-11-17, measured, not drawn here yet).
   Telugu bodies from 0 to about 600, the head stroke (talakattu) up to 853; క 583, మ 1178, ర 733
   wide; the signs ి ె ా are marks above, ink left of x 0 (ి 541 to 881); ు is spacing (487). Kannada

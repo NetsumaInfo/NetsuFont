@@ -3,9 +3,10 @@ import opentype, { type Font as OtFont, type Glyph as OtGlyph, type Path as OtPa
 import { nameFeatureGlyphs, type ParsedGsub } from './featureNames';
 import { featureRules, type Rule } from './features';
 import { gdefTable, gposTable } from './gpos';
+import { gposPairs, MAX_PAIRS } from './gposRead';
 import { glyphMap, outline } from './outline';
 import { writePath, type Command } from './path';
-import { fontCount, fontOfCollection, kernTable, withTable } from './sfnt';
+import { fontCount, fontOfCollection, kernTable, readTables, withTable } from './sfnt';
 import { FontError, FORMAT, type FontDoc, type Glyph, type Kern } from './types';
 import { GLYPH_NAME, validate } from './validate';
 
@@ -108,13 +109,14 @@ function nameFor(glyph: OtGlyph, index: number, taken: Set<string>): string {
 
 /**
  * Reads a TTF or OTF file, or one font of a TTC collection, into a document. What is kept: names, metrics, outlines, advances, one code point per
- * glyph, and kerning from a `kern` table. Not kept: GPOS kerning, hinting, features such as ligatures.
+ * glyph, and kerning from GPOS and a `kern` table. Not kept: hinting, features other than the forms renamed.
  */
 export function importFont(file: Uint8Array, name: string, index = 0): { doc: FontDoc; skipped: string[] } {
   let font: OtFont;
+  let bytes: Uint8Array;
   try {
     if (index >= fontCount(file)) throw new Error(`the file holds ${fontCount(file)} fonts, from index 0`);
-    const bytes = fontOfCollection(file, index);
+    bytes = fontOfCollection(file, index);
     font = opentype.parse(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer);
   } catch (error) {
     throw new FontError('bad_font_file', `This file could not be read as a font: ${(error as Error).message}`);
@@ -133,17 +135,27 @@ export function importFont(file: Uint8Array, name: string, index = 0): { doc: Fo
     glyphs.push(glyph);
   }
   const named = nameFeatureGlyphs(font.tables.gsub as ParsedGsub | undefined, glyphs);
-  const doc = toDoc(font, name, glyphs, readKerning(font, glyphs.map((glyph) => glyph.name)));
+  const kerning = readKerning(font, bytes, glyphs.map((glyph) => glyph.name));
+  const doc = toDoc(font, name, glyphs, kerning);
   validate(doc);
-  return { doc, skipped: ['GPOS kerning', 'hinting', `OpenType features other than the ${named} forms and ligatures renamed to be kept`] };
+  const cut = kerning.length >= MAX_PAIRS ? [`GPOS kerning past ${MAX_PAIRS} pairs`] : [];
+  return { doc, skipped: [...cut, 'hinting', `OpenType features other than the ${named} forms and ligatures renamed to be kept`] };
 }
 
-/** The pairs of a `kern` table, by glyph name. */
-function readKerning(font: OtFont, names: string[]): Kern[] {
-  return Object.entries(font.kerningPairs ?? {}).flatMap(([key, value]) => {
+/** The pairs of the GPOS kerning, then those of a `kern` table it does not have, by glyph name. */
+function readKerning(font: OtFont, bytes: Uint8Array, names: string[]): Kern[] {
+  const gpos = readTables(bytes).tables.find((table) => table.tag === 'GPOS');
+  const fromKern = Object.entries(font.kerningPairs ?? {}).map(([key, value]) => {
     const [left, right] = key.split(',').map(Number);
-    const pair = { left: names[left!], right: names[right!], value: Math.round(value) };
-    return pair.left && pair.right && pair.value !== 0 ? [pair as Kern] : [];
+    return { left: left!, right: right!, value };
+  });
+  const seen = new Set<string>();
+  return [...(gpos ? gposPairs(gpos.data) : []), ...fromKern].flatMap((raw) => {
+    const pair = { left: names[raw.left], right: names[raw.right], value: Math.round(raw.value) };
+    const key = `${pair.left} ${pair.right}`;
+    if (!pair.left || !pair.right || pair.value === 0 || seen.has(key)) return [];
+    seen.add(key);
+    return [pair as Kern];
   });
 }
 

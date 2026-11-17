@@ -31,6 +31,9 @@ export function coverageLine(doc: FontDoc): string {
 }
 
 /** A glyph in short: name, character, advance, side bearings and components. */
+/** How many glyphs list_fonts {name} lists. */
+const LISTED = 400;
+
 function glyphLine(doc: FontDoc, glyph: Glyph): string {
   const char = glyph.unicode === undefined ? '' : ` ${JSON.stringify(String.fromCodePoint(glyph.unicode))}`;
   const bearings = sideBearings(doc, glyph);
@@ -70,8 +73,10 @@ function checks(doc: FontDoc, names?: string[]): string[] {
  * Format of a glyph: name char advance [left right].
  */
 export function outline(doc: FontDoc): string {
-  const glyphs = doc.glyphs.map((glyph) => glyphLine(doc, glyph));
-  return [...head(doc), `glyphs (${doc.glyphs.length}; name char advance [left right]): ${glyphs.join(', ')}`, ...checks(doc)].join('\n');
+  // A model of thousands of glyphs would answer pages: the first ones, and how to reach the others.
+  const glyphs = doc.glyphs.slice(0, LISTED).map((glyph) => glyphLine(doc, glyph));
+  const more = doc.glyphs.length > LISTED ? [`and ${doc.glyphs.length - LISTED} more: look_glyphs {chars} or {glyphs} shows any of them`] : [];
+  return [...head(doc), `glyphs (${doc.glyphs.length}; name char advance [left right]): ${glyphs.join(', ')}`, ...more, ...checks(doc)].join('\n');
 }
 
 /** What an edit answers: the font in short, the glyphs it changed, and what is wrong in them. */

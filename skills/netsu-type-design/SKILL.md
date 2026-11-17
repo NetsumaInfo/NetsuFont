@@ -13,7 +13,7 @@ font family by family, space it, cover its languages, kern it and export it.
 - The `netsufont` MCP server. Call `list_fonts` first; if it fails, stop and say so (NetsuFont
   starts with `pnpm dev` in its folder). With a shell and no MCP connection, the same tools:
   `pnpm -s --filter @netsufont/server mcp <tool> '@args.json' [image.png]`, from that folder; the
-  image path absolute (the command runs in another folder).
+  `@` file and the image path absolute (the command runs in another folder).
   Always write the arguments to a file first, in UTF-8: inline JSON breaks on quotes, `&` and newlines.
   Windows paths in JSON: forward slashes (`C:/Windows/Fonts/Nirmala.ttc`).
   Many similar ops (a script's letters and their forms): generating the JSON with a short script is fine.
@@ -80,7 +80,8 @@ nnynn ooyoo"`. Each x
    that script as a **model** (`import_font {name:"model-deva"}`). Then, family by family (6 to 8
    letters): `look_glyphs {name, chars, model:"model-deva"}` shows the model in each cell, filled
    blue under your glyph and outlined over it, even before you draw. Draw your letters in your
-   style with your sheet's numbers, never its paths; look again and fix until each letter keeps
+   style with your sheet's numbers, never its paths (the guide says why: a blind run that
+   skeletonised the model's outlines by a script made a copy of it, not a font); look again and fix until each letter keeps
    the model's structure (which side the stem is on, where strokes meet, the counters, the
    width). Draw each stroke as one `stroke` shape (`smooth:true` for a bowl or a hook) with
    your stem width, its points on the model's centre line: a letter is 2 to 6 strokes, not dozens

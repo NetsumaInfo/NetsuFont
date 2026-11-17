@@ -92,8 +92,13 @@ function registerRead(server: McpServer, store: Store): void {
     (args) =>
       guarded(() => {
         const doc = store.read(args.name);
-        const shown = args.glyphs === undefined ? doc : { ...doc, glyphs: pick(doc, args.glyphs, undefined), kerning: doc.kerning.filter((k) => args.glyphs!.includes(k.left) || args.glyphs!.includes(k.right)) };
-        return text(JSON.stringify(shown));
+        if (args.glyphs === undefined) return text(JSON.stringify(doc));
+        // The glyphs found, and the names not found said after: one missing name does not lose the others.
+        const glyphs = doc.glyphs.filter((glyph) => args.glyphs!.includes(glyph.name));
+        const missing = args.glyphs.filter((wanted) => !glyphs.some((glyph) => glyph.name === wanted));
+        const shown = { ...doc, glyphs, kerning: doc.kerning.filter((k) => args.glyphs!.includes(k.left) || args.glyphs!.includes(k.right)) };
+        return text(JSON.stringify(shown) + (missing.length > 0 ? `
+not in this font: ${missing.join(', ')}` : ''));
       }),
   );
 
