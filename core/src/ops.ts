@@ -168,9 +168,11 @@ export function applyOps(doc: FontDoc, ops: Op[]): FontDoc {
     try {
       apply(next, op);
     } catch (error) {
-      if (error instanceof FontError) throw new FontError(error.code, `op ${index + 1} (${op.op}): ${error.message}`);
+      // Counted from 1, with the glyph it was for, so that a long list points at its op.
+      const which = `op ${index + 1} (${op.op}${'glyph' in op && typeof op.glyph === 'string' ? ` ${op.glyph}` : ''})`;
+      if (error instanceof FontError) throw new FontError(error.code, `${which}: ${error.message}`);
       // A field of the wrong kind (a number where a name goes) fails deeper down: the agent still learns which op.
-      throw new FontError('bad_op', `op ${index + 1} (${op.op}): ${(error as Error).message}. Check its fields in the guide.`);
+      throw new FontError('bad_op', `${which}: ${(error as Error).message}. Check its fields in the guide.`);
     }
   });
   validate(next);

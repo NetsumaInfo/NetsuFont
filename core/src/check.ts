@@ -61,10 +61,16 @@ function uncut(glyph: Glyph, commands: Command[]): Finding[] {
     if (!inner.box || !parts.some((outer, j) => i !== j && outer.box && inside(inner.box!, outer.box) && inner.points.every((point) => within(point, outer.points)))) return false;
     const middle: [number, number] = [(inner.box.xMin + inner.box.xMax) / 2, (inner.box.yMin + inner.box.yMax) / 2];
     if (!within(middle, inner.points)) return false;
+    // A counter left uncut crosses no other contour; a stem laid over a ring (the @) does, and is ink on purpose.
+    const crosses = parts.some((other, j) => j !== i && inner.points.some((p) => within(p, other.points)) && inner.points.some((p) => !within(p, other.points)));
+    if (crosses) return false;
     return Math.abs(parts.reduce((sum, part) => sum + winding(middle, part.points), 0)) >= 2;
   });
-  return found ? [{ glyph: glyph.name, text: 'a contour inside another turns the same way: the hole is filled. Reverse the inner one.' }] : [];
+  return found ? [{ glyph: glyph.name, text: 'a contour inside another turns the same way: the hole is filled. Reverse the inner one, or draw it as a shape with "hole":true; strokes that close a loop leave no counter: leave a gap or widen it.' }] : [];
 }
+
+/** Tamil ு and ூ: spacing for Unicode, but a font draws them under a grantha letter (ஜு) as marks, or as part of a ligature. */
+const TAMIL_U = [0xbc1, 0xbc2];
 
 /** Ink far above the ascender or below the descender is cut by many apps. */
 function outOfBounds(doc: FontDoc, glyph: Glyph, commands: Command[]): Finding[] {
@@ -76,7 +82,7 @@ function outOfBounds(doc: FontDoc, glyph: Glyph, commands: Command[]): Finding[]
   const top = Math.max(doc.metrics.ascender, doc.metrics.capHeight + doc.unitsPerEm * 0.25);
   if (box.yMax > top + margin) said.push({ glyph: glyph.name, text: `reaches y ${Math.round(box.yMax)}, far above the ascender ${doc.metrics.ascender}: lines of text will collide.` });
   if (box.yMin < doc.metrics.descender - margin) said.push({ glyph: glyph.name, text: `reaches y ${Math.round(box.yMin)}, below the descender ${doc.metrics.descender}.` });
-  if (glyph.unicode !== undefined && glyph.advance === 0 && /\p{Mc}/u.test(String.fromCodePoint(glyph.unicode))) said.push({ glyph: glyph.name, text: 'is a spacing sign, drawn beside its letter (Bengali ং ঃ, the vowel signs া ি): give it its advance.' });
+  if (glyph.unicode !== undefined && glyph.advance === 0 && /\p{Mc}/u.test(String.fromCodePoint(glyph.unicode)) && !TAMIL_U.includes(glyph.unicode)) said.push({ glyph: glyph.name, text: 'is a spacing sign, drawn beside its letter (Bengali ং ঃ, the vowel signs া ি): give it its advance.' });
   // A mark is placed by compose, wherever it is drawn.
   if (glyph.unicode !== undefined && !/\p{M}/u.test(String.fromCodePoint(glyph.unicode)) && (box.xMin < -margin || box.xMax > glyph.advance + margin)) said.push({ glyph: glyph.name, text: glyph.advance === 0 ? `advance 0 but it draws a character that is not a combining mark: give it its advance.` : `ink from x ${Math.round(box.xMin)} to ${Math.round(box.xMax)} leaves the advance 0 to ${glyph.advance}: it will touch its neighbours.` });
   return said;

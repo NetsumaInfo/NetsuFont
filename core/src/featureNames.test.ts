@@ -20,4 +20,17 @@ describe('names from an imported GSUB', () => {
     expect(nameFeatureGlyphs(gsub, glyphs)).toBe(3);
     expect(glyphs.map((g) => g.name)).toEqual(['.notdef', 'uni0915', 'uni094D', 'uni0937', 'uni0915.half', 'uni0915_uni094D_uni0937', 'uni0628', 'uni0628.init']);
   });
+
+  it('names a Bengali conjunct made of a half form and a letter (pres) by the letters typed', () => {
+    // 0 ka, 1 virama, 2 ta, 3 half ka, 4 the conjunct ক্ত.
+    const glyphs = [glyph('uni0995', 0x995), glyph('uni09CD', 0x9cd), glyph('uni09A4', 0x9a4), glyph('glyph3'), glyph('glyph4')];
+    const ligature = (first: number, components: number[], ligGlyph: number) => ({ lookupType: 4, subtables: [{ substFormat: 1, coverage: { format: 1, glyphs: [first] }, ligatureSets: [[{ ligGlyph, components }]] }] });
+    const gsub: ParsedGsub = {
+      scripts: [{ tag: 'bng2', script: { defaultLangSys: { featureIndexes: [0, 1] } } }],
+      features: [{ tag: 'half', feature: { lookupListIndexes: [0] } }, { tag: 'pres', feature: { lookupListIndexes: [1] } }],
+      lookups: [ligature(0, [1], 3), ligature(3, [2], 4)],
+    };
+    nameFeatureGlyphs(gsub, glyphs);
+    expect(glyphs.map((g) => g.name).slice(3)).toEqual(['uni0995.half', 'uni0995_uni09CD_uni09A4']);
+  });
 });

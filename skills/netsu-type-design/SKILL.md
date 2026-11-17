@@ -82,7 +82,9 @@ nnynn ooyoo"`. Each x
    blue under your glyph and outlined over it, even before you draw. Draw your letters in your
    style with your sheet's numbers, never its paths; look again and fix until each letter keeps
    the model's structure (which side the stem is on, where strokes meet, the counters, the
-   width). Two passes per family at least: a first edit never lands. `remove_font` the model at
+   width). Draw each stroke as one `stroke` shape (`smooth:true` for a bowl or a hook) with
+   your stem width, its points on the model's centre line: a letter is 2 to 6 strokes, not dozens
+   of short lines. Two passes per family at least: a first edit never lands. `remove_font` the model at
    the end. Three blind runs that drew Devanagari in one pass made letters no reader could read. Check with one
    `proof` of the brief's pangrams, a line each, sizes `[48, 18]`.
 
@@ -162,7 +164,7 @@ and legible at 12 px; the weakest were & 2 @ and the Greek ζ ξ ς.
 | Accented letters drawn whole, each a little different | Marks drawn once, letters made with `compose` |
 | "Supports Polish" because ą ę exist | `languages` reports the language complete, and its pangram is proofed |
 | Kanji, hanzi or hangul drawn one by one | `draw_kanji` with one pen for a whole set (`references/cjk.md`) |
-| Bengali, Tamil or Chinese promised | Said plainly: not possible yet (the languages answer says why) |
+| Telugu, Kannada, Khmer or Myanmar promised | Said plainly: not possible yet (the languages answer says why) |
 | Marks placed by hand on each letter | Marks drawn once with advance 0: the font's GPOS puts them on every letter |
 | A script drawn from memory, letters guessed | A model font looked at first; the letters drawn from it, in the font's own style |
 | Arabic drawn as isolated letters only | Skeletons with `.init` `.medi` `.fina`, lam-alef, dots by `compose`; `languages` reports it complete |

@@ -1,7 +1,8 @@
 // An imported font keeps its forms and ligatures by giving their glyphs the names NetsuFont reads features from: the
 // initial beh becomes `uni0628.init`, a Devanagari half ka `uni0915.half`, a Bengali ya-phala `uni09AF.pstf`, the conjunct ksha
 // `uni0915_uni094D_uni0937`. Export then writes the same features back, and a model shows its forms by name.
-import { INDIC, viramaName } from './indic';
+import { INDIC, indicOf, viramaName } from './indic';
+import { INDIC_CHARS, indicForms } from './indicLanguages';
 import { glyphName } from './names';
 import type { Glyph } from './types';
 
@@ -50,7 +51,26 @@ function rulesOf(gsub: ParsedGsub, tag: string, scripts: string[]): { sub: numbe
 
 const INDIC_TAGS = INDIC.flatMap((script) => script.tags);
 const VIRAMAS = new Set(INDIC.map(viramaName));
+/** The Indic forms languages count: a glyph two rules make (ஸ்ரீ and ஶ்ரீ) takes the one of these first. */
+const WANTED = new Set(Object.keys(INDIC_CHARS).flatMap(indicForms));
 const RAS = new Set(INDIC.flatMap((script) => script.ras.map((ra) => glyphName(String.fromCodePoint(ra)))));
+
+/**
+ * A glyph as the letters typed for it, joined by _: an Indic form is its letter and the virama (`uni0995.half` is
+ * `uni0995_uni09CD`, `uni09B0.blwf` is `uni09CD_uni09B0`). Undefined for a glyph without a name of its own (glyph42).
+ */
+function spelling(glyphs: Glyph[]): (name: string) => string | undefined {
+  const codes = new Map(glyphs.flatMap((glyph) => (glyph.unicode === undefined ? [] : [[glyph.name, glyph.unicode] as const])));
+  return (name) => {
+    if (/^glyph\d+/.test(name)) return undefined;
+    const [base, form] = name.split('.');
+    const script = indicOf(codes.get(base!) ?? -1);
+    if (!script || form === undefined) return name;
+    const virama = viramaName(script);
+    if (form === 'half' || form === 'rphf') return `${base}_${virama}`;
+    return form === 'blwf' || form === 'pstf' ? `${virama}_${base}` : name;
+  };
+}
 
 /**
  * Renames the glyphs a feature makes, when they have no code point and their new name is free: Arabic forms, the
@@ -59,14 +79,17 @@ const RAS = new Set(INDIC.flatMap((script) => script.ras.map((ra) => glyphName(S
 export function nameFeatureGlyphs(gsub: ParsedGsub | undefined, glyphs: Glyph[]): number {
   if (!gsub) return 0;
   const taken = new Set(glyphs.map((g) => g.name));
-  let renamed = 0;
+  const done = new Set<number>();
+  // A glyph made by two rules (the reph of ra and of the Assamese ra) keeps the first name it gets, unless the second
+  // is a form a language counts and the first is not.
   const rename = (index: number, name: string): void => {
     const glyph = glyphs[index];
     if (!glyph || glyph.unicode !== undefined || taken.has(name)) return;
+    if (done.has(index) && (WANTED.has(glyph.name) || !WANTED.has(name))) return;
+    done.add(index);
     taken.delete(glyph.name);
     glyph.name = name;
     taken.add(name);
-    renamed += 1;
   };
   const nameOf = (index: number): string => glyphs[index]?.name ?? '';
   // The letters first take the names the rules below expect: a font's own "kaDeva" becomes uni0915.
@@ -85,8 +108,14 @@ export function nameFeatureGlyphs(gsub: ParsedGsub | undefined, glyphs: Glyph[])
   for (const form of ['blwf', 'pstf']) {
     for (const rule of rulesOf(gsub, form, INDIC_TAGS)) if (rule.sub.length === 2 && VIRAMAS.has(nameOf(rule.sub[0]!))) rename(rule.by, `${nameOf(rule.sub[1]!)}.${form}`);
   }
-  for (const [tag, scripts] of [['akhn', INDIC_TAGS], ['psts', INDIC_TAGS], ['rlig', ['arab']], ['liga', ['latn', 'DFLT']]] as const) {
-    for (const rule of rulesOf(gsub, tag, [...scripts])) rename(rule.by, rule.sub.map(nameOf).join('_'));
+  const spell = spelling(glyphs);
+  // Conjuncts and letters with their vowel, wherever the font makes them: a Bengali ক্ত is ka.half and ta (pres).
+  const ligatures: [string, readonly string[]][] = [...['akhn', 'cjct', 'pres', 'psts', 'blws', 'abvs'].map((tag): [string, readonly string[]] => [tag, INDIC_TAGS]), ['rlig', ['arab']], ['liga', ['latn', 'DFLT']]];
+  for (const [tag, scripts] of ligatures) {
+    for (const rule of rulesOf(gsub, tag, [...scripts])) {
+      const parts = rule.sub.map((index) => spell(nameOf(index)));
+      if (parts.every((part) => part !== undefined)) rename(rule.by, parts.join('_'));
+    }
   }
-  return renamed;
+  return done.size;
 }

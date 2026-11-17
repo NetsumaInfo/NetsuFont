@@ -134,10 +134,18 @@ Build the letters that are not Latin from the parts you already have:
   1080 and x −487 to −129 (set the ascender to 1080 first); the ya-phala is a spacing glyph with
   its headline (advance 329). A blind run (Nodi, 2026-11-17) drew letters 560 wide, then had to
   rescale them; it made ং a mark, and its conjuncts were two letters squeezed side by side: they
-  pass `languages` and read as nothing. Trace every conjunct and রু from the model by its name
-  (`look_glyphs {glyphs, model}`), and spend the budget on two passes per family. Gujarati has
+  pass `languages` and read as nothing. The model keeps the conjuncts, রু রূ, the reph and the
+  phalas by these names (Nirmala UI has them all since 2026-11-17): trace each with
+  `look_glyphs {glyphs, model}`, and spend the budget on two passes per family. A second run
+  (Padma, about 90 calls, every letter traced) read as text at large sizes; ঙ ঞ শ ম ল stayed weak
+  and its conjuncts were still squeezed letters, drawn before the model had them. Gujarati has
   no headline, its bodies from 0 to about 712 and their side bearings open (ક ink 47 to 529 on 585); Tamil has none either, its bodies from
-  0 to 584 (Latin x-height 512), some with a tail to −209 (ந ர). Vowel signs drawn before their
+  0 to 584 (Latin x-height 512), some with a tail to −209 (ந ர), and wide: க 885, ட 851, ம 959,
+  ர 708, ன 1255, ண 1687, ா 709, ெ 889, ை 1221 (advances). In the model ி is spacing (advance
+  261, its loop reaching back to −248 over the letter) and ீ ு ூ ் are marks of advance 0. A
+  consonant with ு or ூ is one wider glyph with its own foot (கு 1058, மு 1248, down to −209): the
+  model draws all 36, trace each; a consonant with one generic foot added reads poorly (Tamarai,
+  blind run of 2026-11-17). Vowel signs drawn before their
   consonant are spacing glyphs: ি ে ৈ, ਿ, િ, ெ ே ை. Signs in two parts (ো ৌ ொ ோ ௌ): draw their
   parts (ে া ৗ, ெ ே ா ௗ) and `compose` makes the whole. Forms, as `languages` names them:
   Bengali the reph `uni09B0.rphf` (Assamese `uni09F0.rphf`), ra-phala `uni09B0.blwf`, ya-phala

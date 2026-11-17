@@ -1,4 +1,5 @@
 import { writePath, type Command } from './path';
+import { simplify, smooth, strokeOutline } from './kanji';
 import { FontError } from './types';
 
 /**
@@ -13,9 +14,10 @@ export type Shape = (
   | { type: 'arc'; cx: number; cy: number; rx: number; ry: number; stroke: number; strokeY?: number; from: number; to: number; ends?: 'round' }
   | { type: 'line'; x1: number; y1: number; x2: number; y2: number; width: number; ends?: 'square' | 'flat' | 'round' }
   | { type: 'polygon'; points: [number, number][] }
+  | { type: 'stroke'; points: [number, number][]; width: number; ends?: 'square' | 'flat' | 'round'; smooth?: boolean }
 ) & { hole?: boolean };
 
-export const SHAPE_TYPES = ['rect', 'ellipse', 'ring', 'arc', 'line', 'polygon'] as const;
+export const SHAPE_TYPES = ['rect', 'ellipse', 'ring', 'arc', 'line', 'polygon', 'stroke'] as const;
 
 type Point = [number, number];
 /** A contour as a start and segments: a line to a point, or a cubic with two handles. */
@@ -119,13 +121,26 @@ function line(s: Extract<Shape, { type: 'line' }>): Contour[] {
 
 /** Every number of the shape is finite, and a band is thinner than its ellipse. */
 function check(shape: Shape): void {
-  const numbers = Object.entries(shape).filter(([key]) => key !== 'type' && key !== 'hole' && key !== 'ends' && key !== 'points');
+  const numbers = Object.entries(shape).filter(([key]) => key !== 'type' && key !== 'hole' && key !== 'ends' && key !== 'points' && key !== 'smooth');
   if (numbers.some(([, value]) => typeof value !== 'number' || !Number.isFinite(value))) throw new FontError('bad_shape', `A ${shape.type} takes numbers: ${numbers.map(([key]) => key).join(', ')}.`);
   const ends = (shape as { ends?: unknown }).ends;
   if (ends !== undefined && !['square', 'flat', 'round'].includes(ends as string)) throw new FontError('bad_shape', 'ends is "square", "flat" or "round" for a line, "round" for an arc.');
   if ((shape.type === 'ring' || shape.type === 'arc') && !(shape.stroke > 0 && shape.stroke < shape.rx && (shape.strokeY ?? shape.stroke) > 0 && (shape.strokeY ?? shape.stroke) < shape.ry)) {
-    throw new FontError('bad_shape', `The stroke of a ${shape.type} is more than 0 and less than its radii.`);
+    throw new FontError('bad_shape', `The stroke of a ${shape.type} (${shape.stroke}${shape.strokeY === undefined ? '' : `, ${shape.strokeY}`}) is more than 0 and less than its radii (${shape.rx}, ${shape.ry}): rx and ry measure the outside.`);
   }
+}
+
+/**
+ * A pen of `width` along the points: one outline through a curve when `smooth` (Catmull-Rom, sharp where it turns
+ * more than 50°), else one per segment with a disc at each joint, so corners are round.
+ */
+function stroke(s: Extract<Shape, { type: 'stroke' }>): Contour[] {
+  if (!Array.isArray(s.points) || s.points.length < 2 || s.points.some((p) => !Array.isArray(p) || !p.every(Number.isFinite))) throw new FontError('bad_shape', 'A stroke has two points [x, y] or more.');
+  if (!(s.width > 0)) throw new FontError('bad_shape', 'The width of a stroke is more than 0.');
+  const pen = { width: s.width, ends: s.ends ?? 'round' };
+  if (s.smooth) return [polygon(simplify(strokeOutline(smooth(s.points), pen), 0.8))];
+  const segments = s.points.slice(1).map((to, i) => polygon(strokeOutline([s.points[i]!, to], pen)));
+  return [...segments, ...s.points.slice(1, -1).map(([x, y]) => ellipse(x, y, s.width / 2, s.width / 2))];
 }
 
 function contoursOf(shape: Shape): Contour[] {
@@ -146,6 +161,8 @@ function contoursOf(shape: Shape): Contour[] {
     case 'polygon':
       if (!Array.isArray(shape.points) || shape.points.length < 3) throw new FontError('bad_shape', 'A polygon has three points or more.');
       return [polygon(shape.points)];
+    case 'stroke':
+      return stroke(shape);
     default:
       throw new FontError('bad_shape', `Unknown shape "${(shape as { type: unknown }).type}". Shapes: ${SHAPE_TYPES.join(', ')}.`);
   }

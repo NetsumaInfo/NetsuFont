@@ -120,4 +120,17 @@ describe('round ends', () => {
     const box = bounds(parsePath(shapesPath([shapes[2]!])))!;
     expect([box.xMin, box.xMax, box.yMin, box.yMax]).toEqual([85, 615, 310, 390]);
   });
+
+  it('draws a stroke along points, its corners round, or curved through them', () => {
+    const corner = box(shapesPath([{ type: 'stroke', points: [[100, 0], [100, 400], [400, 400]], width: 80 }]))!;
+    expect([corner.xMin, corner.xMax, corner.yMin, corner.yMax]).toEqual([60, 440, -40, 440]);
+    const curve = shapesPath([{ type: 'stroke', points: [[0, 0], [200, 300], [400, 0]], width: 60, smooth: true }]);
+    expect(curve.match(/M/g)).toHaveLength(1);
+    expect(box(curve)!.yMax).toBeGreaterThan(300);
+  });
+
+  it('names the op and its glyph when a shape is wrong', () => {
+    expect(() => applyOps(newFont('t', 'T'), [{ op: 'set_glyph', glyph: 'o', shapes: [{ type: 'ring', cx: 0, cy: 0, rx: 50, ry: 50, stroke: 72 }] }])).toThrow(/op 1 \(set_glyph o\): The stroke of a ring \(72\) .* \(50, 50\)/);
+    expect(() => shapesPath([{ type: 'stroke', points: [[0, 0]], width: 50 } as Shape])).toThrow(FontError);
+  });
 });

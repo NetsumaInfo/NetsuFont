@@ -128,6 +128,13 @@ describe('checks', () => {
     expect(checkGlyphs(cut)).toEqual([]);
   });
 
+  it('takes a stem laid over a ring inside a ring (the @) for ink, not a filled hole', () => {
+    const at = applyOps(newFont('t', 'T'), [{ op: 'set_glyph', glyph: 'at', advance: 900, shapes: [
+      { type: 'ring', cx: 420, cy: 270, rx: 380, ry: 370, stroke: 64 }, { type: 'ring', cx: 420, cy: 270, rx: 130, ry: 130, stroke: 64 }, { type: 'rect', x: 490, y: 150, w: 64, h: 270 },
+    ] }]);
+    expect(checkGlyphs(at)).toEqual([]);
+  });
+
   it('finds ink outside the advance and above the ascender', () => {
     const doc = applyOps(newFont('t', 'T'), [{ op: 'set_glyph', glyph: 'I', unicode: 73, advance: 100, path: 'M0 0H300V1200H0Z' }]);
     expect(checkGlyphs(doc).map((f) => f.text).join(' ')).toMatch(/far above the ascender.*leaves the advance/);

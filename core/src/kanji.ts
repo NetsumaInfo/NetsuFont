@@ -33,7 +33,7 @@ export function kanjiStrokes(svg: string): Point[][] {
 }
 
 /** The line with the points that bend it less than `tolerance` left out (Douglas and Peucker). */
-function simplify(points: Point[], tolerance: number): Point[] {
+export function simplify(points: Point[], tolerance: number): Point[] {
   if (points.length < 3) return points;
   const [a, b] = [points[0]!, points[points.length - 1]!];
   const length = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
@@ -263,7 +263,7 @@ function turnAt(a: Point, b: Point, c: Point): number {
 }
 
 /** A line through the points, curved between them (Catmull-Rom) but kept sharp where it turns more than 50°. */
-function smooth(points: Point[], steps = 6): Point[] {
+export function smooth(points: Point[], steps = 6): Point[] {
   const out: Point[] = [points[0]!];
   for (let i = 0; i < points.length - 1; i += 1) {
     const corner = (k: number): boolean => k <= 0 || k >= points.length - 1 || turnAt(points[k - 1]!, points[k]!, points[k + 1]!) > 50;

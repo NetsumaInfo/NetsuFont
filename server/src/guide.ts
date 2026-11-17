@@ -34,10 +34,11 @@ DOCUMENT
   "<mark>.case" is the flatter one for capitals, above the cap height; without it, compose raises the lowercase one.
   dotlessi carries the accents of i.
 - Right to left (Hebrew, Arabic): proof and the app set it so. In such text a kerning pair's left is the letter read first.
-- Marks with a unicode (accents typed after a letter, Hebrew points, Arabic harakat, Thai and Indic vowel signs):
+- Marks with a unicode (accents typed after a letter, Hebrew points, Arabic harakat, Thai and Indic signs above or below):
   advance 0, drawn once anywhere. The export (GDEF, GPOS mark and mkmk) and proof set each on the top of its letter's
   ink, or under it (Unicode says, or it is drawn below the baseline); a second one stacks on the first. The Hebrew
   dagesh is centred; the shin and sin dots and holam stay where drawn in the letter's frame. Indic marks touch, Tamil's excepted.
+  A sign beside its letter (া ি ং ঃ, Tamil ா ி) is not a mark: it keeps an advance, its ink may reach over the letter.
 - Japanese, Chinese, Korean: draw_kanji {name, set or chars, from?, pen:{width, ends?, contrast?, angle?, terminals?}, frame?} draws
   them from their strokes with the pen, one em-wide glyph each. Sets: kana joyo jinmeiyo (KanjiVG), hanzi1 hanzi2 hanzi3
   hant (Make Me a Hanzi; from:"hanzi" for chars), hangul hangul_all jamo (composed from letters, no data). contrast:
@@ -62,7 +63,8 @@ DOCUMENT
 
 OPS (edit_font)
 {op:"set_glyph", glyph, unicode?, advance?, path?, shapes?, components?}   creates it, or changes what is given;
-   unicode null removes it. shapes become the path (after "path" when both are given).
+   unicode null removes it. shapes become the path (after "path" when both are given). A new glyph's advance is 600
+   unless given: give it, also for a glyph made of components.
 
 SHAPES (each turned the right way; overlapping shapes add; "hole":true cuts one layer). Angles: 0 right, 90 top.
 {type:"rect", x, y, w, h}   {type:"ellipse", cx, cy, rx, ry}   {type:"polygon", points:[[x,y],...]}
@@ -73,7 +75,9 @@ SHAPES (each turned the right way; overlapping shapes add; "hole":true cuts one 
    360 (270 to 450)
 {type:"line", x1, y1, x2, y2, width, ends?}   width across the stroke
 ends: "square" (line, default), "flat" (line: cut level to sit on a line; wider than width by 1/cos of the slant),
-   "round" (line or arc: a half disc past each end)
+   "round" (line or arc: a half disc past each end; stroke default)
+{type:"stroke", points:[[x,y],...], width, ends?, smooth?}   a pen along the points: corners round; smooth:true
+   curves through them (kept sharp where they turn more than 50°). One stroke draws a whole bowl, hook or tail
 
 MORE OPS
 {op:"remove_glyph", glyph}   refused while another glyph uses it as a component
