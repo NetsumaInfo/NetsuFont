@@ -45,7 +45,7 @@ DOCUMENT
   the share of the width left along angle (0.25: a quarter). terminals:"song": strokes made level and upright, a
   triangle on each horizontal's end. <name>.zht: the glyph traditional Chinese text uses (feature locl). Voicing marks uni3099 uni309A, without unicode, stay
   where drawn (compose が from か). <name>.vert: the glyph for vertical writing (feature vert).
-- Indic (Devanagari, Bengali, Gurmukhi, Gujarati, Odia, Tamil, Malayalam): <consonant>.half (before another consonant, the virama
+- Indic (Devanagari, Bengali, Gurmukhi, Gujarati, Odia, Tamil, Malayalam, Telugu, Kannada): <consonant>.half (before another consonant, the virama
   gone), <ra>.rphf (the reph: advance 0, ink above and left of x 0), <consonant>.blwf (under the consonant before it:
   advance 0), <consonant>.pstf (after it: Bengali ya-phala uni09AF.pstf), uni0D30.pref (Malayalam ra after a virama,
   drawn before its consonant: a spacing glyph), conjuncts named by their parts
@@ -53,6 +53,9 @@ DOCUMENT
   signs drawn before their consonant (ि, Bengali ি ে ৈ, Odia େ, Tamil ெ ே ை, Malayalam െ േ ൈ) are spacing glyphs: the engine draws them
   first. Vowel signs in two parts (ো ৌ ୈ ୋ ୌ ொ ோ ௌ ൊ ോ ൌ) are split by the engine: compose makes their glyph from the parts.
   The Malayalam dot reph ൎ, typed before its consonant, is drawn after it: advance 0, ink above and left of x 0.
+  Telugu, Kannada: each consonant is drawn again with each vowel sign (కి uni0C15_uni0C3F). Draw <consonant>.base, the
+  consonant without its head stroke, and the signs (a sign of advance 0 drawn left of x 0 sits over its end); then
+  {op:"compose", syllables:"te"} (or "kn") makes them all for the consonants drawn. Redraw one by hand when needed.
 - Arabic: a joining letter is its glyph (isolated, with unicode) and forms without unicode: <name>.init (word start, joins
   on its left edge), .medi (both edges), .fina (word end, joins on its right edge). ا د ذ ر ز و ة join only on the right:
   .fina alone. Lam-alef ligatures uni0644_uni0627, uni0644_uni0623, uni0644_uni0625, uni0644_uni0622, each with .fina.
@@ -91,7 +94,7 @@ MORE OPS
    mirrors the glyph in its advance: N into И; y below 0 mirrors it round the baseline: 6 into 9 with a translate); slant
    in degrees, positive leans right; then translate [x,y]. The advance follows the x scale.
 {op:"set_kern", left, right, value}   glyph names or characters ("period" or "."); negative brings the pair closer; 0 removes it
-{op:"compose", chars:"éèçÀ"}   makes letters from glyphs already drawn: base + marks, placed (centred, stacked,
+{op:"compose", chars:"éèçÀ"} or {op:"compose", syllables:"te"}   makes letters from glyphs already drawn: base + marks, placed (centred, stacked,
    raised on capitals), Greek or Cyrillic letters shaped as Latin ones (а е о р с А В Н, Α Β Ε), and Arabic letters
    from skeleton + dots with all their forms (dots moved only to clear the skeleton). Refused with
    the list of glyphs to draw first. Fix one with set_glyph components afterwards.

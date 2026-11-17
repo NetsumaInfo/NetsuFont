@@ -9,8 +9,8 @@ export interface IndicScript {
   from: number;
   /** Vowel signs written after their consonant and drawn before it. */
   prebase: number[];
-  /** Vowel signs drawn in two parts, one before the consonant and one after: text engines split them. */
-  split: Record<number, [number, number]>;
+  /** Vowel signs drawn in parts (two, or three in Kannada ೋ), around the consonant: text engines split them. */
+  split: Record<number, number[]>;
   /** The letters ra that, before a virama and a consonant, become the reph. Empty for a script without one. */
   ras: number[];
   /** Where the reph goes: after the vowel signs that follow (Devanagari), or before them. */
@@ -19,6 +19,8 @@ export interface IndicScript {
   pref?: number;
   /** A reph typed as a letter before its consonant and drawn after it, on top (Malayalam ൎ). */
   dotReph?: number;
+  /** Vowel signs go right after the base consonant, before its forms below (Telugu క్కి, Kannada ಕ್ಕಿ). */
+  signsAfterBase?: boolean;
 }
 
 export const INDIC: IndicScript[] = [
@@ -36,6 +38,12 @@ export const INDIC: IndicScript[] = [
   {
     tags: ['mlm2', 'mlym'], from: 0xd00, prebase: [0xd46, 0xd47, 0xd48], split: { 0xd4a: [0xd46, 0xd3e], 0xd4b: [0xd47, 0xd3e], 0xd4c: [0xd46, 0xd57] },
     ras: [], rephLast: false, pref: 0xd30, dotReph: 0xd4e,
+  },
+  { tags: ['tel2', 'telu'], from: 0xc00, prebase: [], split: { 0xc48: [0xc46, 0xc56] }, ras: [], rephLast: false, signsAfterBase: true },
+  {
+    tags: ['knd2', 'knda'], from: 0xc80, prebase: [],
+    split: { 0xcc0: [0xcbf, 0xcd5], 0xcc7: [0xcc6, 0xcd5], 0xcc8: [0xcc6, 0xcd6], 0xcca: [0xcc6, 0xcc2], 0xccb: [0xcc6, 0xcc2, 0xcd5] },
+    ras: [0xcb0], rephLast: true, signsAfterBase: true,
   },
   {
     tags: ['tml2', 'taml'], from: 0xb80, prebase: [0xbc6, 0xbc7, 0xbc8], split: { 0xbca: [0xbc6, 0xbbe], 0xbcb: [0xbc7, 0xbbe], 0xbcc: [0xbc6, 0xbd7] },
@@ -106,6 +114,19 @@ function moveRa<T extends Unit>(letters: T[], script: IndicScript, pref: (ra: T)
   return made ? [made, ...letters.slice(0, at), ...letters.slice(at + 2)] : letters;
 }
 
+/** The vowel signs that move after the base: those of the block from ా to ౌ, not vocalic r nor the length marks. */
+function movesToBase(code: number, script: IndicScript): boolean {
+  const at = code - script.from;
+  return at >= 0x3e && at <= 0x4c && at !== 0x43 && at !== 0x44;
+}
+
+/** Telugu and Kannada: the vowel signs after the first consonant, before the forms below that follow it. */
+function signsToBase<T extends Unit>(letters: T[], script: IndicScript): T[] {
+  if (!isConsonant(codeOf(letters[0]))) return letters;
+  const signs = letters.filter((item, k) => k > 0 && movesToBase(codeOf(item), script));
+  return [letters[0]!, ...signs, ...letters.slice(1).filter((item) => !signs.includes(item))];
+}
+
 /** One syllable in the order it is drawn: the reph moved to its place, the vowel signs drawn before go first. */
 function reorder<T extends Unit>(syllable: T[], movers: Movers<T>): T[] {
   let letters = [...syllable];
@@ -121,6 +142,7 @@ function reorder<T extends Unit>(syllable: T[], movers: Movers<T>): T[] {
     letters = after < 0 ? [...rest, made] : [...rest.slice(0, after), made, ...rest.slice(after)];
   }
   if (script.pref !== undefined) letters = moveRa(letters, script, movers.pref);
+  if (script.signsAfterBase) letters = signsToBase(letters, script);
   const at = letters.findIndex((item) => script.prebase.includes(codeOf(item)));
   if (at > 0) letters = [letters[at]!, ...letters.slice(0, at), ...letters.slice(at + 1)];
   return letters;

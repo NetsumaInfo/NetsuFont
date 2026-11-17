@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { applyOps, charsOf, composeNeeds, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, toWoff2, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
+import { applyOps, charsOf, composeNeeds, syllableNeeds, syllablesOf, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, toWoff2, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
 import { z } from 'zod';
 import { GUIDE } from './guide';
 import { kanjiInput, kanjiOps } from './kanji';
@@ -54,13 +54,17 @@ function languageLines(entry: LanguageCoverage, detail: boolean): string[] {
   const named = others.filter((char) => recipe(char).base === undefined).map((char) => `${char} ${recipe(char).name}`);
   // A form of a letter that compose makes (ب from ٮ) comes with that letter; the others are drawn.
   const composed = new Set(charsOf(SCRIPTS.find((l) => l.code === entry.code)!).filter((char) => recipe(char).base !== undefined).map((char) => recipe(char).name));
-  const forms = entry.forms.filter((name) => !composed.has(name.split('.')[0]!));
+  // Telugu and Kannada consonants with their vowel signs: hundreds, made by one compose.
+  const syllables = new Set(syllablesOf(entry.code).map((s) => s.name));
+  const made = entry.forms.filter((name) => syllables.has(name));
+  const forms = entry.forms.filter((name) => !composed.has(name.split('.')[0]!) && !syllables.has(name));
   return [
     head,
     ...(strokes.length > 0 ? [`  draw_kanji: ${strokes.length} characters (${strokes.slice(0, 12).join('')}…)`] : []),
     ...(built.length > 0 ? [`  compose: ${built.join('')}`] : []),
     ...(named.length > 0 ? [`  draw: ${named.join(', ')}`] : []),
     ...(forms.length > 0 ? [`  draw forms and ligatures: ${forms.join(', ')}`] : []),
+    ...(made.length > 0 ? [`  compose {syllables:"${entry.code}"}: ${made.length} consonants with a vowel sign (${made.slice(0, 2).join(', ')}…)`] : []),
   ];
 }
 
@@ -68,7 +72,8 @@ function languageLines(entry: LanguageCoverage, detail: boolean): string[] {
 function languages(doc: FontDoc, codes: string[] | undefined): string {
   const entries = languageCoverage(doc, codes);
   const lines = entries.flatMap((entry) => languageLines(entry, codes !== undefined));
-  const needs = composeNeeds(doc, entries.flatMap(({ missing }) => missing).join(''));
+  const syllables = entries.filter((entry) => syllablesOf(entry.code).length > 0 && entry.forms.length > 0).flatMap((entry) => syllableNeeds(doc, entry.code));
+  const needs = [...new Set([...composeNeeds(doc, entries.flatMap(({ missing }) => missing).join('')), ...syllables])];
   return [...lines, ...(needs.length > 0 ? [`draw before compose (bases, skeletons and their forms, marks): ${needs.join(', ')}`] : []), `not possible yet: ${UNSUPPORTED_SCRIPTS}`].join('\n');
 }
 

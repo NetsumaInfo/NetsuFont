@@ -1,4 +1,5 @@
 import { ARABIC_MARKS_ABOVE, ARABIC_MARKS_BELOW, FORM_OF, formsOf } from './arabic';
+import { syllablesOf } from './indicLanguages';
 import { BELOW, glyphName, KEEP, recipe, RIGHT } from './names';
 import { glyphBounds, glyphMap } from './outline';
 import { FontError, type FontDoc, type Glyph, type Part } from './types';
@@ -51,8 +52,36 @@ function ordered(builds: Build[]): Build[] {
  * the foot; a horn goes to the right. Arabic dots are centred and moved only to clear the skeleton.
  */
 export function composeLetters(doc: FontDoc, chars: string): string[] {
+  return make(doc, ordered([...new Set(chars)].flatMap(buildsOf)));
+}
+
+/**
+ * The builds of a language's consonants with their vowel signs: `<consonant>.base` (without its head stroke) when
+ * drawn, else the consonant. Only the consonants already drawn: a font is made family by family.
+ */
+function syllableBuilds(code: string, byName: Map<string, Glyph>): Build[] {
+  return syllablesOf(code).filter((s) => byName.has(s.consonant) || byName.has(`${s.consonant}.base`)).map((s) => ({ name: s.name, base: byName.has(`${s.consonant}.base`) ? `${s.consonant}.base` : s.consonant, marks: s.signs, capital: false, beside: true }));
+}
+
+/**
+ * Every consonant of a Telugu or Kannada text drawn again with each vowel sign (కి, ಕಿ): `<consonant>.base`, or the
+ * consonant, then the parts of the sign after it. A sign of advance 0 drawn left of x 0 sits over the consonant's end.
+ */
+export function composeSyllables(doc: FontDoc, code: string): string[] {
+  if (syllablesOf(code).length === 0) throw new FontError('bad_op', 'compose syllables takes "te" or "kn".');
+  const builds = syllableBuilds(code, glyphMap(doc));
+  if (builds.length === 0) throw new FontError('glyph_not_found', 'Draw the consonants first: compose makes the syllables of those drawn.');
+  return make(doc, builds);
+}
+
+/** The vowel signs compose needs drawn before it can make a language's syllables. */
+export function syllableNeeds(doc: FontDoc, code: string): string[] {
   const byName = glyphMap(doc);
-  const builds = ordered([...new Set(chars)].flatMap(buildsOf));
+  return lackingOf(syllableBuilds(code, byName), byName);
+}
+
+function make(doc: FontDoc, builds: Build[]): string[] {
+  const byName = glyphMap(doc);
   const lacking = lackingOf(builds, byName);
   if (lacking.length > 0) throw new FontError('glyph_not_found', `Draw these first: ${lacking.join(', ')}. Marks are drawn above the x-height or below the baseline.`);
   return builds.map((build) => {

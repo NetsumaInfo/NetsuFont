@@ -162,8 +162,17 @@ Build the letters that are not Latin from the parts you already have:
   `uni0D30.pref` is a narrow spacing glyph (advance 287), the ya-phala `uni0D2F.pstf` advance
   532. The model has most conjuncts by name; in Odia it lacks eight of the ten `languages`
   counts and in Malayalam three (it builds them another way): draw those from its forms below.
-- **Not possible yet**: Telugu, Kannada (each consonant drawn again with each vowel sign),
-  Sinhala, Khmer, Myanmar, Tibetan. Say so.
+- **Telugu (te), Kannada (kn)**: trace Nirmala UI (2026-11-17, measured, not drawn here yet).
+  Telugu bodies from 0 to about 600, the head stroke (talakattu) up to 853; క 583, మ 1178, ర 733
+  wide; the signs ి ె ా are marks above, ink left of x 0 (ి 541 to 881); ు is spacing (487). Kannada
+  bodies to about 600, the head up to 798; ಕ 723, ಮ 1289; ಾ spacing (618), ಿ ೆ marks above. Each
+  consonant's form below (`.blwf`, the vattu or ottu) hangs to about −225. Draw each consonant,
+  then its `.base` without the head stroke, then the signs; `compose {syllables}` makes the
+  hundreds of syllables (కి is base and sign side by side); look at a family in `proof` and redraw
+  by hand the few that do not join (the model draws each one: `look_glyphs {glyphs, model}`).
+  The Kannada reph `uni0CB0.rphf` comes after the syllable. Telugu writes no reph: ర్క is ra
+  with ka below.
+- **Not possible yet**: Sinhala, Khmer, Myanmar, Tibetan. Say so.
   Japanese, Chinese and Korean: load `references/cjk.md`.
 
 ## 3b. Arabic, Persian, Urdu
@@ -235,6 +244,8 @@ hi  ऋषियों को सताने वाले दुष्ट र�
 bn  বাংলা ভাষা পৃথিবীর অন্যতম প্রধান ভাষা। ক্ষমা, রুমাল, বর্ষা, কৌতুক, বাক্য, প্রেম (sample)
 pa  ਪੰਜਾਬੀ ਭਾਸ਼ਾ ਗੁਰਮੁਖੀ ਲਿਪੀ ਵਿੱਚ ਲਿਖੀ ਜਾਂਦੀ ਹੈ। ਪ੍ਰੇਮ (sample)
 gu  ગુજરાતી ભાષા ગુજરાતી લિપિમાં લખાય છે. ક્ષમા, ધર્મ, પ્રેમ (sample)
+te  తెలుగు భాష ఒక ద్రావిడ భాష. కృష్ణ, సత్యం, ప్రేమ (sample)
+kn  ಕನ್ನಡ ಒಂದು ದ್ರಾವಿಡ ಭಾಷೆ. ಕೃಷ್ಣ, ಸತ್ಯ, ಪ್ರೀತಿ (sample)
 or  ଓଡ଼ିଆ ଭାଷା ଏକ ପ୍ରାଚୀନ ଭାଷା। କ୍ଷମା, ଧର୍ମ, ସତ୍ୟ (sample)
 ml  മലയാളം ഒരു ദ്രാവിഡ ഭാഷയാണ്. ക്രമം, സത്യം, കേരളം (sample)
 ta  தமிழ் மொழி உலகின் மிகப் பழமையான மொழிகளில் ஒன்று. கூட்டம், டிசம்பர், ஸ்ரீ (sample)

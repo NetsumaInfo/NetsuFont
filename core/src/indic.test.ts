@@ -74,3 +74,22 @@ describe('Odia and Malayalam', () => {
     expect(chars(reorderIndic(unit('କୋ'.normalize('NFD')), movers))).toBe('େକା');
   });
 });
+
+describe('Telugu and Kannada', () => {
+  it('counts each consonant with each vowel sign, and composes them from the consonant without its head stroke', () => {
+    const [te, kn] = languageCoverage(newFont('t', 'T'), ['te', 'kn']);
+    expect(te!.forms).toContain('uni0C15_uni0C3F');
+    expect(te!.forms).toContain('uni0C15_uni0C46_uni0C56');
+    expect(kn!.forms).toContain('uni0C95_uni0CC6_uni0CC2');
+    const doc = applyOps(newFont('t', 'T'), [box('క', 600), form('uni0C15.base', 560), box('ి', 0), box('ె', 0), box('ౖ', 0), box('ా', 300), box('ు', 300), box('ూ', 300), box('ే', 0), box('ొ', 300), box('ో', 300), box('ౌ', 300), box('ీ', 0)]);
+    const done = applyOps(doc, [{ op: 'compose', syllables: 'te' }]).glyphs.find((g) => g.name === 'uni0C15_uni0C3E')!;
+    expect(done.components).toEqual([{ glyph: 'uni0C15.base', x: 0, y: 0 }, { glyph: 'uni0C3E', x: 560, y: 0 }]);
+    expect(done.advance).toBe(860);
+  });
+
+  it('puts the Kannada reph last and splits ೋ in three', () => {
+    const movers = { reph: (ra: { char: string }) => ({ char: `R${ra.char}` }), pref: () => undefined };
+    expect(chars(reorderIndic(unit('ರ್ಕಾ'), movers))).toBe('ಕಾRರ');
+    expect(splitVowels('ಕೋ')).toBe('ಕೋ');
+  });
+});

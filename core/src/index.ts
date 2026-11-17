@@ -12,6 +12,7 @@ export * from './check';
 export * from './shapes';
 export * from './languages';
 export * from './accents';
+export * from './indicLanguages';
 export * from './names';
 export * from './arabic';
 export * from './features';

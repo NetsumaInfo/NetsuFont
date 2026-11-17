@@ -1,4 +1,4 @@
-import { composeLetters } from './accents';
+import { composeLetters, composeSyllables } from './accents';
 import { outline } from './outline';
 import { bounds, parsePath, transformPath, writePath } from './path';
 import { shapesPath, type Shape } from './shapes';
@@ -17,7 +17,7 @@ export type Op =
   | { op: 'set_kern'; left: string; right: string; value: number }
   | { op: 'set_metrics'; metrics: Partial<Metrics> }
   | { op: 'set_info'; family?: string; style?: string }
-  | { op: 'compose'; chars: string };
+  | { op: 'compose'; chars?: string; syllables?: string };
 
 export const OP_NAMES = ['set_glyph', 'remove_glyph', 'copy_glyph', 'set_spacing', 'center', 'transform', 'decompose', 'set_kern', 'set_metrics', 'set_info', 'compose'] as const;
 
@@ -153,8 +153,9 @@ function apply(doc: FontDoc, op: Op): void {
       if (op.style !== undefined) doc.style = op.style;
       return;
     case 'compose':
-      if (typeof op.chars !== 'string' || op.chars === '') throw new FontError('bad_op', 'compose takes chars: the letters to make, such as "éèêë".');
-      composeLetters(doc, op.chars);
+      if (typeof op.syllables === 'string') composeSyllables(doc, op.syllables);
+      if (op.syllables === undefined && (typeof op.chars !== 'string' || op.chars === '')) throw new FontError('bad_op', 'compose takes chars: the letters to make, such as "éèêë"; or syllables: "te" or "kn".');
+      if (typeof op.chars === 'string' && op.chars !== '') composeLetters(doc, op.chars);
       return;
     default:
       throw new FontError('bad_op', `Unknown op "${(op as { op: unknown }).op}". Ops: ${OP_NAMES.join(', ')}.`);

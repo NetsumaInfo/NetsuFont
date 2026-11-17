@@ -76,7 +76,8 @@ function skipMarksInLigatures(font: OtFont): void {
  * to be alphabetical: the rules are sorted by feature first.
  */
 function addFeatures(font: OtFont, rules: Rule[], index: Map<string, number>): void {
-  const sorted = [...rules].sort((a, b) => (a.feature === b.feature ? (a.script < b.script ? -1 : 1) : a.feature < b.feature ? -1 : 1));
+  // Within a feature, the longest ligature first: engines take the first that matches (కై is ka, e and its length mark).
+  const sorted = [...rules].sort((a, b) => (a.feature === b.feature ? (a.script === b.script ? b.sub.length - a.sub.length : a.script < b.script ? -1 : 1) : a.feature < b.feature ? -1 : 1));
   for (const rule of sorted) {
     const by = index.get(rule.by)!;
     for (const language of rule.languages ?? ['dflt']) {
