@@ -190,9 +190,14 @@ Build the letters that are not Latin from the parts you already have:
   in their own way. Conjuncts joined by ZWJ (ක්‍ෂ) are not shaped: the text shows the al-lakuna.
 - **Khmer (km)**: Windows has Leelawadee UI (a .ttf) as a model. Measured in it (2026-11-22, not
   drawn here yet): bodies from about 124 to 673, raised over the baseline to leave room for the
-  forms below; ក 842, ស 915, រ 329, ា 293 wide; េ is spacing (366) and drawn before; ើ is drawn
-  as its part after the letter (the engine puts េ before). Each consonant has a form under another
-  (`.blwf`, advance 0) and ro one before (`uni179A.pref`): `languages` counts them all.
+  forms below; ក 842, ស 915, រ 329, ា 293 wide; េ is spacing (366) and drawn before. ិ ី ំ ់ are
+  marks above (ink left of x 0, from 742 to 919), ុ below (to −206); ើ's part is ី's place,
+  ឿ ៀ's parts are spacing (about 293 to 600). A form below (`.blwf`) has advance 0, its ink left
+  of x 0 (x −557 to −110) and from −206 to 51, under the letter before; `uni179A.pref` is a
+  spacing glyph of 256 whose ink runs on under the next letter (to 510). Set the descender to
+  −300 first. A blind run (Mekong, 2026-11-22, about 30 calls, one look at the model) made km
+  complete and readable as a pattern only: ច ជ ដ ឌ ថ ប ផ ម ហ ល ស were near-identical cups. Khmer
+  letters differ by small hooks and curls: look at each family with the model, `size:400`.
 - **Myanmar (my)**: Windows has Myanmar Text (mmrtext.ttf) as a model. Measured in it
   (2026-11-22, not drawn here yet): round bodies from 0 to about 512, the Latin x-height; wide (က
   1067, သ 1032, မ 631, န 546); ေ spacing (600) and drawn before; the medial ra ြ a narrow spacing
