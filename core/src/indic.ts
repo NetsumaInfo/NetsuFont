@@ -21,7 +21,7 @@ export interface IndicScript {
   dotReph?: number;
   /** Vowel signs go right after the base consonant, before its forms below (Telugu క్కి, Kannada ಕ್ಕಿ). */
   signsAfterBase?: boolean;
-  /** A block not on the common plan (Sinhala): its virama and its consonants. */
+  /** A block not on the common plan (Sinhala, Khmer): its virama and its consonants. */
   virama?: number;
   consonants?: [number, number];
 }
@@ -52,6 +52,12 @@ export const INDIC: IndicScript[] = [
     tags: ['sinh', 'sinh'], from: 0xd80, prebase: [0xdd9, 0xddb],
     split: { 0xdda: [0xdd9, 0xdca], 0xddc: [0xdd9, 0xdcf], 0xddd: [0xdd9, 0xdcf, 0xdca], 0xdde: [0xdd9, 0xddf] },
     ras: [], rephLast: false, virama: 0xdca, consonants: [0xd9a, 0xdc6],
+  },
+  {
+    // Khmer: the coeng (U+17D2) is its virama; a vowel in two parts keeps its own code for the part after the letter.
+    tags: ['khmr', 'khmr'], from: 0x1780, prebase: [0x17c1, 0x17c2, 0x17c3],
+    split: { 0x17be: [0x17c1, 0x17be], 0x17bf: [0x17c1, 0x17bf], 0x17c0: [0x17c1, 0x17c0], 0x17c4: [0x17c1, 0x17c4], 0x17c5: [0x17c1, 0x17c5] },
+    ras: [], rephLast: false, virama: 0x17d2, consonants: [0x1780, 0x17a2], pref: 0x179a,
   },
   {
     tags: ['tml2', 'taml'], from: 0xb80, prebase: [0xbc6, 0xbc7, 0xbc8], split: { 0xbca: [0xbc6, 0xbbe], 0xbcb: [0xbc7, 0xbbe], 0xbcc: [0xbc6, 0xbd7] },

@@ -20,6 +20,8 @@ const TELUGU = `అఆఇఈఉఊఋఎఏఐఒఓఔ${TELUGU_CONSONANTS}ా�
 const KANNADA = `ಅಆಇಈಉಊಋಎಏಐಒಓಔ${KANNADA_CONSONANTS}ಾಿೀುೂೃೆೇೈೊೋೌಂಃ್ೕೖ0123456789${PUNCT}`;
 const SINHALA_CONSONANTS = 'කඛගඝඞඟචඡජඣඤඥඦටඨඩඪණඬතථදධනඳපඵබභමඹයරලවශෂසහළෆ';
 const SINHALA = `අආඇඈඉඊඋඌඍඑඒඓඔඕඖ${SINHALA_CONSONANTS}ාැෑිීුූෘෙේෛොෝෞෟ්ංඃ0123456789${PUNCT}`;
+const KHMER_CONSONANTS = 'កខគឃងចឆជឈញដឋឌឍណតថទធនបផពភមយរលវឝឞសហឡអ';
+const KHMER = `${KHMER_CONSONANTS}ឥឦឧឩឪឫឬឭឮឯឰឱឲឳាិីឹឺុូួើឿៀេែៃោៅំះៈ៉៊់៌៍៎៏័្។៕៖ៗ០១២៣៤៥៦៧៨៩${PUNCT}`;
 const TAMIL = `அஆஇஈஉஊஎஏஐஒஓஔஃகஙசஞடணதநபமயரலவழளறனஜஷஸஹாிீுூெேைொோௌ்ௗ0123456789${PUNCT}`;
 
 export const INDIC_CHARS: Record<string, string> = {
@@ -36,6 +38,7 @@ export const INDIC_CHARS: Record<string, string> = {
   te: TELUGU,
   kn: KANNADA,
   si: SINHALA,
+  km: KHMER,
 };
 
 /** The consonants that take a half form before another consonant (Devanagari, Gujarati). The others keep their virama. */
@@ -91,6 +94,8 @@ export function indicForms(code: string): string[] {
     return ['uni0D30.pref', 'uni0D2F.pstf', 'uni0D35.pstf', ...doubled, ...conjuncts.map(joined)];
   }
   if (code === 'si') return syllablesOf(code).map((s) => s.name);
+  // Khmer: every consonant written under another (coeng), and ro written before it.
+  if (code === 'km') return [...forms(KHMER_CONSONANTS, 'blwf'), 'uni179A.pref'];
   if (code === 'te' || code === 'kn') {
     const [consonants] = SYLLABLE_VOWELS[code]!;
     const conjuncts = code === 'te' ? ['క్ష', 'జ్ఞ'] : ['ಕ್ಷ', 'ಜ್ಞ'];

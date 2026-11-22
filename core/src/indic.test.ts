@@ -104,3 +104,14 @@ describe('Sinhala', () => {
     expect(shapeLine(doc, 'කේ').items.map((i) => i.glyph.name)).toEqual(['uni0DD9', 'uni0D9A', 'uni0DCA']);
   });
 });
+
+describe('Khmer', () => {
+  it('draws ro under a coeng before the consonant, after a vowel drawn before, and splits ើ keeping its own code after', () => {
+    const movers = { reph: () => undefined, pref: (ra: { char: string }) => ({ char: `P${ra.char}` }) };
+    expect(chars(reorderIndic(unit('\u1780\u17D2\u179A\u17C1'), movers))).toBe('\u17C1P\u179A\u1780');
+    expect(splitVowels('\u1780\u17BE')).toBe('\u1780\u17C1\u17BE');
+    const [km] = languageCoverage(newFont('t', 'T'), ['km']);
+    expect(km!.forms).toContain('uni179A.pref');
+    expect(km!.forms).toContain('uni1780.blwf');
+  });
+});

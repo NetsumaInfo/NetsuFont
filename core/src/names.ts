@@ -80,7 +80,8 @@ export function recipe(char: string): Recipe {
   const arabic = arabicRecipe(char, name, unicode);
   if (arabic) return arabic;
   const split = indicOf(unicode)?.split[unicode];
-  if (split) return { name, unicode, base: hex(split[0]!), marks: split.slice(1).map(hex), beside: true };
+  // A Khmer vowel whose part after the letter has its own code is drawn, not composed.
+  if (split && !split.includes(unicode)) return { name, unicode, base: hex(split[0]!), marks: split.slice(1).map(hex), beside: true };
   const [baseChar, ...rest] = [...char.normalize('NFD')];
   const marks = rest.map((mark) => COMMA_FOR_CEDILLA[char] ?? MARKS[mark.codePointAt(0)!]);
   if (rest.length === 0 || !baseChar || marks.some((mark) => mark === undefined)) return { name, unicode };

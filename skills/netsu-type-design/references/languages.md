@@ -181,7 +181,12 @@ Build the letters that are not Latin from the parts you already have:
   with the al-lakuna ් and with ු ූ is one glyph in the model (ක් කු): draw `.base` where the
   sign changes the letter, then `compose {syllables:"si"}`, and redraw by hand those that join
   in their own way. Conjuncts joined by ZWJ (ක්‍ෂ) are not shaped: the text shows the al-lakuna.
-- **Not possible yet**: Khmer, Myanmar, Tibetan. Say so.
+- **Khmer (km)**: Windows has Leelawadee UI (a .ttf) as a model. Measured in it (2026-11-22, not
+  drawn here yet): bodies from about 124 to 673, raised over the baseline to leave room for the
+  forms below; ក 842, ស 915, រ 329, ា 293 wide; េ is spacing (366) and drawn before; ើ is drawn
+  as its part after the letter (the engine puts េ before). Each consonant has a form under another
+  (`.blwf`, advance 0) and ro one before (`uni179A.pref`): `languages` counts them all.
+- **Not possible yet**: Myanmar, Tibetan. Say so.
   Japanese, Chinese and Korean: load `references/cjk.md`.
 
 ## 3b. Arabic, Persian, Urdu
@@ -253,6 +258,7 @@ hi  ऋषियों को सताने वाले दुष्ट र�
 bn  বাংলা ভাষা পৃথিবীর অন্যতম প্রধান ভাষা। ক্ষমা, রুমাল, বর্ষা, কৌতুক, বাক্য, প্রেম (sample)
 pa  ਪੰਜਾਬੀ ਭਾਸ਼ਾ ਗੁਰਮੁਖੀ ਲਿਪੀ ਵਿੱਚ ਲਿਖੀ ਜਾਂਦੀ ਹੈ। ਪ੍ਰੇਮ (sample)
 gu  ગુજરાતી ભાષા ગુજરાતી લિપિમાં લખાય છે. ક્ષમા, ધર્મ, પ્રેમ (sample)
+km  ភាសាខ្មែរជាភាសាផ្លូវការនៃកម្ពុជា។ ស្ត្រី ក្រុម (sample)
 si  සිංහල භාෂාව ශ්‍රී ලංකාවේ භාෂාවකි. කුමක්, ගෙදර (sample)
 te  తెలుగు భాష ఒక ద్రావిడ భాష. కృష్ణ, సత్యం, ప్రేమ (sample)
 kn  ಕನ್ನಡ ಒಂದು ದ್ರಾವಿಡ ಭಾಷೆ. ಕೃಷ್ಣ, ಸತ್ಯ, ಪ್ರೀತಿ (sample)
