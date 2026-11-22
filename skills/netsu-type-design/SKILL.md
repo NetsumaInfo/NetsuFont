@@ -1,6 +1,6 @@
 ---
 name: netsu-type-design
-description: Use when the user asks to create, draw, design or redesign a font, typeface, alphabet or set of letters in NetsuFont (the netsufont MCP server), from a style brief or from an imported TTF or OTF — including spacing, kerning, accents, other scripts (Polish, Vietnamese, Greek, Cyrillic, Armenian, Georgian, Hebrew, Arabic, Persian, Urdu, Hindi, Bengali, Punjabi, Gujarati, Odia, Tamil, Malayalam, Telugu, Kannada, Sinhala, Khmer, Myanmar, Thai, Lao, Japanese, Chinese, Korean…), ligatures and stylistic alternates, and exporting the .otf. Do NOT use for choosing or pairing existing fonts for a site, for logos and wordmarks (netsu-app-icon), or for animated icons (netsu-icon-motion).
+description: Use when the user asks to create, draw, design or redesign a font, typeface, alphabet or set of letters in NetsuFont (the netsufont MCP server), from a style brief or from an imported TTF or OTF — including spacing, kerning, accents, other scripts (Polish, Vietnamese, Greek, Cyrillic, Armenian, Georgian, Hebrew, Arabic, Persian, Urdu, Hindi, Bengali, Punjabi, Gujarati, Odia, Tamil, Malayalam, Telugu, Kannada, Sinhala, Khmer, Myanmar, Tibetan, Thai, Lao, Japanese, Chinese, Korean…), ligatures and stylistic alternates, and exporting the .otf. Do NOT use for choosing or pairing existing fonts for a site, for logos and wordmarks (netsu-app-icon), or for animated icons (netsu-icon-motion).
 ---
 
 # NetsuTypeDesign
@@ -172,7 +172,7 @@ and legible at 12 px; the weakest were & 2 @ and the Greek ζ ξ ς.
 | Accented letters drawn whole, each a little different | Marks drawn once, letters made with `compose` |
 | "Supports Polish" because ą ę exist | `languages` reports the language complete, and its pangram is proofed |
 | Kanji, hanzi or hangul drawn one by one | `draw_kanji` with one pen for a whole set (`references/cjk.md`) |
-| Tibetan or Mongolian promised | Said plainly: not possible yet (the languages answer says why) |
+| Mongolian promised | Said plainly: not possible yet (the languages answer says why) |
 | Marks placed by hand on each letter | Marks drawn once with advance 0: the font's GPOS puts them on every letter |
 | A script drawn from memory, letters guessed | A model font looked at first; the letters drawn from it, in the font's own style |
 | Arabic drawn as isolated letters only | Skeletons with `.init` `.medi` `.fina`, lam-alef, dots by `compose`; `languages` reports it complete |

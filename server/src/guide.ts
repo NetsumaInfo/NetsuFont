@@ -64,6 +64,8 @@ DOCUMENT
   The Malayalam dot reph ൎ, typed before its consonant, is drawn after it: advance 0, ink above and left of x 0.
   Khmer: the coeng ្ is the virama: <consonant>.blwf is each consonant under another, uni179A.pref the ro drawn before
   the consonant. ើ ឿ ៀ ោ ៅ are split into េ and themselves: draw each as its part after the letter.
+  Tibetan: the letters written under another (ྐ ྱ ྲ, U+0F90 on) are marks of advance 0 drawn below the baseline:
+  the font stacks them under the letter, the vowel ུ under them.
   Myanmar: the virama ္ stacks: <consonant>.blwf is a consonant under another; uni1004.rphf the kinzi (င်္ before a
   consonant, drawn over it). ေ and the medial ra ြ are drawn before the consonant, in that order.
   Telugu, Kannada, Sinhala: each consonant is drawn again with each vowel sign (కి uni0C15_uni0C3F; Sinhala ක් කු කූ). Draw <consonant>.base, the

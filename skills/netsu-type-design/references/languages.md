@@ -199,7 +199,13 @@ Build the letters that are not Latin from the parts you already have:
   glyph (215) whose ink wraps the letter from −474 to 1036; ျ spacing (185); the stacked forms
   `.blwf` hang to about −400. Draw the medial ra once; Myanmar Text draws it in several widths,
   a refinement the format does not ask.
-- **Not possible yet**: Tibetan, Mongolian. Say so.
+- **Tibetan (bo)**: Windows has Microsoft Himalaya (himalaya.ttf) as a model. Measured in it
+  (2026-11-22, not drawn here yet): letters hang from a head at 517 and come down past the
+  baseline (ས to −92, ཀ's stem to −616), about 653 to 672 wide; each letter below (ྐ ྱ) is a mark
+  of advance 0 hanging from 0 to about −400 or −635; ི is above (535 to 909); the tsheg ་ is a dot
+  at the head (advance 250). Set the descender low before drawing the letters below. The short ra
+  that sits over a letter below it (རྐ) is not made: the full ra is used.
+- **Not possible yet**: Mongolian. Say so.
   Japanese, Chinese and Korean: load `references/cjk.md`.
 
 ## 3b. Arabic, Persian, Urdu
@@ -271,6 +277,7 @@ hi  ऋषियों को सताने वाले दुष्ट र�
 bn  বাংলা ভাষা পৃথিবীর অন্যতম প্রধান ভাষা। ক্ষমা, রুমাল, বর্ষা, কৌতুক, বাক্য, প্রেম (sample)
 pa  ਪੰਜਾਬੀ ਭਾਸ਼ਾ ਗੁਰਮੁਖੀ ਲਿਪੀ ਵਿੱਚ ਲਿਖੀ ਜਾਂਦੀ ਹੈ। ਪ੍ਰੇਮ (sample)
 gu  ગુજરાતી ભાષા ગુજરાતી લિપિમાં લખાય છે. ક્ષમા, ધર્મ, પ્રેમ (sample)
+bo  བོད་ཡིག་ནི་བོད་ཀྱི་ཡི་གེ་ཡིན། སྐྱེས་ (sample)
 my  မြန်မာဘာသာ သည် မြန်မာနိုင်ငံ၏ ရုံးသုံးဘာသာ ဖြစ်သည်။ (sample)
 km  ភាសាខ្មែរជាភាសាផ្លូវការនៃកម្ពុជា។ ស្ត្រី ក្រុម (sample)
 si  සිංහල භාෂාව ශ්‍රී ලංකාවේ භාෂාවකි. කුමක්, ගෙදර (sample)

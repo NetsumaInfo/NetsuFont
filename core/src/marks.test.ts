@@ -117,3 +117,12 @@ describe('GPOS scripts', () => {
     expect(font.tables.gpos!.scripts.map((s) => s.tag)).toEqual(['DFLT', 'hebr', 'latn']);
   });
 });
+
+describe('Tibetan', () => {
+  it('stacks the letters written below and the vowel under them', () => {
+    const doc = applyOps(newFont('t', 'T'), [box('uni0F66', 0xf66, 500, 50, 0, 300, 500), box('uni0F90', 0xf90, 0, -400, -300, 300, 250), box('uni0FB1', 0xfb1, 0, -400, -300, 300, 150), box('uni0F74', 0xf74, 0, -400, -300, 300, 100)]);
+    const ys = layout(doc, 'སྐྱུ').placed.map((p) => Math.round(p.y));
+    expect(ys[1]! > ys[2]! && ys[2]! > ys[3]!).toBe(true);
+    expect(languageCoverage(doc, ['bo'])[0]!.of).toBeGreaterThan(70);
+  });
+});

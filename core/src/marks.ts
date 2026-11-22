@@ -44,10 +44,10 @@ export function markPlace(glyph: Glyph, box: Box | undefined): MarkPlace {
   return box && (box.yMin + box.yMax) / 2 < 0 ? 'below' : 'above';
 }
 
-/** The space between a letter and its mark: none in Devanagari, Bengali, Gurmukhi and Gujarati, where marks touch the letter. */
+/** The space between a letter and its mark: none in Devanagari, Bengali, Gurmukhi, Gujarati and Tibetan, where marks touch the letter. */
 function gapFor(doc: FontDoc, glyph: Glyph): number {
   const code = glyph.unicode ?? 0;
-  return code >= 0x900 && code <= 0xaff ? 0 : Math.round(doc.unitsPerEm * 0.03);
+  return (code >= 0x900 && code <= 0xaff) || (code >= 0xf00 && code <= 0xfff) ? 0 : Math.round(doc.unitsPerEm * 0.03);
 }
 
 export type Anchor = [number, number];
