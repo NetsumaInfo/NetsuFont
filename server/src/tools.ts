@@ -37,8 +37,12 @@ function traced(doc: FontDoc, names: string[] | undefined, characters: string | 
   return (names ?? []).map((wanted) => doc.glyphs.find((g) => g.name === wanted) ?? empty(wanted));
 }
 
-function listing(store: Store, font: string | undefined): string {
-  if (font !== undefined) return outline(store.read(font));
+function listing(store: Store, font: string | undefined, chars?: string): string {
+  // With chars, only those glyphs: the advances and bearings of a few letters of a model of thousands.
+  if (font !== undefined) {
+    const doc = store.read(font);
+    return outline(chars === undefined ? doc : { ...doc, glyphs: pick(doc, undefined, chars) });
+  }
   const said = store.all().map(summary).join('\n') || 'No font yet. Create one with create_font, or bring one in with import_font.';
   return `app language: ${store.language()}\n${said}\nlist_fonts {name}: one font with its glyphs and checks`;
 }
@@ -82,8 +86,11 @@ function registerRead(server: McpServer, store: Store): void {
 
   server.registerTool(
     'list_fonts',
-    { description: 'Every font in one line. With name: that font, its metrics, coverage, each glyph in short and its checks.', inputSchema: { name: name.optional() } },
-    (args) => guarded(() => text(listing(store, args.name))),
+    {
+      description: 'Every font in one line. With name: that font, its metrics, coverage, each glyph in short and its checks; with chars, only those glyphs.',
+      inputSchema: { name: name.optional(), chars: z.string().optional() },
+    },
+    (args) => guarded(() => text(listing(store, args.name, args.chars))),
   );
 
   server.registerTool(
@@ -131,6 +138,8 @@ not in this font: ${missing.join(', ')}` : ''));
         chars,
         columns: z.number().int().min(1).max(16).optional(),
         model: z.string().optional().describe('A font id to draw under each glyph, scaled to the same cap height, such as "model-deva".'),
+        size: z.number().int().min(100).max(600).optional().describe('Pixels a cell is wide: 200 by default, 400 to read positions.'),
+        grid: z.boolean().optional().describe('Lines every 100 units from the origin and the baseline.'),
       },
     },
     (args) =>
@@ -140,11 +149,11 @@ not in this font: ${missing.join(', ')}` : ''));
         const shown = model ? traced(doc, args.glyphs, args.chars) : pick(doc, args.glyphs, args.chars);
         if (shown.length === 0) throw new FontError('nothing_to_show', 'None of these glyphs exists yet.');
         const columns = args.columns ?? Math.min(8, shown.length);
-        const width = Math.min(1600, columns * 200);
+        const width = Math.min(2400, columns * (args.size ?? 200));
         // The scale of a cell, so that a position read on the picture can be turned into font units.
         const cell = Math.max(doc.unitsPerEm, ...shown.map((g) => g.advance)) * 1.15;
         const scale = `each cell ${Math.round(cell)} units in ${Math.round(width / columns)} px (${(cell / (width / columns)).toFixed(1)} units a pixel); the two upright lines are x 0 and the advance`;
-        return png(glyphSheet(doc, shown, { columns, ...(model ? { under: model } : {}) }), width, `${shown.map((g) => g.name).join(' ')}\n${scale}`);
+        return png(glyphSheet(doc, shown, { columns, ...(model ? { under: model } : {}), ...(args.grid ? { grid: true } : {}) }), width, `${shown.map((g) => g.name).join(' ')}\n${scale}`);
       }),
   );
 

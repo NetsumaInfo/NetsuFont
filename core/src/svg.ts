@@ -48,17 +48,20 @@ export interface SheetOptions {
    * scaled so that both fonts' cap heights match. To draw a script from a model.
    */
   under?: FontDoc;
+  /** Thin lines every 100 units from the glyph's origin and the baseline, to read positions off the picture. */
+  grid?: boolean;
 }
 
 /**
- * The model's glyph of the same character, centred in the cell: filled light under the cell's own glyph, and its
- * outline again over it, so that a dark stroke drawn over the model does not hide where the model goes.
+ * The model's glyph of the same character, from the same origin as the cell's own glyph (a difference of width shows
+ * at the right): filled light under it, and its outline again over it, so that a dark stroke drawn over the model
+ * does not hide where the model goes.
  */
-function underlay(doc: FontDoc, model: FontDoc, glyph: Glyph, cell: number): { under: string; over: string } {
+function underlay(doc: FontDoc, model: FontDoc, glyph: Glyph, left: number): { under: string; over: string } {
   const found = model.glyphs.find((g) => (glyph.unicode !== undefined ? g.unicode === glyph.unicode : g.name === glyph.name));
   if (!found) return { under: '', over: '' };
   const scale = doc.metrics.capHeight / model.metrics.capHeight;
-  const place = `transform="translate(${(cell - found.advance * scale) / 2} 0) scale(${scale})" d="${glyphPath(model, found)}"`;
+  const place = `transform="translate(${left} 0) scale(${scale})" d="${glyphPath(model, found)}"`;
   const line = doc.unitsPerEm / 120 / scale;
   return { under: `<path ${place} fill="#6aa5ff" fill-opacity="0.45"/>`, over: `<path ${place} fill="none" stroke="#1f6fff" stroke-width="${line}"/>` };
 }
@@ -84,12 +87,23 @@ export function glyphSheet(doc: FontDoc, glyphs: Glyph[], options: SheetOptions 
     // A uniXXXX name says nothing at a glance: the character follows it.
     const said = glyph.name.startsWith('uni') && glyph.unicode !== undefined ? `${glyph.name} ${String.fromCodePoint(glyph.unicode)}` : glyph.name;
     const name = `<text x="${cell / 2}" y="${height - top + label * 1.2}" font-size="${Math.min(label, (cell * 1.6) / [...said].length)}" font-family="monospace" text-anchor="middle" fill="${colors.label}">${escape(said)}</text>`;
-    const model = options.under ? underlay(doc, options.under, glyph, cell) : { under: '', over: '' };
-    return `<g transform="translate(${x} ${y})">${marks}${model.under}<path transform="translate(${left} 0)" d="${glyphPath(doc, glyph, byName)}" fill="${colors.ink}" fill-opacity="${model.under ? 0.8 : 1}"/>${model.over}${name}</g>`;
+    const model = options.under ? underlay(doc, options.under, glyph, left) : { under: '', over: '' };
+    const lines = options.grid ? grid(doc, left, cell) : '';
+    return `<g transform="translate(${x} ${y})">${lines}${marks}${model.under}<path transform="translate(${left} 0)" d="${glyphPath(doc, glyph, byName)}" fill="${colors.ink}" fill-opacity="${model.under ? 0.8 : 1}"/>${model.over}${name}</g>`;
   });
   const width = columns * cell;
   const total = Math.max(1, rows) * rowHeight;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${total}" width="${Math.round(width / 5)}" height="${Math.round(total / 5)}"><rect width="${width}" height="${total}" fill="${colors.paper}"/>${cells.join('')}</svg>`;
+}
+
+/** Lines every 100 units across a cell, from the glyph's origin and the baseline (y down in the picture). */
+function grid(doc: FontDoc, left: number, cell: number): string {
+  const { top } = band(doc);
+  const bottom = -doc.metrics.descender;
+  const xs = Array.from({ length: Math.ceil(cell / 100) * 2 + 1 }, (_, i) => (i - Math.ceil(cell / 100)) * 100).filter((dx) => left + dx >= 0 && left + dx <= cell);
+  const ys = Array.from({ length: Math.ceil((top + bottom) / 100) * 2 + 1 }, (_, i) => (i - Math.ceil(top / 100)) * 100).filter((dy) => dy >= -top && dy <= bottom);
+  const width = doc.unitsPerEm / 500;
+  return [...xs.map((dx) => `<line x1="${left + dx}" x2="${left + dx}" y1="${-top}" y2="${bottom}" stroke="#d9dde6" stroke-width="${width}"/>`), ...ys.map((dy) => `<line x1="0" x2="${cell}" y1="${dy}" y2="${dy}" stroke="#d9dde6" stroke-width="${width}"/>`)].join('');
 }
 
 /** One glyph, large, on its metric lines. */

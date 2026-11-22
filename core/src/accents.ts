@@ -60,7 +60,10 @@ export function composeLetters(doc: FontDoc, chars: string): string[] {
  * drawn, else the consonant. Only the consonants already drawn: a font is made family by family.
  */
 function syllableBuilds(code: string, byName: Map<string, Glyph>): Build[] {
-  return syllablesOf(code).filter((s) => byName.has(s.consonant) || byName.has(`${s.consonant}.base`)).map((s) => ({ name: s.name, base: byName.has(`${s.consonant}.base`) ? `${s.consonant}.base` : s.consonant, marks: s.signs, capital: false, beside: true }));
+  // The base without its head stroke takes a sign that replaces the head: one drawn as a mark (advance 0). A spacing
+  // sign (Telugu ు) goes after the whole consonant.
+  const headless = (s: { consonant: string; signs: string[] }): boolean => byName.has(`${s.consonant}.base`) && byName.get(s.signs[0]!)?.advance === 0;
+  return syllablesOf(code).filter((s) => byName.has(s.consonant) || byName.has(`${s.consonant}.base`)).map((s) => ({ name: s.name, base: headless(s) ? `${s.consonant}.base` : s.consonant, marks: s.signs, capital: false, beside: true }));
 }
 
 /**

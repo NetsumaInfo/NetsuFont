@@ -6,7 +6,7 @@
 export const GUIDE = `NetsuFont: fonts drawn by small targeted operations. The user watches the font change live in the app.
 
 WORKFLOW
-1. list_fonts (one line each; {name} for one font's glyphs and checks), then create_font {name, family, style?, from?}
+1. list_fonts (one line each; {name} for one font's glyphs and checks, {name, chars} for a few of them), then create_font {name, family, style?, from?}
    (from: another style of that font, its glyphs copied: "Bold", "Light Italic"; the export names and links it) or
    import_font {file, name, index?} (a .ttf, .otf, or .ttc with index; to change, its license must allow it). It keeps
    its Arabic forms, Indic forms and conjuncts, and ligatures, under the names below. A font brought in as a model
@@ -16,7 +16,8 @@ WORKFLOW
 2. edit_font {name, ops:[...]}. All or nothing: on an error nothing is saved and the error names the op. It answers the
    glyphs it changed, with their advance and [left right] side bearings, and checks: fix each, or keep it on purpose.
 3. look_glyphs {name, chars:"Hno"} (or glyphs:[names]): the glyphs on their lines; model:"<font id>" draws that font's
-   glyph of each character in blue, filled under yours and outlined over it, to trace a script. proof {name, text, sizes?, features?, lang?}: words at
+   glyph of each character in blue, from your glyph's origin, filled under it and outlined over it, to trace a script;
+   size:400 and grid:true (a line every 100 units) to read positions. proof {name, text, sizes?, features?, lang?}: words at
    several sizes, with spacing and kerning; "\\n" starts a line, 600 characters at most.
    get_font {name, glyphs:[names]}: the paths of those glyphs.
 4. languages {name, languages?:["fr","pl"]}: what each language lacks, what compose can make, what to draw.
@@ -65,7 +66,8 @@ DOCUMENT
   consonant, drawn over it). ေ and the medial ra ြ are drawn before the consonant, in that order.
   Telugu, Kannada, Sinhala: each consonant is drawn again with each vowel sign (కి uni0C15_uni0C3F; Sinhala ක් කු කූ). Draw <consonant>.base, the
   consonant without its head stroke, and the signs (a sign of advance 0 drawn left of x 0 sits over its end); then
-  {op:"compose", syllables:"te"} (or "kn", "si") makes them all for the consonants drawn. Redraw one by hand when needed.
+  {op:"compose", syllables:"te"} (or "kn", "si") makes them all for the consonants drawn: a sign drawn as a mark (advance
+  0) goes on .base, a spacing sign after the whole consonant. Redraw one by hand when needed.
 - Arabic: a joining letter is its glyph (isolated, with unicode) and forms without unicode: <name>.init (word start, joins
   on its left edge), .medi (both edges), .fina (word end, joins on its right edge). ا د ذ ر ز و ة join only on the right:
   .fina alone. Lam-alef ligatures uni0644_uni0627, uni0644_uni0623, uni0644_uni0625, uni0644_uni0622, each with .fina.

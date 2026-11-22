@@ -126,7 +126,7 @@ function check(shape: Shape): void {
   const ends = (shape as { ends?: unknown }).ends;
   if (ends !== undefined && !['square', 'flat', 'round'].includes(ends as string)) throw new FontError('bad_shape', 'ends is "square", "flat" or "round" for a line, "round" for an arc.');
   if ((shape.type === 'ring' || shape.type === 'arc') && !(shape.stroke > 0 && shape.stroke < shape.rx && (shape.strokeY ?? shape.stroke) > 0 && (shape.strokeY ?? shape.stroke) < shape.ry)) {
-    throw new FontError('bad_shape', `The stroke of a ${shape.type} (${shape.stroke}${shape.strokeY === undefined ? '' : `, ${shape.strokeY}`}) is more than 0 and less than its radii (${shape.rx}, ${shape.ry}): rx and ry measure the outside.`);
+    throw new FontError('bad_shape', `The stroke of a ${shape.type} (${shape.stroke}${shape.strokeY === undefined ? '' : `, ${shape.strokeY}`}) is more than 0 and less than its radii (${shape.rx}, ${shape.ry}): rx and ry measure the outside; a filled disc is an ellipse.`);
   }
 }
 
@@ -138,7 +138,7 @@ function stroke(s: Extract<Shape, { type: 'stroke' }>): Contour[] {
   if (!Array.isArray(s.points) || s.points.length < 2 || s.points.some((p) => !Array.isArray(p) || !p.every(Number.isFinite))) throw new FontError('bad_shape', 'A stroke has two points [x, y] or more.');
   if (!(s.width > 0)) throw new FontError('bad_shape', 'The width of a stroke is more than 0.');
   const pen = { width: s.width, ends: s.ends ?? 'round' };
-  if (s.smooth) return [polygon(simplify(strokeOutline(smooth(s.points), pen), 0.8))];
+  if (s.smooth) return [polygon(simplify(strokeOutline(smooth(s.points, 12), pen), 0.8))];
   const segments = s.points.slice(1).map((to, i) => polygon(strokeOutline([s.points[i]!, to], pen)));
   return [...segments, ...s.points.slice(1, -1).map(([x, y]) => ellipse(x, y, s.width / 2, s.width / 2))];
 }

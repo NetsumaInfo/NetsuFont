@@ -154,7 +154,10 @@ Build the letters that are not Latin from the parts you already have:
   (half forms, reph, ra below, ક્ષ જ્ઞ) and રુ રૂ; Tamil each consonant with ு and ூ drawn as one
   (கு `uni0B95_uni0BC1`, 36 glyphs, their shapes differ: trace each), டி டீ, க்ஷ, ஸ்ரீ. The
   Tamil pulli ் sits above the letter. Only Bengali has been drawn blind (once); the others not yet.
-- **Odia (or), Malayalam (ml)**: trace Nirmala UI too (2026-11-17, measured). Odia was drawn
+- **Odia (or), Malayalam (ml)**: trace Nirmala UI too (2026-11-17, measured). Malayalam was drawn
+  blind once honestly (Kayal, 2026-11-22, about 66 calls): ml complete, read loosely; the vowels
+  and ജ ഝ ഞ ഡ ഢ ണ ദ ബ ഭ യ ശ ഷ സ ഴ ള weak, the letters drawn narrower than the model's. Read the
+  model's advances with `list_fonts {name, chars}` before drawing a family. Odia was drawn
   blind once (Mahanadi, 2026-11-22, about 50 calls, by hand with `stroke`): it read as Odia text;
   ଝ ଞ ହ ୟ ଯ ଙ ଘ ଗ and the vowels ଇ ଈ ଉ ଊ were weak, and its conjuncts, scaled copies stacked
   with components, did not look like Odia ones: draw each as one shape. Odia: round tops at 728, no headline, letters about 683 wide with side bearings of 39;
@@ -167,9 +170,13 @@ Build the letters that are not Latin from the parts you already have:
   `uni0D35.pstf`: draw those as the shapes they are, not two letters side by side.
 - **Telugu (te), Kannada (kn)**: trace Nirmala UI (2026-11-17, measured, not drawn here yet).
   Telugu bodies from 0 to about 600, the head stroke (talakattu) up to 853; క 583, మ 1178, ర 733
-  wide; the signs ి ె ా are marks above, ink left of x 0 (ి 541 to 881); ు is spacing (487). Kannada
+  wide; the signs ి ె ా are marks above, their ink left of x 0 and from y 541 to 881 (ి); ు is
+  spacing (487). The model draws ఖ ఙ జ ఞ ణ బ ఱ ల without a head stroke: they need no `.base`. Kannada
   bodies to about 600, the head up to 798; ಕ 723, ಮ 1289; ಾ spacing (618), ಿ ೆ marks above. Each
-  consonant's form below (`.blwf`, the vattu or ottu) hangs to about −225. Draw each consonant,
+  consonant's form below (`.blwf`, the vattu or ottu) hangs to about −225: set the descender to
+  −300 before drawing them, or every one is named below the descender. A blind run (Godavari,
+  2026-11-22, about 66 calls, by hand) made te complete; it read as Telugu, ఘ జ ఝ ఞ ఙ ళ య శ and
+  the vowels weak, its vattus scaled copies of the letters. Draw each consonant,
   then its `.base` without the head stroke, then the signs; `compose {syllables}` makes the
   hundreds of syllables (కి is base and sign side by side); look at a family in `proof` and redraw
   by hand the few that do not join (the model draws each one: `look_glyphs {glyphs, model}`).
