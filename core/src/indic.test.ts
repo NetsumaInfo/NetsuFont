@@ -104,6 +104,7 @@ describe('Sinhala', () => {
     expect(si!.forms).toContain('uni0D9A_uni0DCA');
     const doc = applyOps(newFont('t', 'T'), [box('ක', 600), box('ෙ', 300), box('්', 0), form('uni0D9A_uni0DCA', 600)]);
     expect(shapeLine(doc, 'ක්').items.map((i) => i.glyph.name)).toEqual(['uni0D9A_uni0DCA']);
+    expect(shapeLine(doc, 'ක්‍').missing).toEqual([]);
     expect(shapeLine(doc, 'කේ').items.map((i) => i.glyph.name)).toEqual(['uni0DD9', 'uni0D9A', 'uni0DCA']);
   });
 });

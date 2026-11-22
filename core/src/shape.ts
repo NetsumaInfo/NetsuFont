@@ -168,7 +168,8 @@ function substitute(doc: FontDoc, logical: Logical[], features: string[], langua
  * in the order they are drawn, left to right. A character the font does not draw is left out and named in `missing`.
  */
 export function shapeLine(doc: FontDoc, text: string, features: string[] = [], language?: string): { items: Item[]; missing: string[] } {
-  const parts = splitParts(text);
+  // Joiners and variation selectors draw nothing: engines hide them, and so does proof.
+  const parts = splitParts(text).filter((part) => !/[‌‍︀-️]/u.test(part.char));
   const chars = parts.map((part) => part.char);
   const levels = bidiLevels(chars);
   const byCode = new Map(doc.glyphs.flatMap((glyph) => (glyph.unicode === undefined ? [] : [[glyph.unicode, glyph] as const])));
