@@ -13,7 +13,7 @@ NetsuFont works like [NetsuIcon](https://github.com/NetsumaInfo/NetsuIcon), its 
 - **OpenType features from glyph names**: Arabic joining forms and lam-alef, ligatures (`f_i`), stylistic sets (`a.ss01`) and alternates are written to the font; the app has a switch for each optional one.
 - **Space and kern**: side bearings and kerning pairs, checked on words.
 - **See it**: the glyphs on their metric lines, one glyph large with its points, and your own text set with the compiled font.
-- **Export**: an OpenType file with CFF outlines, kerning and features, and a WOFF2 file for web pages.
+- **Export**: an OpenType file with CFF outlines, kerning and features, the same with TrueType outlines (.ttf), and a WOFF2 file for web pages.
 
 ## Start
 

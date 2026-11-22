@@ -26,3 +26,4 @@ export * from './japanese';
 export * from './chinese';
 export * from './korean';
 export * from './hangul';
+export * from './ttf';

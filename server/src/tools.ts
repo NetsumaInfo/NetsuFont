@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { applyOps, charsOf, composeNeeds, syllableNeeds, syllablesOf, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, toWoff2, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
+import { applyOps, charsOf, composeNeeds, syllableNeeds, syllablesOf, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, toWoff2, ttfFromOtf, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
 import { z } from 'zod';
 import { GUIDE } from './guide';
 import { kanjiInput, kanjiOps } from './kanji';
@@ -218,12 +218,12 @@ function registerWrite(server: McpServer, store: Store): void {
     guarded(() => text(`removed: ${args.name}, kept in ${path.resolve(store.remove(args.name))}`)),
   );
 
-  server.registerTool('export_font', { description: 'Writes the font as an .otf file the user can install and a .woff2 for web pages, and says where.', inputSchema: { name } }, (args) =>
+  server.registerTool('export_font', { description: 'Writes the font as an .otf and a .ttf the user can install and a .woff2 for web pages, and says where.', inputSchema: { name } }, (args) =>
     guarded(() => {
       const doc = store.read(args.name);
       const base = `${doc.family.replace(/[^A-Za-z0-9]+/g, '')}-${doc.style.replace(/[^A-Za-z0-9]+/g, '')}`;
       const otf = exportOtf(doc);
-      const files = [store.writeExport(`${base}.otf`, otf), store.writeExport(`${base}.woff2`, toWoff2(otf, (data) => zlib.brotliCompressSync(data)))];
+      const files = [store.writeExport(`${base}.otf`, otf), store.writeExport(`${base}.ttf`, ttfFromOtf(otf)), store.writeExport(`${base}.woff2`, toWoff2(otf, (data) => zlib.brotliCompressSync(data)))];
       return text(files.map((file) => `written: ${path.resolve(file)} (${fs.statSync(file).size} bytes)`).join('\n'));
     }),
   );

@@ -44,7 +44,7 @@ export function fontOfCollection(file: Uint8Array, index: number): Uint8Array {
   return writeTables(flavor, tables);
 }
 
-function writeTables(flavor: number, tables: Table[]): Uint8Array {
+export function writeTables(flavor: number, tables: Table[]): Uint8Array {
   const sorted = [...tables].sort((a, b) => (a.tag < b.tag ? -1 : 1));
   const head = 12 + sorted.length * 16;
   const size = sorted.reduce((total, table) => total + Math.ceil(table.data.length / 4) * 4, head);
