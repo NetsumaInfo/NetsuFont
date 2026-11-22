@@ -79,7 +79,8 @@
     "missing": "Missing: {{chars}}",
     "kerning_one": "Kerning: {{count}} pair",
     "kerning_other": "Kerning: {{count}} pairs",
-    "languages": "Languages"
+    "languages": "Languages",
+    "styleClean": "No glyph departs from the style."
   },
   "charset": {
     "uppercase": "Uppercase",
@@ -87,5 +88,10 @@
     "digits": "Digits",
     "punctuation": "Punctuation",
     "ascii": "All of ASCII"
+  },
+  "lint": {
+    "stroke": "Stroke off the style",
+    "overshoot": "Round, no overshoot",
+    "side": "Side bearing differs"
   }
 }

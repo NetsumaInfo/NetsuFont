@@ -52,6 +52,8 @@ export function inkRuns(commands: Command[], y: number): [number, number][] {
 
 export interface LintFinding {
   glyph: string;
+  /** What departs: its stroke, its overshoot, a side bearing. The app names it in the user's language. */
+  kind: 'stroke' | 'overshoot' | 'side';
   text: string;
 }
 
@@ -109,7 +111,7 @@ function stems(doc: FontDoc, byName: Map<string, Glyph>): LintFinding[] {
     const usual = median(found.map((f) => f.stem));
     return found
       .filter((f) => f.stem > usual * 1.5 || f.stem < usual / 1.5)
-      .map((f) => ({ glyph: f.glyph, text: `stroke ${Math.round(f.stem)} wide where the ${script} letters have about ${Math.round(usual)}` }));
+      .map((f) => ({ glyph: f.glyph, kind: 'stroke' as const, text: `stroke ${Math.round(f.stem)} wide where the ${script} letters have about ${Math.round(usual)}` }));
   });
 }
 
@@ -122,7 +124,7 @@ function overshoots(doc: FontDoc, byName: Map<string, Glyph>): LintFinding[] {
     if (!glyph || !box || !outline(doc, glyph, byName).some((c) => c.type === 'Q' || c.type === 'C')) return [];
     const height = char === char.toLowerCase() ? doc.metrics.xHeight : doc.metrics.capHeight;
     const short = box.yMin >= 0 || box.yMax <= height;
-    return short ? [{ glyph: glyph.name, text: `round but from ${Math.round(box.yMin)} to ${Math.round(box.yMax)}: let it pass the baseline and the ${height === doc.metrics.xHeight ? 'x-height' : 'cap height'} a little, or it looks smaller` }] : [];
+    return short ? [{ glyph: glyph.name, kind: 'overshoot' as const, text: `round but from ${Math.round(box.yMin)} to ${Math.round(box.yMax)}: let it pass the baseline and the ${height === doc.metrics.xHeight ? 'x-height' : 'cap height'} a little, or it looks smaller` }] : [];
   });
 }
 
@@ -151,7 +153,7 @@ function sides(doc: FontDoc, byName: Map<string, Glyph>): LintFinding[] {
     return [...letters].flatMap((char) => {
       const own = bearing(char, side);
       if (own === undefined || Math.abs(own - usual) <= Math.max(15, Math.abs(usual) / 4)) return [];
-      return [{ glyph: byName.has(char) ? char : (doc.glyphs.find((g) => g.unicode === char.codePointAt(0))?.name ?? char), text: `${side} side bearing ${own} where ${reference} has ${usual}: the same shape of side takes the same space` }];
+      return [{ glyph: byName.has(char) ? char : (doc.glyphs.find((g) => g.unicode === char.codePointAt(0))?.name ?? char), kind: 'side' as const, text: `${side} side bearing ${own} where ${reference} has ${usual}: the same shape of side takes the same space` }];
     });
   });
 }

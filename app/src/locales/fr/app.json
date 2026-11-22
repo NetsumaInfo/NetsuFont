@@ -79,7 +79,8 @@
     "missing": "Manquent : {{chars}}",
     "kerning_one": "Crénage : {{count}} paire",
     "kerning_other": "Crénage : {{count}} paires",
-    "languages": "Langues"
+    "languages": "Langues",
+    "styleClean": "Aucun glyphe ne s’écarte du style."
   },
   "charset": {
     "uppercase": "Majuscules",
@@ -87,5 +88,10 @@
     "digits": "Chiffres",
     "punctuation": "Ponctuation",
     "ascii": "ASCII entier"
+  },
+  "lint": {
+    "stroke": "Trait hors style",
+    "overshoot": "Rond sans dépassement",
+    "side": "Approche différente"
   }
 }

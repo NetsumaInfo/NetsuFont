@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { coverage, languageCoverage, sideBearings, type FontDoc, type Glyph } from '@netsufont/core';
+import { coverage, languageCoverage, lint, sideBearings, type FontDoc, type Glyph } from '@netsufont/core';
 import { CopyButton } from './CopyButton';
 
 function Row({ label, value }: { label: string; value: string | number }) {
@@ -18,6 +18,17 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
       <h3 className="font-semibold">{title}</h3>
       {children}
     </section>
+  );
+}
+
+/** The glyphs that depart from the font's own style (lint), by their ids. */
+function Style({ doc }: { doc: FontDoc }) {
+  const { t } = useTranslation();
+  const found = useMemo(() => lint(doc, 20), [doc]);
+  return (
+    <Section title={t('panel.style')}>
+      {found.length === 0 ? <span className="text-muted">{t('panel.styleClean')}</span> : found.map((f) => <Row key={`${f.glyph} ${f.kind}`} label={t(`lint.${f.kind}`)} value={f.glyph} />)}
+    </Section>
   );
 }
 
@@ -92,6 +103,7 @@ export function FontPanel({ doc, glyph }: { doc: FontDoc; glyph?: Glyph }) {
         ))}
       </Section>
       <Languages doc={doc} />
+      <Style doc={doc} />
       <Section title={t('panel.kerning', { count: doc.kerning.length })}>
         {doc.kerning.slice(0, 40).map((kern) => (
           <Row key={`${kern.left} ${kern.right}`} label={`${kern.left} ${kern.right}`} value={kern.value} />
