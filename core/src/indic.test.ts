@@ -93,3 +93,14 @@ describe('Telugu and Kannada', () => {
     expect(splitVowels('ಕೋ')).toBe('ಕೋ');
   });
 });
+
+describe('Sinhala', () => {
+  it('counts each consonant with al-lakuna, u and uu, and keeps the al-lakuna of ේ out of a conjunct', () => {
+    const [si] = languageCoverage(newFont('t', 'T'), ['si']);
+    expect(si!.forms).toHaveLength(123);
+    expect(si!.forms).toContain('uni0D9A_uni0DCA');
+    const doc = applyOps(newFont('t', 'T'), [box('ක', 600), box('ෙ', 300), box('්', 0), form('uni0D9A_uni0DCA', 600)]);
+    expect(shapeLine(doc, 'ක්').items.map((i) => i.glyph.name)).toEqual(['uni0D9A_uni0DCA']);
+    expect(shapeLine(doc, 'කේ').items.map((i) => i.glyph.name)).toEqual(['uni0DD9', 'uni0D9A', 'uni0DCA']);
+  });
+});

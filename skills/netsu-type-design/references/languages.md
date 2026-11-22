@@ -173,7 +173,13 @@ Build the letters that are not Latin from the parts you already have:
   by hand the few that do not join (the model draws each one: `look_glyphs {glyphs, model}`).
   The Kannada reph `uni0CB0.rphf` comes after the syllable. Telugu writes no reph: ర్క is ra
   with ka below.
-- **Not possible yet**: Sinhala, Khmer, Myanmar, Tibetan. Say so.
+- **Sinhala (si)**: trace Nirmala UI (2026-11-22, measured, not drawn here yet). Round bodies
+  from 0 to about 595, wide (ක 1036, ග 920, ම 835), some rising to 862 (ර); ා is spacing (406),
+  ෙ ෛ are drawn before the consonant (ෙ 684); ි ් above and ු below are marks. Each consonant
+  with the al-lakuna ් and with ු ූ is one glyph in the model (ක් කු): draw `.base` where the
+  sign changes the letter, then `compose {syllables:"si"}`, and redraw by hand those that join
+  in their own way. Conjuncts joined by ZWJ (ක්‍ෂ) are not shaped: the text shows the al-lakuna.
+- **Not possible yet**: Khmer, Myanmar, Tibetan. Say so.
   Japanese, Chinese and Korean: load `references/cjk.md`.
 
 ## 3b. Arabic, Persian, Urdu
@@ -245,6 +251,7 @@ hi  ऋषियों को सताने वाले दुष्ट र�
 bn  বাংলা ভাষা পৃথিবীর অন্যতম প্রধান ভাষা। ক্ষমা, রুমাল, বর্ষা, কৌতুক, বাক্য, প্রেম (sample)
 pa  ਪੰਜਾਬੀ ਭਾਸ਼ਾ ਗੁਰਮੁਖੀ ਲਿਪੀ ਵਿੱਚ ਲਿਖੀ ਜਾਂਦੀ ਹੈ। ਪ੍ਰੇਮ (sample)
 gu  ગુજરાતી ભાષા ગુજરાતી લિપિમાં લખાય છે. ક્ષમા, ધર્મ, પ્રેમ (sample)
+si  සිංහල භාෂාව ශ්‍රී ලංකාවේ භාෂාවකි. කුමක්, ගෙදර (sample)
 te  తెలుగు భాష ఒక ద్రావిడ భాష. కృష్ణ, సత్యం, ప్రేమ (sample)
 kn  ಕನ್ನಡ ಒಂದು ದ್ರಾವಿಡ ಭಾಷೆ. ಕೃಷ್ಣ, ಸತ್ಯ, ಪ್ರೀತಿ (sample)
 or  ଓଡ଼ିଆ ଭାଷା ଏକ ପ୍ରାଚୀନ ଭାଷା। କ୍ଷମା, ଧର୍ମ, ସତ୍ୟ (sample)

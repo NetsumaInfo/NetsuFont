@@ -68,7 +68,7 @@ function syllableBuilds(code: string, byName: Map<string, Glyph>): Build[] {
  * consonant, then the parts of the sign after it. A sign of advance 0 drawn left of x 0 sits over the consonant's end.
  */
 export function composeSyllables(doc: FontDoc, code: string): string[] {
-  if (syllablesOf(code).length === 0) throw new FontError('bad_op', 'compose syllables takes "te" or "kn".');
+  if (syllablesOf(code).length === 0) throw new FontError('bad_op', 'compose syllables takes "te", "kn" or "si".');
   const builds = syllableBuilds(code, glyphMap(doc));
   if (builds.length === 0) throw new FontError('glyph_not_found', 'Draw the consonants first: compose makes the syllables of those drawn.');
   return make(doc, builds);

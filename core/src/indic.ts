@@ -21,6 +21,9 @@ export interface IndicScript {
   dotReph?: number;
   /** Vowel signs go right after the base consonant, before its forms below (Telugu క్కి, Kannada ಕ್ಕಿ). */
   signsAfterBase?: boolean;
+  /** A block not on the common plan (Sinhala): its virama and its consonants. */
+  virama?: number;
+  consonants?: [number, number];
 }
 
 export const INDIC: IndicScript[] = [
@@ -46,6 +49,11 @@ export const INDIC: IndicScript[] = [
     ras: [0xcb0], rephLast: true, signsAfterBase: true,
   },
   {
+    tags: ['sinh', 'sinh'], from: 0xd80, prebase: [0xdd9, 0xddb],
+    split: { 0xdda: [0xdd9, 0xdca], 0xddc: [0xdd9, 0xdcf], 0xddd: [0xdd9, 0xdcf, 0xdca], 0xdde: [0xdd9, 0xddf] },
+    ras: [], rephLast: false, virama: 0xdca, consonants: [0xd9a, 0xdc6],
+  },
+  {
     tags: ['tml2', 'taml'], from: 0xb80, prebase: [0xbc6, 0xbc7, 0xbc8], split: { 0xbca: [0xbc6, 0xbbe], 0xbcb: [0xbc7, 0xbbe], 0xbcc: [0xbc6, 0xbd7] },
     ras: [], rephLast: false,
   },
@@ -55,13 +63,14 @@ const hex = (code: number): string => `uni${code.toString(16).toUpperCase().padS
 
 export const indicOf = (code: number): IndicScript | undefined => INDIC.find((script) => code >= script.from && code < script.from + 0x80);
 export const isIndic = (code: number): boolean => indicOf(code) !== undefined;
-export const viramaOf = (script: IndicScript): number => script.from + 0x4d;
+export const viramaOf = (script: IndicScript): number => script.virama ?? script.from + 0x4d;
 export const viramaName = (script: IndicScript): string => hex(viramaOf(script));
 
 /** A consonant: those of the block, those with a nukta, the Assamese ra and wa, the Odia wa. */
 export function isConsonant(code: number): boolean {
   const script = indicOf(code);
   if (!script) return false;
+  if (script.consonants) return code >= script.consonants[0] && code <= script.consonants[1];
   const at = code - script.from;
   return (at >= 0x15 && at <= 0x39) || (at >= 0x58 && at <= 0x5f) || (script.from === 0x980 && at === 0x70) || ((script.from === 0x980 || script.from === 0xb00) && at === 0x71);
 }
@@ -74,11 +83,16 @@ export function isVowelSign(code: number): boolean {
 
 /** The text with each split vowel sign written as its two parts, as text engines do before they shape. */
 export function splitVowels(text: string): string {
-  return [...text].map((char) => {
+  return splitParts(text).map((part) => part.char).join('');
+}
+
+/** The characters of a text, split vowel signs in their parts, each part marked: it takes no part in a conjunct. */
+export function splitParts(text: string): { char: string; split: boolean }[] {
+  return [...text].flatMap((char): { char: string; split: boolean }[] => {
     const code = char.codePointAt(0)!;
     const parts = indicOf(code)?.split[code];
-    return parts ? String.fromCodePoint(...parts) : char;
-  }).join('');
+    return parts ? parts.map((part) => ({ char: String.fromCodePoint(part), split: true })) : [{ char, split: false }];
+  });
 }
 
 interface Unit {

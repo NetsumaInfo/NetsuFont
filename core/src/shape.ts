@@ -1,6 +1,6 @@
 import { isRtl, joiningOf, MIRROR, type Joining } from './arabic';
 import { DEFAULT_FEATURES, featureRules, type Rule } from './features';
-import { isConsonant, reorderIndic, splitVowels } from './indic';
+import { isConsonant, reorderIndic, splitParts } from './indic';
 import type { FontDoc, Glyph } from './types';
 
 /** A glyph set on a line: its embedding level (odd: right to left) and, for a mark, the item it sits on. */
@@ -86,6 +86,8 @@ interface Logical {
   glyph: Glyph;
   level: number;
   char: string;
+  /** A part of a vowel sign the engine split (the al-lakuna of Sinhala කේ): no conjunct takes it. */
+  split?: boolean;
 }
 
 const isMarkChar = (item: Logical): boolean => /\p{M}/u.test(item.char) && item.glyph.advance === 0;
@@ -127,6 +129,7 @@ function matchAt(items: Logical[], at: number, rule: Rule): number[] | undefined
     found.push(i);
   }
   if (found.length < rule.sub.length) return undefined;
+  if (rule.feature === 'akhn' && found.some((k) => items[k]!.split)) return undefined;
   if (rule.feature === 'half') {
     const next = items[found[found.length - 1]! + 1];
     if (!next || !isConsonant(next.char.codePointAt(0)!)) return undefined;
@@ -165,7 +168,8 @@ function substitute(doc: FontDoc, logical: Logical[], features: string[], langua
  * in the order they are drawn, left to right. A character the font does not draw is left out and named in `missing`.
  */
 export function shapeLine(doc: FontDoc, text: string, features: string[] = [], language?: string): { items: Item[]; missing: string[] } {
-  const chars = [...splitVowels(text)];
+  const parts = splitParts(text);
+  const chars = parts.map((part) => part.char);
   const levels = bidiLevels(chars);
   const byCode = new Map(doc.glyphs.flatMap((glyph) => (glyph.unicode === undefined ? [] : [[glyph.unicode, glyph] as const])));
   const missing: string[] = [];
@@ -173,7 +177,7 @@ export function shapeLine(doc: FontDoc, text: string, features: string[] = [], l
     const char = levels[i]! % 2 === 1 ? (MIRROR[raw] ?? raw) : raw;
     const glyph = byCode.get(char.codePointAt(0)!);
     if (!glyph && !missing.includes(raw)) missing.push(raw);
-    return glyph ? [{ glyph, level: levels[i]!, char }] : [];
+    return glyph ? [{ glyph, level: levels[i]!, char, ...(parts[i]!.split ? { split: true } : {}) }] : [];
   });
   const shaped = substitute(doc, logical, [...features, ...(language ? ['locl'] : [])], language);
   let lastBase = -1;

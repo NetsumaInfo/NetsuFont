@@ -18,6 +18,8 @@ const TELUGU_CONSONANTS = 'కఖగఘఙచఛజఝఞటఠడఢణతథ�
 const KANNADA_CONSONANTS = 'ಕಖಗಘಙಚಛಜಝಞಟಠಡಢಣತಥದಧನಪಫಬಭಮಯರಲಳವಶಷಸಹ';
 const TELUGU = `అఆఇఈఉఊఋఎఏఐఒఓఔ${TELUGU_CONSONANTS}ాిీుూృెేైొోౌంఃఁ్ౕౖ0123456789${PUNCT}`;
 const KANNADA = `ಅಆಇಈಉಊಋಎಏಐಒಓಔ${KANNADA_CONSONANTS}ಾಿೀುೂೃೆೇೈೊೋೌಂಃ್ೕೖ0123456789${PUNCT}`;
+const SINHALA_CONSONANTS = 'කඛගඝඞඟචඡජඣඤඥඦටඨඩඪණඬතථදධනඳපඵබභමඹයරලවශෂසහළෆ';
+const SINHALA = `අආඇඈඉඊඋඌඍඑඒඓඔඕඖ${SINHALA_CONSONANTS}ාැෑිීුූෘෙේෛොෝෞෟ්ංඃ0123456789${PUNCT}`;
 const TAMIL = `அஆஇஈஉஊஎஏஐஒஓஔஃகஙசஞடணதநபமயரலவழளறனஜஷஸஹாிீுூெேைொோௌ்ௗ0123456789${PUNCT}`;
 
 export const INDIC_CHARS: Record<string, string> = {
@@ -33,6 +35,7 @@ export const INDIC_CHARS: Record<string, string> = {
   ml: MALAYALAM,
   te: TELUGU,
   kn: KANNADA,
+  si: SINHALA,
 };
 
 /** The consonants that take a half form before another consonant (Devanagari, Gujarati). The others keep their virama. */
@@ -44,10 +47,10 @@ const joined = (text: string): string => [...text].map(glyphName).join('_');
 const forms = (chars: string, suffix: string): string[] => [...chars].map((char) => `${glyphName(char)}.${suffix}`);
 
 /**
- * The vowel signs a Telugu or Kannada consonant is drawn again with, as one glyph (కి, ಕಿ): the font's consonant
+ * The vowel signs a Telugu, Kannada or Sinhala consonant is drawn again with, as one glyph (కి, ಕಿ, කු, ක්): the font's consonant
  * loses its head stroke and takes the sign. Kannada ೀ ೇ ೈ ೋ are these and a length mark the engine adds after.
  */
-const SYLLABLE_VOWELS: Record<string, [string, string]> = { te: [TELUGU_CONSONANTS, 'ాిీుూెేైొోౌ'], kn: [KANNADA_CONSONANTS, 'ಾಿುೃೆೊೌ'] };
+const SYLLABLE_VOWELS: Record<string, [string, string]> = { te: [TELUGU_CONSONANTS, 'ాిీుూెేైొోౌ'], kn: [KANNADA_CONSONANTS, 'ಾಿುೃೆೊೌ'], si: [SINHALA_CONSONANTS, '්ුූ'] };
 
 export interface Syllable {
   /** The glyph's name: the consonant and the parts of its vowel sign, as the engine splits it (uni0C15_uni0C46_uni0C56). */
@@ -87,6 +90,7 @@ export function indicForms(code: string): string[] {
     const conjuncts = ['ന്ത', 'ങ്ക', 'ഞ്ച', 'ണ്ട', 'മ്പ', 'ക്ഷ', 'ന്ദ', 'സ്ത'];
     return ['uni0D30.pref', 'uni0D2F.pstf', 'uni0D35.pstf', ...doubled, ...conjuncts.map(joined)];
   }
+  if (code === 'si') return syllablesOf(code).map((s) => s.name);
   if (code === 'te' || code === 'kn') {
     const [consonants] = SYLLABLE_VOWELS[code]!;
     const conjuncts = code === 'te' ? ['క్ష', 'జ్ఞ'] : ['ಕ್ಷ', 'ಜ್ಞ'];
