@@ -19,4 +19,13 @@ describe('lint', () => {
     const found = lint(doc).map((f) => `${f.glyph}: ${f.text}`);
     expect(found).toEqual([expect.stringMatching(/^U: stroke 160 wide where the Latin letters have about 80/), expect.stringMatching(/^o: round but from 0 to 500/)]);
   });
+
+  it('finds a letter whose straight side is spaced unlike n', () => {
+    const doc = applyOps(newFont('t', 'T'), [
+      { op: 'set_glyph', glyph: 'n', unicode: 110, advance: 600, path: 'M60 0H140V500H60ZM460 0H540V500H460Z' },
+      { op: 'set_glyph', glyph: 'h', unicode: 104, advance: 680, path: 'M140 0H220V700H140ZM540 0H620V500H540Z' },
+      { op: 'set_glyph', glyph: 'm', unicode: 109, advance: 900, path: 'M60 0H140V500H60ZM760 0H840V500H760Z' },
+    ]);
+    expect(lint(doc).map((f) => f.glyph)).toEqual(['h']);
+  });
 });

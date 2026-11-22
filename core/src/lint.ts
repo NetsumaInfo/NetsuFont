@@ -1,6 +1,6 @@
 // The style of a font, measured, and the glyphs that depart from it: stems thicker or thinner than those of their
-// script, round letters that do not pass the lines. Measured on horizontal lines through the ink, the curves
-// flattened and the nonzero rule applied, so overlapping strokes count once.
+// script, round letters that do not pass the lines, Latin letters spaced unlike those of the same side. Strokes are
+// measured on lines through the ink, the curves flattened and the nonzero rule applied: overlaps count once.
 import { glyphMap, glyphBounds, outline } from './outline';
 import type { Command } from './path';
 import type { FontDoc, Glyph } from './types';
@@ -126,8 +126,38 @@ function overshoots(doc: FontDoc, byName: Map<string, Glyph>): LintFinding[] {
   });
 }
 
+/**
+ * Latin letters whose side has the shape of a reference letter's, and so the same side bearing: [reference, side,
+ * letters]. A straight stem on the left of n is the one of h m r; the round left of o is the one of c d e q.
+ */
+const SIDES: [string, 'left' | 'right', string][] = [
+  ['n', 'left', 'hmrbkpli'], ['n', 'right', 'hmu'], ['o', 'left', 'cdeq'], ['o', 'right', 'bp'],
+  ['H', 'left', 'IEFLPRBDNMK'], ['H', 'right', 'INMU'], ['O', 'left', 'CGQ'], ['O', 'right', 'D'],
+];
+
+/** Side bearings that differ from their reference letter's by more than a quarter and 15 units. */
+function sides(doc: FontDoc, byName: Map<string, Glyph>): LintFinding[] {
+  // A monospaced font centres its narrow letters on purpose.
+  const advances = new Set(doc.glyphs.filter((g) => g.unicode !== undefined && /\p{L}/u.test(String.fromCodePoint(g.unicode))).map((g) => g.advance));
+  if (advances.size === 1) return [];
+  const bearing = (char: string, side: 'left' | 'right'): number | undefined => {
+    const glyph = doc.glyphs.find((g) => g.unicode === char.codePointAt(0));
+    const box = glyph ? glyphBounds(doc, glyph, byName) : undefined;
+    return glyph && box ? Math.round(side === 'left' ? box.xMin : glyph.advance - box.xMax) : undefined;
+  };
+  return SIDES.flatMap(([reference, side, letters]) => {
+    const usual = bearing(reference, side);
+    if (usual === undefined) return [];
+    return [...letters].flatMap((char) => {
+      const own = bearing(char, side);
+      if (own === undefined || Math.abs(own - usual) <= Math.max(15, Math.abs(usual) / 4)) return [];
+      return [{ glyph: byName.has(char) ? char : (doc.glyphs.find((g) => g.unicode === char.codePointAt(0))?.name ?? char), text: `${side} side bearing ${own} where ${reference} has ${usual}: the same shape of side takes the same space` }];
+    });
+  });
+}
+
 /** What departs from the font's own style, at most `limit` findings. */
 export function lint(doc: FontDoc, limit = 40): LintFinding[] {
   const byName = glyphMap(doc);
-  return [...stems(doc, byName), ...overshoots(doc, byName)].slice(0, limit);
+  return [...stems(doc, byName), ...overshoots(doc, byName), ...sides(doc, byName)].slice(0, limit);
 }

@@ -111,7 +111,7 @@ not in this font: ${missing.join(', ')}` : ''));
 
   server.registerTool(
     'lint',
-    { description: "Glyphs that depart from the font's own style: strokes much heavier or lighter than their script's, round letters that do not pass the lines.", inputSchema: { name } },
+    { description: "Glyphs that depart from the font's own style: strokes much heavier or lighter than their script's, round letters that do not pass the lines, Latin sides spaced unlike their reference letter.", inputSchema: { name } },
     (args) =>
       guarded(() => {
         const found = lint(store.read(args.name));
