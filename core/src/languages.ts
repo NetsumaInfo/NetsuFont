@@ -7,7 +7,7 @@ import { glyphName } from './names';
 import type { FontDoc } from './types';
 
 export type Script =
-  | 'latin' | 'greek' | 'cyrillic' | 'armenian' | 'georgian' | 'hebrew' | 'arabic' | 'devanagari' | 'bengali' | 'gurmukhi' | 'gujarati' | 'odia' | 'tamil' | 'malayalam' | 'telugu' | 'kannada' | 'sinhala' | 'khmer'
+  | 'latin' | 'greek' | 'cyrillic' | 'armenian' | 'georgian' | 'hebrew' | 'arabic' | 'devanagari' | 'bengali' | 'gurmukhi' | 'gujarati' | 'odia' | 'tamil' | 'malayalam' | 'telugu' | 'kannada' | 'sinhala' | 'khmer' | 'myanmar'
   | 'thai' | 'lao' | 'japanese' | 'chinese' | 'korean';
 
 /**
@@ -100,6 +100,7 @@ export const LANGUAGES: Language[] = [
   { code: 'kn', script: 'kannada', chars: INDIC_CHARS.kn! },
   { code: 'si', script: 'sinhala', chars: INDIC_CHARS.si! },
   { code: 'km', script: 'khmer', chars: INDIC_CHARS.km! },
+  { code: 'my', script: 'myanmar', chars: INDIC_CHARS.my! },
   { code: 'th', script: 'thai', chars: `${span(0xe01, 0xe3a)}${span(0xe3f, 0xe4e)}${span(0xe50, 0xe59)}0123456789.,:;!?-()"'–—…` },
   { code: 'lo', script: 'lao', chars: 'ກຂຄງຈຊຍດຕຖທນບປຜຝພຟມຢຣລວສຫອຮໜໝະັາຳິີຶືຸູົຼຽເແໂໃໄໆ່້໊໋໌ໍ໐໑໒໓໔໕໖໗໘໙0123456789.,:;!?-()–—…' },
   // Japanese: the kana, the punctuation and the 2,136 kanji for general use. draw_kanji draws the kanji from KanjiVG.
@@ -117,7 +118,7 @@ export const LANGUAGES: Language[] = [
 
 /** Scripts the format cannot serve yet, and why. */
 export const UNSUPPORTED_SCRIPTS =
-  'Myanmar, Tibetan: each shapes its own way, not written yet. Sinhala conjuncts joined by ZWJ are not shaped.';
+  'Tibetan, Mongolian: each shapes its own way, not written yet. Sinhala conjuncts joined by ZWJ are not shaped.';
 
 /** Every character a language needs: basic Latin first for a Latin language, then its own. */
 export function charsOf(language: Language): string[] {

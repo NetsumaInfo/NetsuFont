@@ -21,9 +21,11 @@ export interface IndicScript {
   dotReph?: number;
   /** Vowel signs go right after the base consonant, before its forms below (Telugu క్కి, Kannada ಕ್ಕಿ). */
   signsAfterBase?: boolean;
-  /** A block not on the common plan (Sinhala, Khmer): its virama and its consonants. */
+  /** A block not on the common plan (Sinhala, Khmer, Myanmar): its virama and its consonants. */
   virama?: number;
   consonants?: [number, number];
+  /** What follows the ra to make the reph: the virama, or the asat and the virama of the Myanmar kinzi. */
+  rephTail?: number[];
 }
 
 export const INDIC: IndicScript[] = [
@@ -52,6 +54,12 @@ export const INDIC: IndicScript[] = [
     tags: ['sinh', 'sinh'], from: 0xd80, prebase: [0xdd9, 0xddb],
     split: { 0xdda: [0xdd9, 0xdca], 0xddc: [0xdd9, 0xdcf], 0xddd: [0xdd9, 0xdcf, 0xdca], 0xdde: [0xdd9, 0xddf] },
     ras: [], rephLast: false, virama: 0xdca, consonants: [0xd9a, 0xdc6],
+  },
+  {
+    // Myanmar: the virama (U+1039) stacks a consonant under another; nga, asat and virama before a consonant are the
+    // kinzi, drawn over it. ေ and the medial ra ြ are drawn before the consonant, in that order.
+    tags: ['mym2', 'mymr'], from: 0x1000, prebase: [0x1031, 0x103c], split: {}, ras: [0x1004], rephLast: false,
+    virama: 0x1039, consonants: [0x1000, 0x1021], rephTail: [0x103a, 0x1039],
   },
   {
     // Khmer: the coeng (U+17D2) is its virama; a vowel in two parts keeps its own code for the part after the letter.
@@ -153,19 +161,21 @@ function reorder<T extends Unit>(syllable: T[], movers: Movers<T>): T[] {
   const script = indicOf(codeOf(letters[0]));
   if (!script) return letters;
   if (script.dotReph !== undefined && codeOf(letters[0]) === script.dotReph && letters.length > 1) letters = [letters[1]!, letters[0]!, ...letters.slice(2)];
-  const reph = movers.reph;
-  const [first, second, third] = letters.map(codeOf);
-  const made = script.ras.includes(first!) && second === viramaOf(script) && third !== undefined && isConsonant(third) ? reph(letters[0]!) : undefined;
+  const tail = script.rephTail ?? [viramaOf(script)];
+  const codes = letters.map(codeOf);
+  const isReph = script.ras.includes(codes[0]!) && tail.every((code, k) => codes[k + 1] === code) && isConsonant(codes[tail.length + 1] ?? -1);
+  const made = isReph ? movers.reph(letters[0]!) : undefined;
   if (made) {
-    const rest = letters.slice(2);
+    const rest = letters.slice(1 + tail.length);
     const after = script.rephLast ? -1 : rest.findIndex((item) => /\p{Mc}/u.test(item.char) && !script.prebase.includes(codeOf(item)));
     letters = after < 0 ? [...rest, made] : [...rest.slice(0, after), made, ...rest.slice(after)];
   }
   if (script.pref !== undefined) letters = moveRa(letters, script, movers.pref);
   if (script.signsAfterBase) letters = signsToBase(letters, script);
-  const at = letters.findIndex((item) => script.prebase.includes(codeOf(item)));
-  if (at > 0) letters = [letters[at]!, ...letters.slice(0, at), ...letters.slice(at + 1)];
-  return letters;
+  // The signs drawn before the consonant, in the order the script lists them (Myanmar ေ then ြ).
+  const before = letters.filter((item, k) => k > 0 && script.prebase.includes(codeOf(item)));
+  before.sort((a, b) => script.prebase.indexOf(codeOf(a)) - script.prebase.indexOf(codeOf(b)));
+  return before.length > 0 ? [...before, ...letters.filter((item) => !before.includes(item))] : letters;
 }
 
 /**

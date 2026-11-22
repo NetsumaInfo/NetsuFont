@@ -106,7 +106,8 @@ function indicRule(source: Glyph, suffix: string, by: string): Rule | undefined 
   if (code === undefined || !script || !isConsonant(code)) return undefined;
   const [tag, virama] = [script.tags[0], viramaName(script)];
   if (suffix === 'half') return { feature: 'half', script: tag, sub: [source.name, virama], by };
-  if (suffix === 'rphf' && script.ras.includes(code)) return { feature: 'rphf', script: tag, sub: [source.name, virama], by };
+  const tail = script.rephTail?.map((part) => `uni${part.toString(16).toUpperCase().padStart(4, '0')}`) ?? [virama];
+  if (suffix === 'rphf' && script.ras.includes(code)) return { feature: 'rphf', script: tag, sub: [source.name, ...tail], by };
   if (suffix === 'blwf' || suffix === 'pstf') return { feature: suffix, script: tag, sub: [virama, source.name], by };
   if (suffix === 'pref' && code === script.pref) return { feature: 'pref', script: tag, sub: [virama, source.name], by };
   return undefined;

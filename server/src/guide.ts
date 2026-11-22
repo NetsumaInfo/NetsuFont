@@ -50,7 +50,8 @@ DOCUMENT
   the share of the width left along angle (0.25: a quarter). terminals:"song": strokes made level and upright, a
   triangle on each horizontal's end. <name>.zht: the glyph traditional Chinese text uses (feature locl). Voicing marks uni3099 uni309A, without unicode, stay
   where drawn (compose が from か). <name>.vert: the glyph for vertical writing (feature vert).
-- Indic (Devanagari, Bengali, Gurmukhi, Gujarati, Odia, Tamil, Malayalam, Telugu, Kannada, Sinhala, Khmer): <consonant>.half (before another consonant, the virama
+- Indic (Devanagari, Bengali, Gurmukhi, Gujarati, Odia, Tamil, Malayalam, Telugu, Kannada, Sinhala, Khmer,
+  Myanmar): <consonant>.half (before another consonant, the virama
   gone), <ra>.rphf (the reph: advance 0, ink above and left of x 0), <consonant>.blwf (under the consonant before it:
   advance 0), <consonant>.pstf (after it: Bengali ya-phala uni09AF.pstf), uni0D30.pref (Malayalam ra after a virama,
   drawn before its consonant: a spacing glyph), conjuncts named by their parts
@@ -60,6 +61,8 @@ DOCUMENT
   The Malayalam dot reph ൎ, typed before its consonant, is drawn after it: advance 0, ink above and left of x 0.
   Khmer: the coeng ្ is the virama: <consonant>.blwf is each consonant under another, uni179A.pref the ro drawn before
   the consonant. ើ ឿ ៀ ោ ៅ are split into េ and themselves: draw each as its part after the letter.
+  Myanmar: the virama ္ stacks: <consonant>.blwf is a consonant under another; uni1004.rphf the kinzi (င်္ before a
+  consonant, drawn over it). ေ and the medial ra ြ are drawn before the consonant, in that order.
   Telugu, Kannada, Sinhala: each consonant is drawn again with each vowel sign (కి uni0C15_uni0C3F; Sinhala ක් කු කූ). Draw <consonant>.base, the
   consonant without its head stroke, and the signs (a sign of advance 0 drawn left of x 0 sits over its end); then
   {op:"compose", syllables:"te"} (or "kn", "si") makes them all for the consonants drawn. Redraw one by hand when needed.

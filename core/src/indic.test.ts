@@ -115,3 +115,13 @@ describe('Khmer', () => {
     expect(km!.forms).toContain('uni1780.blwf');
   });
 });
+
+describe('Myanmar', () => {
+  it('draws ေ then the medial ra before the consonant, and the kinzi after it', () => {
+    const movers = { reph: (ra: { char: string }) => ({ char: `R${ra.char}` }), pref: () => undefined };
+    expect(chars(reorderIndic(unit('\u1000\u103C\u1031'), movers))).toBe('\u1031\u103C\u1000');
+    expect(chars(reorderIndic(unit('\u1004\u103A\u1039\u1000\u102C'), movers))).toBe('\u1000R\u1004\u102C');
+    const [my] = languageCoverage(newFont('t', 'T'), ['my']);
+    expect(my!.forms).toContain('uni1004.rphf');
+  });
+});
