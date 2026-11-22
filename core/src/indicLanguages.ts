@@ -53,10 +53,11 @@ const joined = (text: string): string => [...text].map(glyphName).join('_');
 const forms = (chars: string, suffix: string): string[] => [...chars].map((char) => `${glyphName(char)}.${suffix}`);
 
 /**
- * The vowel signs a Telugu, Kannada or Sinhala consonant is drawn again with, as one glyph (కి, ಕಿ, කු, ක්): the font's consonant
+ * The vowel signs a Telugu, Kannada or Sinhala consonant is drawn again with, as one glyph (కి, ಕಿ, කු, ක්), and the
+ * Tibetan ra drawn short over the letters written under it (རྐ): the font's consonant
  * loses its head stroke and takes the sign. Kannada ೀ ೇ ೈ ೋ are these and a length mark the engine adds after.
  */
-const SYLLABLE_VOWELS: Record<string, [string, string]> = { te: [TELUGU_CONSONANTS, 'ాిీుూెేైొోౌ'], kn: [KANNADA_CONSONANTS, 'ಾಿುೃೆೊೌ'], si: [SINHALA_CONSONANTS, '්ුූ'] };
+const SYLLABLE_VOWELS: Record<string, [string, string]> = { te: [TELUGU_CONSONANTS, 'ాిీుూెేైొోౌ'], kn: [KANNADA_CONSONANTS, 'ಾಿುೃೆೊೌ'], si: [SINHALA_CONSONANTS, '්ුූ'], bo: ['ར', 'ྐྒྔྗྙྟྡྣྦྨྩྫ'] };
 
 export interface Syllable {
   /** The glyph's name: the consonant and the parts of its vowel sign, as the engine splits it (uni0C15_uni0C46_uni0C56). */
@@ -96,7 +97,7 @@ export function indicForms(code: string): string[] {
     const conjuncts = ['ന്ത', 'ങ്ക', 'ഞ്ച', 'ണ്ട', 'മ്പ', 'ക്ഷ', 'ന്ദ', 'സ്ത'];
     return ['uni0D30.pref', 'uni0D2F.pstf', 'uni0D35.pstf', ...doubled, ...conjuncts.map(joined)];
   }
-  if (code === 'si') return syllablesOf(code).map((s) => s.name);
+  if (code === 'si' || code === 'bo') return syllablesOf(code).map((s) => s.name);
   // Khmer: every consonant written under another (coeng), and ro written before it.
   if (code === 'km') return [...forms(KHMER_CONSONANTS, 'blwf'), 'uni179A.pref'];
   // Myanmar: every consonant stacked under another, and the kinzi.

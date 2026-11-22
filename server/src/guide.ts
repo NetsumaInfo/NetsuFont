@@ -67,12 +67,13 @@ DOCUMENT
   the consonant. ើ ឿ ៀ ោ ៅ are split into េ and themselves: draw each as its part after េ: ើ a mark above (advance 0),
   ឿ ៀ ោ ៅ spacing. The coeng ្ itself may stay empty.
   Tibetan: the letters written under another (ྐ ྱ ྲ, U+0F90 on) are marks of advance 0 drawn below the baseline:
-  the font stacks them under the letter, the vowel ུ under them.
+  the font stacks them under the letter, the vowel ུ under them. Ra over one of them is short: draw uni0F62.base,
+  then {op:"compose", syllables:"bo"} makes རྐ རྒ… (12).
   Myanmar: the virama ္ stacks: <consonant>.blwf is a consonant under another; uni1004.rphf the kinzi (င်္ before a
   consonant, drawn over it). ေ and the medial ra ြ are drawn before the consonant, in that order.
   Telugu, Kannada, Sinhala: each consonant is drawn again with each vowel sign (కి uni0C15_uni0C3F; Sinhala ක් කු කූ). Draw <consonant>.base, the
   consonant without its head stroke, and the signs (a sign of advance 0 drawn left of x 0 sits over its end); then
-  {op:"compose", syllables:"te"} (or "kn", "si") makes them all for the consonants drawn: a sign drawn as a mark (advance
+  {op:"compose", syllables:"te"} (or "kn", "si", "bo") makes them all for the consonants drawn: a sign drawn as a mark (advance
   0) goes on .base, a spacing sign after the whole consonant. Redraw one by hand when needed.
 - Arabic: a joining letter is its glyph (isolated, with unicode) and forms without unicode: <name>.init (word start, joins
   on its left edge), .medi (both edges), .fina (word end, joins on its right edge). ا د ذ ر ز و ة join only on the right:

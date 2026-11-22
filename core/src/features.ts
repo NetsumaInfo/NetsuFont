@@ -24,7 +24,7 @@ const LOCAL: Record<string, { script: ScriptTag; languages: string[] }> = { zht:
 /** The features a glyph name suffix asks for: `a.ss01` is `a` in the stylistic set 1. */
 const SUFFIX_FEATURES: Record<string, string> = { alt: 'salt', sc: 'smcp', onum: 'onum', tnum: 'tnum', sups: 'sups', sinf: 'sinf', vert: 'vert' };
 /** The features applied without the user asking: the joining forms, ligatures and required ligatures. */
-export const DEFAULT_FEATURES = ['akhn', 'rphf', 'pref', 'blwf', 'half', 'pstf', 'psts', 'init', 'medi', 'fina', 'isol', 'rlig', 'liga'];
+export const DEFAULT_FEATURES = ['ccmp', 'akhn', 'rphf', 'pref', 'blwf', 'half', 'pstf', 'psts', 'init', 'medi', 'fina', 'isol', 'rlig', 'liga'];
 /** The features a user turns on: stylistic sets and alternates. Shown in the app when the font has them. */
 export const OPTIONAL_FEATURE = /^(ss(0[1-9]|1\d|20)|salt|smcp|onum|tnum|sups|sinf|dlig)$/;
 
@@ -72,6 +72,8 @@ function ligature(glyph: Glyph, byName: Map<string, Glyph>): Rule | undefined {
     const sub = parts.map((part, i) => `${part}.${partForms(parts.length, suffix || 'isol')[i]}`).map((name, i) => (byName.has(name) ? name : parts[i]!));
     return { feature: 'rlig', script: 'arab', sub, by: glyph.name };
   }
+  // A Tibetan letter with the letters written under it (the short ra of རྐ): always made, as ccmp.
+  if (suffix === '' && parts.every((part) => /^uni0F[0-9A-F]{2}$/.test(part))) return { feature: 'ccmp', script: 'DFLT', sub: parts, by: glyph.name };
   if (suffix === '') return { feature: 'liga', script: 'DFLT', sub: parts, by: glyph.name };
   if (suffix === 'dlig') return { feature: 'dlig', script: 'DFLT', sub: parts, by: glyph.name };
   return undefined;

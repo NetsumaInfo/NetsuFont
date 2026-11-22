@@ -120,7 +120,7 @@ export const LANGUAGES: Language[] = [
 
 /** Scripts the format cannot serve yet, and why. */
 export const UNSUPPORTED_SCRIPTS =
-  'Mongolian (written in columns): not written yet. Sinhala conjuncts joined by ZWJ are not shaped; the short Tibetan ra over a letter below it is not made.';
+  'Mongolian (written in columns): not written yet. Sinhala conjuncts joined by ZWJ are not shaped.';
 
 /** Every character a language needs: basic Latin first for a Latin language, then its own. */
 export function charsOf(language: Language): string[] {
