@@ -1,6 +1,7 @@
 /// <reference path="./opentype.d.ts" />
 import opentype, { type Font as OtFont, type Glyph as OtGlyph, type Path as OtPath } from 'opentype.js';
 import { nameFeatureGlyphs, type ParsedGsub } from './featureNames';
+import { addContextual } from './contextual';
 import { featureRules, type Rule } from './features';
 import { gdefTable, gposTable } from './gpos';
 import { gposPairs, MAX_PAIRS } from './gposRead';
@@ -59,6 +60,7 @@ export function exportOtf(doc: FontDoc): Uint8Array {
   // .notdef is index 0: the glyphs of the document follow in their order.
   const index = new Map(own.map((glyph, at) => [glyph.name, at + 1]));
   addFeatures(font, featureRules(doc), index);
+  addContextual(font, doc, index);
   const gpos = gposTable(doc, index);
   if (gpos) skipMarksInLigatures(font);
   let bytes: Uint8Array = withMacStyle(new Uint8Array(font.toArrayBuffer()), style.macStyle);

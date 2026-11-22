@@ -1,5 +1,6 @@
 import { isRtl, joiningOf, MIRROR, type Joining } from './arabic';
 import { DEFAULT_FEATURES, featureRules, type Rule } from './features';
+import { applyContexts } from './contextual';
 import { isConsonant, reorderIndic, splitParts } from './indic';
 import type { FontDoc, Glyph } from './types';
 
@@ -156,6 +157,7 @@ function substitute(doc: FontDoc, logical: Logical[], features: string[], langua
   });
   const several = rules.filter((rule) => rule.sub.length > 1 && rule.feature !== 'rphf' && rule.feature !== 'pref');
   for (const pass of PASSES) items = ligatures(items, several.filter((rule) => (pass ? rule.feature === pass : !PASSES.includes(rule.feature))), byName);
+  items = applyContexts(items, doc, byName);
   return items.map((item) => {
     const feature = features.find((f) => singles.has(`${f} ${item.glyph.name}`));
     return feature ? { ...item, glyph: byName.get(singles.get(`${feature} ${item.glyph.name}`)!)! } : item;

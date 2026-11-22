@@ -18,6 +18,8 @@ export interface FontDoc {
   metrics: Metrics;
   glyphs: Glyph[];
   kerning: Kern[];
+  /** Glyphs drawn another way next to some glyphs (feature calt). */
+  contextual?: Context[];
 }
 
 /** The horizontal lines every glyph is drawn against. The descender is below the baseline: negative. */
@@ -47,6 +49,14 @@ export interface Part {
   y: number;
   /** A size other than its own: 0.6 for a letter set small under another (a conjunct's second letter). */
   scale?: number;
+}
+
+/** A glyph that becomes `by` when the glyph before it is one of `before`, or the one after it one of `after`. */
+export interface Context {
+  glyph: string;
+  by: string;
+  before?: string[];
+  after?: string[];
 }
 
 /** A change of the space between two glyphs, in font units: negative brings them closer. */

@@ -39,7 +39,7 @@ function rootCode(glyph: Glyph | undefined, byName: Map<string, Glyph>): number 
   return glyph.unicode ?? byName.get(glyph.name.split(/[._]/)[0]!)?.unicode;
 }
 
-function scriptOf(glyph: Glyph | undefined, byName: Map<string, Glyph>): ScriptTag {
+export function scriptOf(glyph: Glyph | undefined, byName: Map<string, Glyph>): ScriptTag {
   const code = rootCode(glyph, byName);
   if (code === undefined) return 'DFLT';
   return isArabic(code) ? 'arab' : (indicOf(code)?.tags[0] ?? 'DFLT');

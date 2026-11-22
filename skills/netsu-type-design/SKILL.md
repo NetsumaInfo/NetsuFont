@@ -91,7 +91,8 @@ nnynn ooyoo"`. Each x
 
 8. **Features**, when the brief asks for character or display use: the alternates of the
    signature as `.ss01` (a second a, g, y or R), ligatures named by their parts (`f_i`, `T_h`).
-   `proof {features:["ss01"]}` shows them; one set per trait, never more.
+   `proof {features:["ss01"]}` shows them; one set per trait, never more. A form that depends
+   on its neighbours (a script letter that joins the next) is `set_context`.
 
 9. **Kerning.** `proof` the pairs of `construction.md` §Kerning. Kern only what looks wrong
    after spacing; a first release needs 40 to 150 pairs, never a pair for every combination.

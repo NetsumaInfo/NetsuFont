@@ -74,6 +74,11 @@ export function validate(doc: FontDoc): void {
   }
   for (const glyph of doc.glyphs) checkGlyph(glyph, names);
   checkCycles(doc);
+  for (const context of doc.contextual ?? []) {
+    const named = [context.glyph, context.by, ...(context.before ?? []), ...(context.after ?? [])];
+    if (named.some((name) => !names.has(name))) fail('context_glyph_not_found', `The context of ${context.glyph} names a glyph that does not exist.`);
+    if (!context.before?.length && !context.after?.length) fail('bad_context', `The context of ${context.glyph} has glyphs before or after it.`);
+  }
   for (const kern of doc.kerning) {
     if (!names.has(kern.left) || !names.has(kern.right)) fail('kern_glyph_not_found', `The kerning pair ${kern.left} ${kern.right} names a glyph that does not exist.`);
     if (!Number.isInteger(kern.value) || Math.abs(kern.value) > doc.unitsPerEm) fail('bad_kern', `The kerning of ${kern.left} ${kern.right} is a whole number, at most one em.`);

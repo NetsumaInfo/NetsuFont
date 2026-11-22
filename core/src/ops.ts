@@ -15,13 +15,14 @@ export type Op =
   | { op: 'center'; glyphs: string[]; advance: number }
   | { op: 'transform'; glyphs?: string[]; scale?: number | [number, number]; slant?: number; translate?: [number, number] }
   | { op: 'embolden'; by: number; glyphs?: string[] }
+  | { op: 'set_context'; glyph: string; by: string | null; before?: string[]; after?: string[] }
   | { op: 'decompose'; glyph: string }
   | { op: 'set_kern'; left: string; right: string; value: number }
   | { op: 'set_metrics'; metrics: Partial<Metrics> }
   | { op: 'set_info'; family?: string; style?: string }
   | { op: 'compose'; chars?: string; syllables?: string };
 
-export const OP_NAMES = ['set_glyph', 'remove_glyph', 'copy_glyph', 'set_spacing', 'center', 'transform', 'embolden', 'decompose', 'set_kern', 'set_metrics', 'set_info', 'compose'] as const;
+export const OP_NAMES = ['set_glyph', 'remove_glyph', 'copy_glyph', 'set_spacing', 'center', 'transform', 'embolden', 'set_context', 'decompose', 'set_kern', 'set_metrics', 'set_info', 'compose'] as const;
 
 /** A deep copy: a document is plain JSON. */
 function clone<T>(value: T): T {
@@ -56,6 +57,7 @@ function removeGlyph(doc: FontDoc, name: string): void {
   if (user) throw new FontError('glyph_in_use', `"${user.name}" uses "${name}" as a component. Decompose or change it first.`);
   doc.glyphs = doc.glyphs.filter((g) => g.name !== name);
   doc.kerning = doc.kerning.filter((kern) => kern.left !== name && kern.right !== name);
+  doc.contextual = doc.contextual?.filter((c) => ![c.glyph, c.by, ...(c.before ?? []), ...(c.after ?? [])].includes(name));
 }
 
 /** Moves the drawing so that its left side bearing is `left`, and sets the advance so that the right one is `right`. */
@@ -116,6 +118,17 @@ function embolden(doc: FontDoc, op: Extract<Op, { op: 'embolden' }>): void {
   }
 }
 
+/** A context of a glyph, replacing one with the same neighbours; `by` null takes it out (every context of the glyph). */
+function setContext(doc: FontDoc, op: Extract<Op, { op: 'set_context' }>): void {
+  const glyph = nameFor(doc, op.glyph);
+  const before = op.before?.map((name) => nameFor(doc, name));
+  const after = op.after?.map((name) => nameFor(doc, name));
+  const key = JSON.stringify([before ?? [], after ?? []]);
+  const others = (doc.contextual ?? []).filter((c) => c.glyph !== glyph || (op.by !== null && JSON.stringify([c.before ?? [], c.after ?? []]) !== key));
+  doc.contextual = op.by === null ? others : [...others, { glyph, by: nameFor(doc, op.by), ...(before ? { before } : {}), ...(after ? { after } : {}) }];
+  if (doc.contextual.length === 0) delete doc.contextual;
+}
+
 function decompose(doc: FontDoc, name: string): void {
   const glyph = find(doc, name);
   glyph.path = writePath(outline(doc, glyph));
@@ -161,6 +174,8 @@ function apply(doc: FontDoc, op: Op): void {
       return transform(doc, op);
     case 'embolden':
       return embolden(doc, op);
+    case 'set_context':
+      return setContext(doc, op);
     case 'decompose':
       return decompose(doc, op.glyph);
     case 'set_kern':

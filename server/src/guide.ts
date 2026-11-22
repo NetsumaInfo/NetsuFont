@@ -110,6 +110,9 @@ MORE OPS
 {op:"decompose", glyph}   its components become its own path
 {op:"set_spacing", glyph, left?, right?}   moves the drawing to these side bearings; the advance follows
 {op:"center", glyphs, advance}   one advance for all, the ink centred: figures that line up in tables, a monospace
+{op:"set_context", glyph, by, before?, after?}   glyph is drawn as by when the glyph before it is one of before,
+   or the one after it one of after (names or characters): a letter that joins the next, a form before a sign
+   (feature calt). by null takes the glyph's contexts out.
 {op:"embolden", by, glyphs?}   strokes heavier by "by" units on each side (lighter below 0), counters smaller, the
    advance grown by twice "by": the start of a Bold from a Regular (create_font from), to look at and fix.
 {op:"transform", glyphs?, scale?, slant?, translate?}   every glyph when glyphs is left out. scale n or [x,y] (x below 0
