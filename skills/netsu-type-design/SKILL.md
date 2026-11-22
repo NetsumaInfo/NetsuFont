@@ -96,7 +96,8 @@ nnynn ooyoo"`. Each x
 9. **Kerning.** `proof` the pairs of `construction.md` §Kerning. Kern only what looks wrong
    after spacing; a first release needs 40 to 150 pairs, never a pair for every combination.
 
-10. **Deliver.** `list_fonts {name}`: no check left unexplained. `proof` a paragraph at 48, 18 and 12, in lines of about 60 characters.
+10. **Deliver.** `list_fonts {name}`: no check left unexplained. `lint`: fix each glyph it
+   names, or say why it stays. `proof` a paragraph at 48, 18 and 12, in lines of about 60 characters.
    `export_font`, give the path, say how to install it (Windows: right click, Install), and
    what was not verified (an app the font was not tried in).
 

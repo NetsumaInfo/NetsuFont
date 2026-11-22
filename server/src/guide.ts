@@ -20,6 +20,7 @@ WORKFLOW
    several sizes, with spacing and kerning; "\\n" starts a line, 600 characters at most.
    get_font {name, glyphs:[names]}: the paths of those glyphs.
 4. languages {name, languages?:["fr","pl"]}: what each language lacks, what compose can make, what to draw.
+   lint {name}: glyphs whose strokes are much heavier or lighter than their script's, round letters short of the lines.
 5. export_font {name}: an .otf and a .ttf (TrueType outlines, for apps that take no other) the user installs, a .woff2 for web pages. set_language: the app speaks the user's language.
 
 DOCUMENT

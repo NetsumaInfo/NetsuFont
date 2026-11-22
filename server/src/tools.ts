@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { applyOps, styleOf, charsOf, composeNeeds, syllableNeeds, syllablesOf, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, toWoff2, ttfFromOtf, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
+import { applyOps, lint, styleOf, charsOf, composeNeeds, syllableNeeds, syllablesOf, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, toWoff2, ttfFromOtf, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
 import { z } from 'zod';
 import { GUIDE } from './guide';
 import { kanjiInput, kanjiOps } from './kanji';
@@ -99,6 +99,16 @@ function registerRead(server: McpServer, store: Store): void {
         const shown = { ...doc, glyphs, kerning: doc.kerning.filter((k) => args.glyphs!.includes(k.left) || args.glyphs!.includes(k.right)) };
         return text(JSON.stringify(shown) + (missing.length > 0 ? `
 not in this font: ${missing.join(', ')}` : ''));
+      }),
+  );
+
+  server.registerTool(
+    'lint',
+    { description: "Glyphs that depart from the font's own style: strokes much heavier or lighter than their script's, round letters that do not pass the lines.", inputSchema: { name } },
+    (args) =>
+      guarded(() => {
+        const found = lint(store.read(args.name));
+        return text(found.length === 0 ? 'Nothing departs from the style of the font.' : found.map((f) => `${f.glyph}: ${f.text}`).join('\n'));
       }),
   );
 
