@@ -123,7 +123,7 @@ Build the letters that are not Latin from the parts you already have:
   `uni091C_uni094D_uni091E` (त्र श्र are welcome, named the same way). The model keeps its half
   forms, reph and conjuncts under these names: trace them with `look_glyphs {glyphs:
   ["uni0915_uni094D_uni0937", "uni0915.half"], model}`. Conjuncts look nothing like their parts. A conjunct made of components (`.half` and the full
-  letter) passes `languages`; a drawn shape, as in the model, reads better. `languages` names
+  letter, or a letter with `scale`, its strokes thinner too) passes `languages`; a drawn shape, as in the model, reads better. `languages` names
   the rest.
 - **Bengali and Assamese (bn, as), Gurmukhi (pa), Gujarati (gu), Tamil (ta)**: trace a model as
   for Devanagari; Nirmala UI (index 0) draws all four. Measured in it, scaled to Latin caps at 700

@@ -30,6 +30,7 @@ function checkGlyph(glyph: Glyph, names: Set<string>): void {
   for (const part of glyph.components ?? []) {
     if (!names.has(part.glyph)) fail('component_not_found', `${where}: no glyph named "${part.glyph}" to use as a component.`);
     if (!isNumber(part.x) || !isNumber(part.y)) fail('bad_component', `${where}: a component has numbers x and y.`);
+    if (part.scale !== undefined && !(isNumber(part.scale) && part.scale > 0 && part.scale <= 4)) fail('bad_component', `${where}: a component's scale is more than 0 and at most 4.`);
   }
 }
 

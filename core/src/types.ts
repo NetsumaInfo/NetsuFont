@@ -45,6 +45,8 @@ export interface Part {
   glyph: string;
   x: number;
   y: number;
+  /** A size other than its own: 0.6 for a letter set small under another (a conjunct's second letter). */
+  scale?: number;
 }
 
 /** A change of the space between two glyphs, in font units: negative brings them closer. */

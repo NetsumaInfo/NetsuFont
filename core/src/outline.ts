@@ -11,7 +11,8 @@ export function outline(doc: FontDoc, glyph: Glyph, byName = glyphMap(doc)): Com
   const own = parsePath(glyph.path);
   const parts = (glyph.components ?? []).flatMap((part) => {
     const inner = byName.get(part.glyph);
-    return inner ? transformPath(outline(doc, inner, byName), [1, 0, 0, 1, part.x, part.y]) : [];
+    const s = part.scale ?? 1;
+    return inner ? transformPath(outline(doc, inner, byName), [s, 0, 0, s, part.x, part.y]) : [];
   });
   return [...own, ...parts];
 }

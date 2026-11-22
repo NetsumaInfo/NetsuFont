@@ -33,7 +33,8 @@ DOCUMENT
 - Fill is nonzero. Outer contours turn counterclockwise (y up: along the bottom to the right, up the right side),
   holes clockwise. A hole drawn the same way as its outer contour is filled, not cut.
 - Ink goes from x = left side bearing to x = advance − right side bearing.
-- components [{glyph, x, y}]: other glyphs drawn inside this one, moved. An accented letter is its base and its accent.
+- components [{glyph, x, y, scale?}]: other glyphs drawn inside this one, moved (and scaled from their origin). An
+  accented letter is its base and its accent.
 - Marks: one glyph each, no unicode: acute grave circumflex dieresis tilde caron breve macron ring dotaccent
   hungarumlaut hookabove horn above the x-height; cedilla ogonek commaaccent dotbelow below the baseline.
   "<mark>.case" is the flatter one for capitals, above the cap height; without it, compose raises the lowercase one.

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { checkGlyphs } from './check';
 import { newFont } from './doc';
 import { applyOps } from './ops';
+import { glyphBounds } from './outline';
 import { bounds, parsePath } from './path';
 import { shapesPath, type Shape } from './shapes';
 import { proofSvg } from './svg';
@@ -132,5 +133,17 @@ describe('round ends', () => {
   it('names the op and its glyph when a shape is wrong', () => {
     expect(() => applyOps(newFont('t', 'T'), [{ op: 'set_glyph', glyph: 'o', shapes: [{ type: 'ring', cx: 0, cy: 0, rx: 50, ry: 50, stroke: 72 }] }])).toThrow(/op 1 \(set_glyph o\): The stroke of a ring \(72\) .* \(50, 50\)/);
     expect(() => shapesPath([{ type: 'stroke', points: [[0, 0]], width: 50 } as Shape])).toThrow(FontError);
+  });
+});
+
+describe('components', () => {
+  it('draws a component scaled from its origin, and refuses a scale of 0', () => {
+    const doc = applyOps(newFont('t', 'T'), [
+      { op: 'set_glyph', glyph: 'I', advance: 300, path: 'M100 0H200V700H100Z' },
+      { op: 'set_glyph', glyph: 'small', advance: 300, components: [{ glyph: 'I', x: 50, y: -400, scale: 0.5 }] },
+    ]);
+    const small = doc.glyphs.find((g) => g.name === 'small')!;
+    expect(glyphBounds(doc, small)).toEqual({ xMin: 100, yMin: -400, xMax: 150, yMax: -50 });
+    expect(() => applyOps(doc, [{ op: 'set_glyph', glyph: 'small', components: [{ glyph: 'I', x: 0, y: 0, scale: 0 }] }])).toThrow(/scale/);
   });
 });

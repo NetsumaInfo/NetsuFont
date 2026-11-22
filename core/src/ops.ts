@@ -44,7 +44,7 @@ function setGlyph(doc: FontDoc, op: Extract<Op, { op: 'set_glyph' }>): void {
   if (op.path !== undefined || op.shapes !== undefined) glyph.path = (op.path ?? '') + (op.shapes ? shapesPath(op.shapes) : '');
   if (op.components !== undefined) {
     if (op.components.length === 0) delete glyph.components;
-    else glyph.components = op.components.map(({ glyph: part, x, y }) => ({ glyph: part, x, y }));
+    else glyph.components = op.components.map(({ glyph: part, x, y, scale }) => ({ glyph: part, x, y, ...(scale === undefined || scale === 1 ? {} : { scale }) }));
   }
 }
 
