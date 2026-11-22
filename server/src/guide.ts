@@ -39,7 +39,8 @@ DOCUMENT
   dotlessi carries the accents of i.
 - Right to left (Hebrew, Arabic): proof and the app set it so. In such text a kerning pair's left is the letter read first.
 - Marks with a unicode (accents typed after a letter, Hebrew points, Arabic harakat, Thai and Indic signs above or below):
-  advance 0, drawn once anywhere. The export (GDEF, GPOS mark and mkmk) and proof set each on the top of its letter's
+  advance 0, drawn once anywhere: the export (GDEF, GPOS mark and mkmk) and proof move it, its ink centred on the letter's,
+  and set it on the top of its letter's
   ink, or under it (Unicode says, or it is drawn below the baseline); a second one stacks on the first. The Hebrew
   dagesh is centred; the shin and sin dots and holam stay where drawn in the letter's frame. Indic marks touch, Tamil's excepted.
   A sign beside its letter (া ি ং ঃ, Tamil ா ி) is not a mark: it keeps an advance, its ink may reach over the letter.

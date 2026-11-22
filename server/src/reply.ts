@@ -55,7 +55,7 @@ function head(doc: FontDoc): string[] {
 export function summary(doc: FontDoc): string {
   const complete = languageCoverage(doc).filter((l) => l.has === l.of).map((l) => l.code);
   const found = checkGlyphs(doc).length;
-  return `${doc.name}: "${doc.family}" ${doc.style}, ${doc.glyphs.length} glyphs, ${doc.kerning.length} kerning pairs, languages ${complete.join(' ') || 'none'}${found > 0 ? `, ${found} checks` : ''}`;
+  return `${doc.name}: "${doc.family}" ${doc.style}, ${doc.glyphs.length} glyphs, ${doc.kerning.length} kerning pairs, complete in ${complete.join(' ') || 'no language'}${found > 0 ? `, ${found} checks` : ''}`;
 }
 
 const SHOWN = 12;

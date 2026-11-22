@@ -140,7 +140,11 @@ not in this font: ${missing.join(', ')}` : ''));
         const shown = model ? traced(doc, args.glyphs, args.chars) : pick(doc, args.glyphs, args.chars);
         if (shown.length === 0) throw new FontError('nothing_to_show', 'None of these glyphs exists yet.');
         const columns = args.columns ?? Math.min(8, shown.length);
-        return png(glyphSheet(doc, shown, { columns, ...(model ? { under: model } : {}) }), Math.min(1600, columns * 200), `${shown.map((g) => g.name).join(' ')}`);
+        const width = Math.min(1600, columns * 200);
+        // The scale of a cell, so that a position read on the picture can be turned into font units.
+        const cell = Math.max(doc.unitsPerEm, ...shown.map((g) => g.advance)) * 1.15;
+        const scale = `each cell ${Math.round(cell)} units in ${Math.round(width / columns)} px (${(cell / (width / columns)).toFixed(1)} units a pixel); the two upright lines are x 0 and the advance`;
+        return png(glyphSheet(doc, shown, { columns, ...(model ? { under: model } : {}) }), width, `${shown.map((g) => g.name).join(' ')}\n${scale}`);
       }),
   );
 

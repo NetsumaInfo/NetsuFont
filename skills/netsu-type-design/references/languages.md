@@ -154,8 +154,10 @@ Build the letters that are not Latin from the parts you already have:
   (half forms, reph, ra below, ક્ષ જ્ઞ) and રુ રૂ; Tamil each consonant with ு and ூ drawn as one
   (கு `uni0B95_uni0BC1`, 36 glyphs, their shapes differ: trace each), டி டீ, க்ஷ, ஸ்ரீ. The
   Tamil pulli ் sits above the letter. Only Bengali has been drawn blind (once); the others not yet.
-- **Odia (or), Malayalam (ml)**: trace Nirmala UI too (2026-11-17, measured, not drawn here
-  yet). Odia: round tops at 728, no headline, letters about 683 wide with side bearings of 39;
+- **Odia (or), Malayalam (ml)**: trace Nirmala UI too (2026-11-17, measured). Odia was drawn
+  blind once (Mahanadi, 2026-11-22, about 50 calls, by hand with `stroke`): it read as Odia text;
+  ଝ ଞ ହ ୟ ଯ ଙ ଘ ଗ and the vowels ଇ ଈ ଉ ଊ were weak, and its conjuncts, scaled copies stacked
+  with components, did not look like Odia ones: draw each as one shape. Odia: round tops at 728, no headline, letters about 683 wide with side bearings of 39;
   ି is a mark above (772 to 909), the reph sits from 728 to 1015 and left of x 0. Malayalam:
   bodies to 712 and wide (ക 1179, ന 1016, ര 824, ാ 565); ു is spacing (advance 375, down to
   −251); ് and the dot reph ൎ are marks above (767 to 1019); the ra before its consonant
