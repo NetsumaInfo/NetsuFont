@@ -201,8 +201,11 @@ Build the letters that are not Latin from the parts you already have:
 - **Myanmar (my)**: Windows has Myanmar Text (mmrtext.ttf) as a model. Measured in it
   (2026-11-22, not drawn here yet): round bodies from 0 to about 512, the Latin x-height; wide (က
   1067, သ 1032, မ 631, န 546); ေ spacing (600) and drawn before; the medial ra ြ a narrow spacing
-  glyph (215) whose ink wraps the letter from −474 to 1036; ျ spacing (185); the stacked forms
-  `.blwf` hang to about −400. Draw the medial ra once; Myanmar Text draws it in several widths,
+  glyph (advance 215) whose ink runs on over the next letter (x 73 to 762) and wraps it from y −474
+  to 1036; ျ spacing (185); the stacked forms `.blwf` hang to about −400. `look_glyphs` shows a
+  mark where it is drawn; `proof` shows it where the font puts it: judge marks in `proof`. A
+  blind run (Ayeyar, 2026-11-22, about 50 calls) read as Myanmar text; ဋ ဌ ဍ ဎ ဇ ဈ and the
+  vowels အ ဣ ဤ ဥ ဦ ဩ ဪ were weak. Draw the medial ra once; Myanmar Text draws it in several widths,
   a refinement the format does not ask.
 - **Tibetan (bo)**: Windows has Microsoft Himalaya (himalaya.ttf) as a model. Measured in it
   (2026-11-22, not drawn here yet): letters hang from a head at 517 and come down past the

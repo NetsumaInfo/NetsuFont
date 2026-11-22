@@ -87,6 +87,8 @@ function outOfBounds(doc: FontDoc, glyph: Glyph, commands: Command[]): Finding[]
   if (box.yMax > top + margin) said.push({ glyph: glyph.name, text: `reaches y ${Math.round(box.yMax)}, far above the ascender ${doc.metrics.ascender}: lines of text will collide.` });
   if (box.yMin < doc.metrics.descender - margin) said.push({ glyph: glyph.name, text: `reaches y ${Math.round(box.yMin)}, below the descender ${doc.metrics.descender}.` });
   if (glyph.unicode !== undefined && glyph.advance === 0 && /\p{Mc}/u.test(String.fromCodePoint(glyph.unicode)) && !TAMIL_U.includes(glyph.unicode) && glyph.unicode !== KHMER_OE) said.push({ glyph: glyph.name, text: 'is a spacing sign, drawn beside its letter (Bengali ং ঃ, the vowel signs া ি): give it its advance.' });
+  // A non-spacing mark with an advance is set beside its letter, not on it: Malayalam ു is drawn so on purpose.
+  if (glyph.unicode !== undefined && glyph.advance > 0 && /\p{Mn}/u.test(String.fromCodePoint(glyph.unicode)) && !(glyph.unicode >= 0xd41 && glyph.unicode <= 0xd44)) said.push({ glyph: glyph.name, text: `draws a mark that sits on its letter, but has advance ${glyph.advance}: give it 0 and the font places it, or keep it beside on purpose.` });
   // A mark is placed by compose, wherever it is drawn.
   if (glyph.unicode !== undefined && !/\p{M}/u.test(String.fromCodePoint(glyph.unicode)) && glyph.unicode !== DOT_REPH && (box.xMin < -margin || box.xMax > glyph.advance + margin)) said.push({ glyph: glyph.name, text: glyph.advance === 0 ? `advance 0 but it draws a character that is not a combining mark: give it its advance.` : `ink from x ${Math.round(box.xMin)} to ${Math.round(box.xMax)} leaves the advance 0 to ${glyph.advance}: it will touch its neighbours.` });
   return said;

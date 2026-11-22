@@ -23,7 +23,7 @@ const SINHALA = `අආඇඈඉඊඋඌඍඑඒඓඔඕඖ${SINHALA_CONSONAN
 const KHMER_CONSONANTS = 'កខគឃងចឆជឈញដឋឌឍណតថទធនបផពភមយរលវឝឞសហឡអ';
 const KHMER = `${KHMER_CONSONANTS}ឥឦឧឩឪឫឬឭឮឯឰឱឲឳាិីឹឺុូួើឿៀេែៃោៅំះៈ៉៊់៌៍៎៏័្។៕៖ៗ០១២៣៤៥៦៧៨៩${PUNCT}`;
 const MYANMAR_CONSONANTS = 'ကခဂဃငစဆဇဈဉညဋဌဍဎဏတထဒဓနပဖဗဘမယရလဝသဟဠအ';
-const MYANMAR = `${MYANMAR_CONSONANTS}ဣဤဥဦဧဩဪဿါာိီုူေဲံ့း်ျြွှ္၀၁၂၃၄၅၆၇၈၉၊။${PUNCT}`;
+const MYANMAR = `${MYANMAR_CONSONANTS}ဣဤဥဦဧဩဪဿါာိီုူေဲံ့း်ျြွှ္၀၁၂၃၄၅၆၇၈၉၊။၌၍၎၏${PUNCT}`;
 const TAMIL = `அஆஇஈஉஊஎஏஐஒஓஔஃகஙசஞடணதநபமயரலவழளறனஜஷஸஹாிீுூெேைொோௌ்ௗ0123456789${PUNCT}`;
 
 export const INDIC_CHARS: Record<string, string> = {
