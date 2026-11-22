@@ -11,7 +11,7 @@ An app to make fonts with an AI agent. The agent draws and spaces the glyphs thr
 - `app/`: web front (Vite, React, Tailwind v4). Read only. The list of fonts, the glyph grid or one glyph on its lines, a text proof set by the browser with the font compiled to OTF, and a panel (glyph, metrics, coverage, kerning). The choice is in the address (`#/netsu-pixel/g`). English and French.
 - `fonts/netsu-pixel.nfont.json` is drawn by `server/scripts/seed.ts` through the tools (en, fr, es, de, nl). `galet` (fr, pl) and `rivet` (en, ru, el) were drawn by agents that had only the skill.
 - The method of drawing a font is a skill, `netsu-type-design`, in `skills/`. `server/src/guide.ts` holds the format; the skill holds the method. The NetsuSkills repository publishes a copy.
-- Not yet: weights interpolated between masters, Mongolian, Sinhala conjuncts by ZWJ, Sinhala conjuncts joined by ZWJ, a lint of spacing and widths, contextual alternates, editing by hand in the app. See `docs/STATUS.md`.
+- Not yet: weights interpolated between masters, Mongolian, Sinhala conjuncts by ZWJ, a lint of widths and of spacing beyond Latin, contextual alternates, editing by hand in the app. See `docs/STATUS.md`.
 
 ## Read first
 
