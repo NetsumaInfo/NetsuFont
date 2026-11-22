@@ -184,7 +184,10 @@ Build the letters that are not Latin from the parts you already have:
   with ka below.
 - **Sinhala (si)**: trace Nirmala UI (2026-11-22, measured, not drawn here yet). Round bodies
   from 0 to about 595, wide (ක 1036, ග 920, ම 835), some rising to 862 (ර); ා is spacing (406),
-  ෙ ෛ are drawn before the consonant (ෙ 684); ි ් above and ු below are marks. Each consonant
+  ෙ ෛ are drawn before the consonant (ෙ 684); ි ් above and ු ූ below are marks; ෘ ෟ ං ඃ
+  are spacing. ආ ඇ ඈ are අ with ා ැ ෑ as components (x: the advance of අ), ඖ is ඔ with ෟ, ඓ is
+  එ with ෙ. A blind run (Kelani, 2026-11-22, about 72 calls, by hand on the model) read as
+  Sinhala text; the wide ඣ ඤ ඥ ණ and the curls of ඞ ඟ ඨ ඳ ඹ ෂ ළ were weak. Each consonant
   with the al-lakuna ් and with ු ූ is one glyph in the model (ක් කු): draw `.base` where the
   sign changes the letter, then `compose {syllables:"si"}`, and redraw by hand those that join
   in their own way. Conjuncts joined by ZWJ (ක්‍ෂ) are not shaped: the text shows the al-lakuna.

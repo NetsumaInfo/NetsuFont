@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { applyOps, lint, styleOf, charsOf, composeNeeds, syllableNeeds, syllablesOf, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, toWoff2, ttfFromOtf, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
+import { applyOps, lint, modelScale, sheetCell, styleOf, charsOf, composeNeeds, syllableNeeds, syllablesOf, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, toWoff2, ttfFromOtf, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
 import { z } from 'zod';
 import { GUIDE } from './guide';
 import { kanjiInput, kanjiOps } from './kanji';
@@ -151,8 +151,11 @@ not in this font: ${missing.join(', ')}` : ''));
         const columns = args.columns ?? Math.min(8, shown.length);
         const width = Math.min(2400, columns * (args.size ?? 200));
         // The scale of a cell, so that a position read on the picture can be turned into font units.
-        const cell = Math.max(doc.unitsPerEm, ...shown.map((g) => g.advance)) * 1.15;
-        const scale = `each cell ${Math.round(cell)} units in ${Math.round(width / columns)} px (${(cell / (width / columns)).toFixed(1)} units a pixel); the two upright lines are x 0 and the advance`;
+        const cell = sheetCell(doc, shown, model);
+        const scale = [
+          `each cell ${Math.round(cell)} units in ${Math.round(width / columns)} px (${(cell / (width / columns)).toFixed(1)} units a pixel); the two upright lines are x 0 and the advance, the darker level line the baseline`,
+          ...(model ? [`the model is drawn at ${modelScale(doc, model).toFixed(3)} of its size (its cap height to yours): its advances in list_fonts times that`] : []),
+        ].join('\n');
         return png(glyphSheet(doc, shown, { columns, ...(model ? { under: model } : {}), ...(args.grid ? { grid: true } : {}) }), width, `${shown.map((g) => g.name).join(' ')}\n${scale}`);
       }),
   );

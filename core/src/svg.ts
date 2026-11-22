@@ -60,10 +60,20 @@ export interface SheetOptions {
 function underlay(doc: FontDoc, model: FontDoc, glyph: Glyph, left: number): { under: string; over: string } {
   const found = model.glyphs.find((g) => (glyph.unicode !== undefined ? g.unicode === glyph.unicode : g.name === glyph.name));
   if (!found) return { under: '', over: '' };
-  const scale = doc.metrics.capHeight / model.metrics.capHeight;
+  const scale = modelScale(doc, model);
   const place = `transform="translate(${left} 0) scale(${scale})" d="${glyphPath(model, found)}"`;
   const line = doc.unitsPerEm / 120 / scale;
   return { under: `<path ${place} fill="#6aa5ff" fill-opacity="0.45"/>`, over: `<path ${place} fill="none" stroke="#1f6fff" stroke-width="${line}"/>` };
+}
+
+/** How a model is scaled under a font: its cap height to the font's. */
+export const modelScale = (doc: FontDoc, model: FontDoc): number => doc.metrics.capHeight / model.metrics.capHeight;
+
+/** The width of a cell of a sheet: an em, or the widest glyph shown, the model's included, with a margin. */
+export function sheetCell(doc: FontDoc, glyphs: Glyph[], under?: FontDoc): number {
+  const scale = under ? modelScale(doc, under) : 0;
+  const theirs = glyphs.map((glyph) => under?.glyphs.find((g) => (glyph.unicode !== undefined ? g.unicode === glyph.unicode : g.name === glyph.name))?.advance ?? 0);
+  return Math.max(doc.unitsPerEm, ...glyphs.map((g) => g.advance), ...theirs.map((advance) => advance * scale)) * 1.15;
 }
 
 /**
@@ -75,7 +85,7 @@ export function glyphSheet(doc: FontDoc, glyphs: Glyph[], options: SheetOptions 
   const columns = Math.max(1, Math.min(options.columns ?? 8, glyphs.length));
   const byName = glyphMap(doc);
   const { top, height } = band(doc);
-  const cell = Math.max(doc.unitsPerEm, ...glyphs.map((g) => g.advance)) * 1.15;
+  const cell = sheetCell(doc, glyphs, options.under);
   const label = doc.unitsPerEm * 0.12;
   const rowHeight = height + label * 1.6;
   const rows = Math.ceil(glyphs.length / columns);
@@ -103,7 +113,7 @@ function grid(doc: FontDoc, left: number, cell: number): string {
   const xs = Array.from({ length: Math.ceil(cell / 100) * 2 + 1 }, (_, i) => (i - Math.ceil(cell / 100)) * 100).filter((dx) => left + dx >= 0 && left + dx <= cell);
   const ys = Array.from({ length: Math.ceil((top + bottom) / 100) * 2 + 1 }, (_, i) => (i - Math.ceil(top / 100)) * 100).filter((dy) => dy >= -top && dy <= bottom);
   const width = doc.unitsPerEm / 500;
-  return [...xs.map((dx) => `<line x1="${left + dx}" x2="${left + dx}" y1="${-top}" y2="${bottom}" stroke="#d9dde6" stroke-width="${width}"/>`), ...ys.map((dy) => `<line x1="0" x2="${cell}" y1="${dy}" y2="${dy}" stroke="#d9dde6" stroke-width="${width}"/>`)].join('');
+  return [...xs.map((dx) => `<line x1="${left + dx}" x2="${left + dx}" y1="${-top}" y2="${bottom}" stroke="#b8c0cf" stroke-width="${width}"/>`), ...ys.map((dy) => `<line x1="0" x2="${cell}" y1="${dy}" y2="${dy}" stroke="#b8c0cf" stroke-width="${width}"/>`)].join('');
 }
 
 /** One glyph, large, on its metric lines. */
