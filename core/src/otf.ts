@@ -7,6 +7,7 @@ import { gposPairs, MAX_PAIRS } from './gposRead';
 import { glyphMap, outline } from './outline';
 import { writePath, type Command } from './path';
 import { fontCount, fontOfCollection, kernTable, readTables, withTable } from './sfnt';
+import { styleNames, type StyleNames } from './style';
 import { FontError, FORMAT, type FontDoc, type Glyph, type Kern } from './types';
 import { GLYPH_NAME, validate } from './validate';
 
@@ -43,6 +44,7 @@ export function exportOtf(doc: FontDoc): Uint8Array {
   validate(doc);
   const byName = glyphMap(doc);
   const own = doc.glyphs.filter((glyph) => glyph.name !== '.notdef');
+  const style = styleNames(doc.family, doc.style);
   const glyphs = [notdef(doc), ...own.map((glyph) => new opentype.Glyph({ name: glyph.name, ...(glyph.unicode === undefined ? {} : { unicode: glyph.unicode }), advanceWidth: glyph.advance, path: toPath(outline(doc, glyph, byName)) }))];
   const font = new opentype.Font({
     familyName: doc.family,
@@ -51,18 +53,38 @@ export function exportOtf(doc: FontDoc): Uint8Array {
     ascender: doc.metrics.ascender,
     descender: doc.metrics.descender,
     glyphs,
-    tables: { os2: { sxHeight: doc.metrics.xHeight, sCapHeight: doc.metrics.capHeight } },
+    tables: { os2: { sxHeight: doc.metrics.xHeight, sCapHeight: doc.metrics.capHeight, usWeightClass: style.weight, fsSelection: style.fsSelection } },
   });
+  name(font, style);
   // .notdef is index 0: the glyphs of the document follow in their order.
   const index = new Map(own.map((glyph, at) => [glyph.name, at + 1]));
   addFeatures(font, featureRules(doc), index);
   const gpos = gposTable(doc, index);
   if (gpos) skipMarksInLigatures(font);
-  let bytes: Uint8Array = new Uint8Array(font.toArrayBuffer());
+  let bytes: Uint8Array = withMacStyle(new Uint8Array(font.toArrayBuffer()), style.macStyle);
   if (gpos) bytes = withTable(withTable(bytes, 'GPOS', gpos), 'GDEF', gdefTable(doc, index));
   if (doc.kerning.length === 0) return bytes;
   const pairs = doc.kerning.map((kern) => ({ left: index.get(kern.left)!, right: index.get(kern.right)!, value: kern.value }));
   return withTable(bytes, 'kern', kernTable(pairs));
+}
+
+/** The family and style names apps group styles by: name IDs 1 and 2, and 16 and 17 when they differ. */
+function name(font: OtFont, style: StyleNames): void {
+  for (const platform of Object.values(font.names)) {
+    platform.fontFamily = { en: style.family };
+    platform.fontSubfamily = { en: style.subfamily };
+    if (style.typographic) {
+      platform.preferredFamily = { en: style.typographic.family };
+      platform.preferredSubfamily = { en: style.typographic.subfamily };
+    }
+  }
+}
+
+/** head with its macStyle bits (bold, italic): opentype.js leaves them 0. */
+function withMacStyle(bytes: Uint8Array, macStyle: number): Uint8Array {
+  const head = readTables(bytes).tables.find((table) => table.tag === 'head')!.data.slice();
+  new DataView(head.buffer).setUint16(44, macStyle);
+  return withTable(bytes, 'head', head);
 }
 
 /** A harakat between lam and alef must not break lam-alef: the required ligatures look past marks (GDEF says which). */

@@ -6,7 +6,8 @@
 export const GUIDE = `NetsuFont: fonts drawn by small targeted operations. The user watches the font change live in the app.
 
 WORKFLOW
-1. list_fonts (one line each; {name} for one font's glyphs and checks), then create_font {name, family, style?} or
+1. list_fonts (one line each; {name} for one font's glyphs and checks), then create_font {name, family, style?, from?}
+   (from: another style of that font, its glyphs copied: "Bold", "Light Italic"; the export names and links it) or
    import_font {file, name, index?} (a .ttf, .otf, or .ttc with index; to change, its license must allow it). It keeps
    its Arabic forms, Indic forms and conjuncts, and ligatures, under the names below. A font brought in as a model
    is looked at (look_glyphs model); never read its paths with get_font or trace them by a script: the result is that

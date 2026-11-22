@@ -11,7 +11,7 @@ An app to make fonts with an AI agent. The agent draws and spaces the glyphs thr
 - `app/`: web front (Vite, React, Tailwind v4). Read only. The list of fonts, the glyph grid or one glyph on its lines, a text proof set by the browser with the font compiled to OTF, and a panel (glyph, metrics, coverage, kerning). The choice is in the address (`#/netsu-pixel/g`). English and French.
 - `fonts/netsu-pixel.nfont.json` is drawn by `server/scripts/seed.ts` through the tools (en, fr, es, de, nl). `galet` (fr, pl) and `rivet` (en, ru, el) were drawn by agents that had only the skill.
 - The method of drawing a font is a skill, `netsu-type-design`, in `skills/`. `server/src/guide.ts` holds the format; the skill holds the method. The NetsuSkills repository publishes a copy.
-- Not yet: styles shared by a family (weights), Sinhala, Khmer, Myanmar, a lint of the style, contextual alternates, editing by hand in the app. See `docs/STATUS.md`.
+- Not yet: weights drawn from each other (interpolation, an emboldening op), Sinhala, Khmer, Myanmar, a lint of the style, contextual alternates, editing by hand in the app. See `docs/STATUS.md`.
 
 ## Read first
 
@@ -21,7 +21,7 @@ An app to make fonts with an AI agent. The agent draws and spaces the glyphs thr
 
 ```
 core/src/      # pure TypeScript, no DOM, no Node: types, path, validate, outline (components, layout), ops, shapes, check, svg, charset,
-               # languages, indicLanguages, names, accents (compose), arabic, indic, japanese, chinese, korean, kanji, hangul, features, featureNames, shape, marks, layout, otl, gpos, gposRead, otf, ttf, sfnt, woff2, doc
+               # languages, indicLanguages, names, accents (compose), arabic, indic, japanese, chinese, korean, kanji, hangul, features, featureNames, shape, marks, layout, otl, gpos, gposRead, otf, ttf, sfnt, woff2, style, doc
 server/src/    # store.ts (only code that touches the disk), tools.ts (MCP tools), kanji.ts (draw_kanji), reply.ts (what a tool answers), guide.ts (what the agent is told), main.ts (HTTP)
 server/scripts/  # seed.ts (the example font), mcp.ts (one tool call from a shell), agent.ts (their client), kanjivg.ts and hanzi.ts (stroke data, CC BY-SA and Arphic, to ~/.netsufont)
 app/src/       # components/, lib/ (useFonts, events, picked, fontFace), locales/ (fr is the source, en)

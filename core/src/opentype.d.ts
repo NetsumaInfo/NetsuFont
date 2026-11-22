@@ -44,6 +44,8 @@ declare module 'opentype.js' {
     numGlyphs: number;
     glyphs: { get(index: number): Glyph; length: number };
     kerningPairs?: Record<string, number>;
+    /** By platform (unicode, macintosh, windows), then name (fontFamily, preferredFamily…), then language. */
+    names: Record<string, Record<string, Record<string, string>>>;
     tables: {
       os2?: { sxHeight?: number; sCapHeight?: number };
       gsub?: { features: { tag: string; feature: { lookupListIndexes: number[] } }[]; lookups: { lookupFlag: number }[] };

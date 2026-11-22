@@ -100,6 +100,12 @@ nnynn ooyoo"`. Each x
    `export_font`, give the path, say how to install it (Windows: right click, Install), and
    what was not verified (an app the font was not tried in).
 
+11. **A family**, when the brief asks for more than one style: finish and deliver the Regular
+   first. Each other style is `create_font {from}` with its style name ("Bold", "Light",
+   "Italic"), then redrawn family by family with its own stem width from its own sheet: the
+   copied glyphs are a start, not the style. Space it again; kern it again. Proof the styles in
+   the same words, one call each, at the same sizes.
+
 ## Budget
 
 Control glyphs: 1 create, 1 to 3 edits, 2 looks. Each of the 12 families: 1 edit, 1 look, 1 fix

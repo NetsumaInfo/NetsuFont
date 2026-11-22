@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { applyOps, charsOf, composeNeeds, syllableNeeds, syllablesOf, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, toWoff2, ttfFromOtf, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
+import { applyOps, styleOf, charsOf, composeNeeds, syllableNeeds, syllablesOf, exportOtf, FontError, glyphSheet, importFont, languageCoverage, LANGUAGES as SCRIPTS, newFont, OP_NAMES, proofSvg, recipe, toWoff2, ttfFromOtf, UNSUPPORTED_SCRIPTS, type FontDoc, type Glyph, type LanguageCoverage, type Op } from '@netsufont/core';
 import { z } from 'zod';
 import { GUIDE } from './guide';
 import { kanjiInput, kanjiOps } from './kanji';
@@ -158,11 +158,14 @@ not in this font: ${missing.join(', ')}` : ''));
 function registerWrite(server: McpServer, store: Store): void {
   server.registerTool(
     'create_font',
-    { description: 'A new empty font of 1000 units with the usual metrics and a space.', inputSchema: { name, family: z.string().describe('The family name, such as "Netsu Pixel".'), style: z.string().optional() } },
+    {
+      description: 'A new empty font of 1000 units with the usual metrics and a space; with from, another style of that font (its glyphs, metrics and kerning copied).',
+      inputSchema: { name, family: z.string().describe('The family name, such as "Netsu Pixel".'), style: z.string().optional(), from: z.string().optional().describe('A font id to copy, for another style of its family.') },
+    },
     (args) =>
       guarded(() => {
         if (store.exists(args.name)) throw new FontError('font_exists', `A font named "${args.name}" exists already.`);
-        const doc = newFont(args.name, args.family, args.style);
+        const doc = args.from === undefined ? newFont(args.name, args.family, args.style) : styleOf(store.read(args.from), args.name, args.style ?? 'Regular', args.family);
         store.write(doc);
         return text(outline(doc));
       }),

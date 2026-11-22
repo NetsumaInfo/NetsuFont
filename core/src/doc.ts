@@ -16,3 +16,10 @@ export function newFont(name: string, family: string, style = 'Regular'): FontDo
   validate(doc);
   return doc;
 }
+
+/** Another style of a font's family: its glyphs, metrics and kerning copied under a new id and style, to redraw. */
+export function styleOf(source: FontDoc, name: string, style: string, family = source.family): FontDoc {
+  const doc: FontDoc = { ...(JSON.parse(JSON.stringify(source)) as FontDoc), name, family, style };
+  validate(doc);
+  return doc;
+}
