@@ -103,8 +103,9 @@ nnynn ooyoo"`. Each x
 
 11. **A family**, when the brief asks for more than one style: finish and deliver the Regular
    first. Each other style is `create_font {from}` with its style name ("Bold", "Light",
-   "Italic"), then redrawn family by family with its own stem width from its own sheet: the
-   copied glyphs are a start, not the style. Space it again; kern it again. Proof the styles in
+   "Italic"); for a weight, then `embolden {by}` (the stem grows by twice `by`, a light style
+   below 0), then looked at family by family: small counters close and sharp joins blot, and
+   those are redrawn with the style's own sheet. The result is a start, not the style. Space it again; kern it again. Proof the styles in
    the same words, one call each, at the same sizes.
 
 ## Budget

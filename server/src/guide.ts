@@ -107,6 +107,8 @@ MORE OPS
 {op:"decompose", glyph}   its components become its own path
 {op:"set_spacing", glyph, left?, right?}   moves the drawing to these side bearings; the advance follows
 {op:"center", glyphs, advance}   one advance for all, the ink centred: figures that line up in tables, a monospace
+{op:"embolden", by, glyphs?}   strokes heavier by `by` units on each side (lighter below 0), counters smaller, the
+   advance grown by twice `by`: the start of a Bold from a Regular (create_font from), to look at and fix.
 {op:"transform", glyphs?, scale?, slant?, translate?}   every glyph when glyphs is left out. scale n or [x,y] (x below 0
    mirrors the glyph in its advance: N into И; y below 0 mirrors it round the baseline: 6 into 9 with a translate); slant
    in degrees, positive leans right; then translate [x,y]. The advance follows the x scale.

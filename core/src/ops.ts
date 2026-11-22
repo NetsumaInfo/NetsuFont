@@ -1,4 +1,5 @@
 import { composeLetters, composeSyllables } from './accents';
+import { emboldenPath } from './embolden';
 import { outline } from './outline';
 import { bounds, parsePath, transformPath, writePath } from './path';
 import { shapesPath, type Shape } from './shapes';
@@ -13,13 +14,14 @@ export type Op =
   | { op: 'set_spacing'; glyph: string; left?: number; right?: number }
   | { op: 'center'; glyphs: string[]; advance: number }
   | { op: 'transform'; glyphs?: string[]; scale?: number | [number, number]; slant?: number; translate?: [number, number] }
+  | { op: 'embolden'; by: number; glyphs?: string[] }
   | { op: 'decompose'; glyph: string }
   | { op: 'set_kern'; left: string; right: string; value: number }
   | { op: 'set_metrics'; metrics: Partial<Metrics> }
   | { op: 'set_info'; family?: string; style?: string }
   | { op: 'compose'; chars?: string; syllables?: string };
 
-export const OP_NAMES = ['set_glyph', 'remove_glyph', 'copy_glyph', 'set_spacing', 'center', 'transform', 'decompose', 'set_kern', 'set_metrics', 'set_info', 'compose'] as const;
+export const OP_NAMES = ['set_glyph', 'remove_glyph', 'copy_glyph', 'set_spacing', 'center', 'transform', 'embolden', 'decompose', 'set_kern', 'set_metrics', 'set_info', 'compose'] as const;
 
 /** A deep copy: a document is plain JSON. */
 function clone<T>(value: T): T {
@@ -101,6 +103,19 @@ function transform(doc: FontDoc, op: Extract<Op, { op: 'transform' }>): void {
   }
 }
 
+/**
+ * Heavier (by > 0) or lighter strokes, `by` units on each side, the advance grown by twice that so that the side
+ * bearings stay. A glyph made of components keeps them where they are: its parts grow when they are in the list.
+ */
+function embolden(doc: FontDoc, op: Extract<Op, { op: 'embolden' }>): void {
+  if (typeof op.by !== 'number' || !Number.isFinite(op.by) || Math.abs(op.by) > 150) throw new FontError('bad_op', 'embolden takes by: units added on each side of a stroke, from -150 to 150.');
+  for (const name of op.glyphs ?? doc.glyphs.map((g) => g.name)) {
+    const glyph = find(doc, name);
+    if (glyph.path !== '') glyph.path = emboldenPath(glyph.path, op.by);
+    if (glyph.advance > 0 && (glyph.path !== '' || glyph.components?.length)) glyph.advance = Math.max(0, Math.round(glyph.advance + 2 * op.by));
+  }
+}
+
 function decompose(doc: FontDoc, name: string): void {
   const glyph = find(doc, name);
   glyph.path = writePath(outline(doc, glyph));
@@ -141,6 +156,8 @@ function apply(doc: FontDoc, op: Op): void {
       return center(doc, op);
     case 'transform':
       return transform(doc, op);
+    case 'embolden':
+      return embolden(doc, op);
     case 'decompose':
       return decompose(doc, op.glyph);
     case 'set_kern':
