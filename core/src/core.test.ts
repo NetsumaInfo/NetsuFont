@@ -149,6 +149,19 @@ describe('checks', () => {
   });
 });
 
+describe('copy_glyph', () => {
+  it('replaces a glyph that exists, keeping its character', () => {
+    const doc = applyOps(newFont('t', 'T'), [
+      { op: 'set_glyph', glyph: 'six', unicode: 54, advance: 500, path: 'M0 0H100V100H0Z' },
+      { op: 'set_glyph', glyph: 'nine', unicode: 57, advance: 500, path: 'M0 0H50V50H0Z' },
+      { op: 'copy_glyph', from: 'six', to: 'nine' },
+    ]);
+    const nine = doc.glyphs.filter((g) => g.name === 'nine');
+    expect(nine).toHaveLength(1);
+    expect([nine[0]!.unicode, nine[0]!.path]).toEqual([57, doc.glyphs.find((g) => g.name === 'six')!.path]);
+  });
+});
+
 describe('a bad op', () => {
   it('names the op when a field is of the wrong kind', () => {
     expect(() => applyOps(newFont('t', 'T'), [{ op: 'set_kern', left: 5, right: 'A', value: -20 } as unknown as Op])).toThrow('op 1 (set_kern):');

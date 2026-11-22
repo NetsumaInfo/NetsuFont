@@ -7,7 +7,8 @@ export const GUIDE = `NetsuFont: fonts drawn by small targeted operations. The u
 
 WORKFLOW
 1. list_fonts (one line each; {name} for one font's glyphs and checks, {name, chars} for a few of them), then create_font {name, family, style?, from?}
-   (from: another style of that font, its glyphs copied: "Bold", "Light Italic"; the export names and links it) or
+   (from: the id of a font to copy, its glyphs, metrics and kerning, for another style of it; style "Bold", "Light
+   Italic": the export names and links it) or
    import_font {file, name, index?} (a .ttf, .otf, or .ttc with index; to change, its license must allow it). It keeps
    its Arabic forms, Indic forms and conjuncts, and ligatures, under the names below. A font brought in as a model
    is looked at (look_glyphs model); never read its paths with get_font or trace them by a script: the result is that
@@ -18,7 +19,7 @@ WORKFLOW
 3. look_glyphs {name, chars:"Hno"} (or glyphs:[names]): the glyphs on their lines; model:"<font id>" draws that font's
    glyph of each character in blue, from your glyph's origin, filled under it and outlined over it, to trace a script;
    size:400 and grid:true (a line every 100 units) to read positions. proof {name, text, sizes?, features?, lang?}: words at
-   several sizes, with spacing and kerning; "\\n" starts a line, 600 characters at most.
+   several sizes, with spacing and kerning; "\\n" starts a line, 600 characters at most; a line wider than the picture is cut (the answer says how much fits).
    get_font {name, glyphs:[names]}: the paths of those glyphs.
 4. languages {name, languages?:["fr","pl"]}: what each language lacks, what compose can make, what to draw.
    lint {name}: glyphs whose strokes are much heavier or lighter than their script's, round letters short of the lines,
@@ -103,7 +104,8 @@ ends: "square" (line, default), "flat" (line: cut level to sit on a line; wider 
 
 MORE OPS
 {op:"remove_glyph", glyph}   refused while another glyph uses it as a component
-{op:"copy_glyph", from, to, unicode?}   the start of a related letter: n → h, o → c, b → d
+{op:"copy_glyph", from, to, unicode?}   the start of a related letter: n → h, o → c, b → d; onto a glyph that exists,
+   it replaces its drawing
 {op:"decompose", glyph}   its components become its own path
 {op:"set_spacing", glyph, left?, right?}   moves the drawing to these side bearings; the advance follows
 {op:"center", glyphs, advance}   one advance for all, the ink centred: figures that line up in tables, a monospace

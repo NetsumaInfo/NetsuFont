@@ -191,6 +191,7 @@ function registerWrite(server: McpServer, store: Store): void {
     (args) =>
       guarded(() => {
         if (store.exists(args.name)) throw new FontError('font_exists', `A font named "${args.name}" exists already.`);
+        if (args.from !== undefined && !store.exists(args.from)) throw new FontError('font_not_found', `from is the id of a font to copy, and "${args.from}" is none: list_fonts gives the ids.`);
         const doc = args.from === undefined ? newFont(args.name, args.family, args.style) : styleOf(store.read(args.from), args.name, args.style ?? 'Regular', args.family);
         store.write(doc);
         return text(outline(doc));

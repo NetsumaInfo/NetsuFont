@@ -104,8 +104,11 @@ nnynn ooyoo"`. Each x
 11. **A family**, when the brief asks for more than one style: finish and deliver the Regular
    first. Each other style is `create_font {from}` with its style name ("Bold", "Light",
    "Italic"); for a weight, then `embolden {by}` (the stem grows by twice `by`, a light style
-   below 0), then looked at family by family: small counters close and sharp joins blot, and
-   those are redrawn with the style's own sheet. The result is a start, not the style. Space it again; kern it again. Proof the styles in
+   below 0; `by` is half the stem the style adds), then looked at family by family: small
+   counters close, sharp joins blot, the dots of a dieresis merge, a flat end leaves a notch (e, t,
+   g), and round letters grow past their overshoot. Those are redrawn with the style's own sheet.
+   A blind run (Lumen, 2026-11-22) made its Bold in 10 calls this way, a, e, g, t, j and the
+   marks redrawn. The result is a start, not the style. Space it again; kern it again. Proof the styles in
    the same words, one call each, at the same sizes.
 
 ## Budget

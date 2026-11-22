@@ -143,11 +143,14 @@ function apply(doc: FontDoc, op: Op): void {
       return removeGlyph(doc, op.glyph);
     case 'copy_glyph': {
       const from = find(doc, op.from);
-      if (doc.glyphs.some((g) => g.name === op.to)) throw new FontError('glyph_exists', `A glyph named "${op.to}" exists already.`);
+      // Onto a glyph that exists, the copy replaces its drawing and keeps its character unless another is given.
+      const target = doc.glyphs.find((g) => g.name === op.to);
       const copy: Glyph = { ...clone(from), name: op.to };
       delete copy.unicode;
-      if (typeof op.unicode === 'number') copy.unicode = op.unicode;
-      doc.glyphs.push(copy);
+      const unicode = typeof op.unicode === 'number' ? op.unicode : target?.unicode;
+      if (unicode !== undefined) copy.unicode = unicode;
+      if (target) doc.glyphs[doc.glyphs.indexOf(target)] = copy;
+      else doc.glyphs.push(copy);
       return;
     }
     case 'set_spacing':
